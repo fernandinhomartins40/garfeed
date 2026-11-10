@@ -9,7 +9,10 @@ export const toMedia = (m: MediaRow): Media => ({
   durationMs: m.durationMs, status: m.status, error: m.error, createdAt: m.createdAt.toISOString(),
 });
 
-export const orderInclude = { items: true, table: true } satisfies Prisma.OrderInclude;
+export const orderInclude = {
+  items: { include: { item: { select: { media: { select: { thumbUrl: true, posterUrl: true } } } } } },
+  table: true,
+} satisfies Prisma.OrderInclude;
 export type OrderRow = Prisma.OrderGetPayload<{ include: typeof orderInclude }>;
 
 export const toPublicOrder = (o: OrderRow): PublicOrder => ({
@@ -20,7 +23,10 @@ export const toPublicOrder = (o: OrderRow): PublicOrder => ({
     options: i.options as OrderItemOption[], note: i.note, sector: i.sector,
   })),
 });
-export const toPanelOrder = (o: OrderRow): PanelOrder => ({ ...toPublicOrder(o), sessionId: o.sessionId, table: tableRef(o.table) });
+export const toPanelOrder = (o: OrderRow): PanelOrder => {
+  const pub = toPublicOrder(o);
+  return { ...pub, sessionId: o.sessionId, table: tableRef(o.table), items: pub.items.map((i, k) => ({ ...i, thumbUrl: o.items[k]!.item.media?.thumbUrl ?? o.items[k]!.item.media?.posterUrl ?? null })) };
+};
 
 type CallRow = Prisma.ServiceCallGetPayload<{ include: { table: true } }>;
 export const toPublicCall = (c: Pick<CallRow, 'id' | 'type' | 'status' | 'createdAt'>): PublicCall => ({
