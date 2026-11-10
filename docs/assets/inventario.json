@@ -1,0 +1,1895 @@
+[
+  {
+    "arquivo": "01-marca/logo-horizontal-branca.png",
+    "bytes": 46115,
+    "sha256": "800bf0f463b1fbbbc11a99b46410b222c17e6bb0b8ed7f62c604ba073e060a89",
+    "largura": 2400,
+    "altura": 675,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "01-marca/logo-horizontal-branca.svg",
+    "bytes": 44952,
+    "sha256": "9bacbe33fb33979f67be1896218414a8e4eb3aa1e025736c338a218c69f2a42d"
+  },
+  {
+    "arquivo": "01-marca/logo-horizontal-cor.png",
+    "bytes": 65298,
+    "sha256": "78e00ba775512a3952f5562e814f16db27948eb1f3275bc14d8e5d80185ea3d9",
+    "largura": 2400,
+    "altura": 675,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "01-marca/logo-horizontal-cor.svg",
+    "bytes": 44952,
+    "sha256": "faaf2ac35f68d4fa12fd8277c5e0e532f5c347f737bf7fbb4e9b0a3910e460e1"
+  },
+  {
+    "arquivo": "01-marca/logo-horizontal-negativa.png",
+    "bytes": 51237,
+    "sha256": "69cf6a253b71418cf82607b6494c6b058c569048512d87156953a80786c1cb61",
+    "largura": 2400,
+    "altura": 675,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "01-marca/logo-horizontal-negativa.svg",
+    "bytes": 44952,
+    "sha256": "7071f488b0edf54f75c0030a5aa8bcf0250a13cb9607d801d7603f7644396b51"
+  },
+  {
+    "arquivo": "01-marca/logo-horizontal-preta.png",
+    "bytes": 51211,
+    "sha256": "31ec81f54cd08574e51882f98aba3681067a1f50d3e753b3a4a389912b64602a",
+    "largura": 2400,
+    "altura": 675,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "01-marca/logo-horizontal-preta.svg",
+    "bytes": 44952,
+    "sha256": "b6bad5e004cb2b1791c60b472a10d7fcb561888232eb0cac1737334fdbc0e2e5"
+  },
+  {
+    "arquivo": "01-marca/logo-vertical-branca.png",
+    "bytes": 59939,
+    "sha256": "c905f5a2185587294abf4e03fd6365329cd1cc54c2857ed51b6301bf26622572",
+    "largura": 2048,
+    "altura": 1676,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "01-marca/logo-vertical-branca.svg",
+    "bytes": 43580,
+    "sha256": "d07629acf23209d362f4e8690c15b23a0396f2f1301020e893365510a8debc03"
+  },
+  {
+    "arquivo": "01-marca/logo-vertical-cor.png",
+    "bytes": 80185,
+    "sha256": "bbaa6b65d1f2ccf5b2eed90518840fa7de592ea213d288298ab1cbedbc29983e",
+    "largura": 2048,
+    "altura": 1676,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "01-marca/logo-vertical-cor.svg",
+    "bytes": 43580,
+    "sha256": "bfdc7a9525b6d39640efad9a99c0780dd71eec0b540e04edc79617c0e8ed844c"
+  },
+  {
+    "arquivo": "01-marca/logo-vertical-negativa.png",
+    "bytes": 65477,
+    "sha256": "6c0075d176ac677d07a36c5de17d83e7e3115e8d4e8246288623d98584ef60ef",
+    "largura": 2048,
+    "altura": 1676,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "01-marca/logo-vertical-negativa.svg",
+    "bytes": 43580,
+    "sha256": "3781ace3c70df882fd570fafd3e3f49bd1741cdba74b98181ccd207037cc2b0f"
+  },
+  {
+    "arquivo": "01-marca/logo-vertical-preta.png",
+    "bytes": 65258,
+    "sha256": "d190c9b65182d4796cde491bbc7e1d1b1bcb322a4e4af438d87bea1e7cdbf6fb",
+    "largura": 2048,
+    "altura": 1676,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "01-marca/logo-vertical-preta.svg",
+    "bytes": 43580,
+    "sha256": "e6327f939b3547276bbe5e55a6f640635fb87365c61cf6b63cf6b39be0a3b0f4"
+  },
+  {
+    "arquivo": "01-marca/simbolo-branco.png",
+    "bytes": 42240,
+    "sha256": "7833884df9c9726972d2306ff18f44ecbe0160bab0aa11f2ffb17e09b61669b5",
+    "largura": 2048,
+    "altura": 2048,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "01-marca/simbolo-branco.svg",
+    "bytes": 10138,
+    "sha256": "5054455a1b1b64793634e75dffbe3e4d1d0ea46c5a895d3d28bc0a7f04c29198"
+  },
+  {
+    "arquivo": "01-marca/simbolo-laranja.png",
+    "bytes": 49585,
+    "sha256": "e6f980081750ec9a7a4bd776b79e24ad1b44509bb7dd3a54e2af02ceee882345",
+    "largura": 2048,
+    "altura": 2048,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "01-marca/simbolo-laranja.svg",
+    "bytes": 10138,
+    "sha256": "2383f52ced162965e66d880c99956e93697e1e91f27b8592103c9393690b1942"
+  },
+  {
+    "arquivo": "01-marca/simbolo-preto.png",
+    "bytes": 44198,
+    "sha256": "6baeb6ac736f568e3373f8a36b77c43966b6daaf69efe91f7bce40cd41d89d38",
+    "largura": 2048,
+    "altura": 2048,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "01-marca/simbolo-preto.svg",
+    "bytes": 10138,
+    "sha256": "8a7bccbc683d1567bd374e2d6e3a0a4edaebf7e2b142407364a83ddc71f906e2"
+  },
+  {
+    "arquivo": "02-landing-assets/celular-placa-sem-fundo-1024.webp",
+    "bytes": 107510,
+    "sha256": "763a4ed21ae77000d26eff3482863fc06dfd6bb62424f0a8c796816de44d2fe2",
+    "largura": 1024,
+    "altura": 683,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/celular-placa-sem-fundo-1440.webp",
+    "bytes": 175286,
+    "sha256": "4414a985421ef53f92ab7522776973bc0faca4fa3eab8bedbc751b1ea9ca0133",
+    "largura": 1440,
+    "altura": 960,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/celular-placa-sem-fundo-480.webp",
+    "bytes": 35400,
+    "sha256": "48afe1036c84291f526315f6b7f25155e168443f0f062990ac3e8097246092f6",
+    "largura": 480,
+    "altura": 320,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/celular-placa-sem-fundo-768.webp",
+    "bytes": 70368,
+    "sha256": "2375cbc459ca1c4c1b92e1b6ea238d5bb0c3bb8a12370626c5d6700bf6069217",
+    "largura": 768,
+    "altura": 512,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/celular-placa-sem-fundo.png",
+    "bytes": 1786668,
+    "sha256": "18996a86ba2ee07b8a8e2670f5e8db91b8190561c6ef49ecc80f436f3321c28f",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      254
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/cta-comida-fundo-1024.webp",
+    "bytes": 79080,
+    "sha256": "3cff921d277e177c1d0f3f721b73f3a5b69e46448903ab2600f159dfc41e261a",
+    "largura": 1024,
+    "altura": 512,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/cta-comida-fundo-1440.webp",
+    "bytes": 132330,
+    "sha256": "2d1bc822a96d5d8ca18504e8a3136ccdb6275e9b573d5c938d7b615aa0a40f89",
+    "largura": 1440,
+    "altura": 720,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/cta-comida-fundo-480.webp",
+    "bytes": 22584,
+    "sha256": "406b9db058a216eef0e865fb304a46512dfeab317516f9c4622bbd01fbe7ddfa",
+    "largura": 480,
+    "altura": 240,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/cta-comida-fundo-768.webp",
+    "bytes": 49494,
+    "sha256": "a5dc0ff4f9528abae24f520aaebf2d446f1bbde89467e0937b5d60794620f6ff",
+    "largura": 768,
+    "altura": 384,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/cta-comida-fundo.jpg",
+    "bytes": 546418,
+    "sha256": "dee6bde0fcb2d42e291447ef0da7382dd16b41a2509fcf7c642ca26ffbe87218",
+    "largura": 1774,
+    "altura": 887,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/cta-comida-sem-fundo-1024.webp",
+    "bytes": 212136,
+    "sha256": "bcb0a384f144ee1b79212863b03b8f36d3687e5ff3f85524224dcc04adb9a5b0",
+    "largura": 1024,
+    "altura": 683,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/cta-comida-sem-fundo-1440.webp",
+    "bytes": 368012,
+    "sha256": "04c306a5ec9f1048b31c2977cf19b7aafa4629aed262b9c1ad0eb1ea5bcf913f",
+    "largura": 1440,
+    "altura": 960,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/cta-comida-sem-fundo-480.webp",
+    "bytes": 53588,
+    "sha256": "bd92a2483fb01e17137f22aa00885705a898addebc55a2b888432e66e5005f21",
+    "largura": 480,
+    "altura": 320,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/cta-comida-sem-fundo-768.webp",
+    "bytes": 121168,
+    "sha256": "ad103484cd4223e6701ddc3cf924722d0b1faa71886eace15498648ca4b0e166",
+    "largura": 768,
+    "altura": 512,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/cta-comida-sem-fundo.png",
+    "bytes": 2527503,
+    "sha256": "4a0ae8bfaa2ad591f1126fb8ac08739322f3930f0079748e9ea2c6af4146907c",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      254
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/experiencia-desktop-1024.webp",
+    "bytes": 123848,
+    "sha256": "adbba78d15084a41758d37a486e3cbe0ab98d5e4f291aab90e5e97cc4c938929",
+    "largura": 1024,
+    "altura": 683,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/experiencia-desktop-1440.webp",
+    "bytes": 206022,
+    "sha256": "6994ce5bafb6c9e70b3ebf5709baf1d500995352e82b8cb98e93582d5811566f",
+    "largura": 1440,
+    "altura": 960,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/experiencia-desktop-480.webp",
+    "bytes": 36896,
+    "sha256": "2b0efc327353f442ecac1a995c13a151c9c7755f16540978df16a802ac16f3a2",
+    "largura": 480,
+    "altura": 320,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/experiencia-desktop-768.webp",
+    "bytes": 77100,
+    "sha256": "3de5dca0afe47f4a68c0955c3b723fba988664361ed3ea9d72d3cf67d2f951d0",
+    "largura": 768,
+    "altura": 512,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/experiencia-desktop.jpg",
+    "bytes": 643385,
+    "sha256": "4b3604b89f6d3f938d1b3ab98ad19518ed517d43726aa3390083e49ea4cf9de6",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/experiencia-mobile-1024.webp",
+    "bytes": 211838,
+    "sha256": "7dd95f6ca8aedfd7974890186ad799a21d3ac678e4f9d5085702c8c4944c6447",
+    "largura": 1024,
+    "altura": 1280,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/experiencia-mobile-480.webp",
+    "bytes": 68900,
+    "sha256": "97290db347e4b371ac24c1fc9d358e4288105a361e9339b885f7ff5357c84839",
+    "largura": 480,
+    "altura": 600,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/experiencia-mobile-768.webp",
+    "bytes": 137884,
+    "sha256": "a1e80c6910589bfa5b6cf74a87431e2702c199ad0e513852d9c78bcaeadeaace",
+    "largura": 768,
+    "altura": 960,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/experiencia-mobile.jpg",
+    "bytes": 671297,
+    "sha256": "a3e2bfc5ef0a0cc9334728c7c1885f05a4a4625de3107b22b399419c69b9a0c3",
+    "largura": 1122,
+    "altura": 1402,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/feed-cliente.png",
+    "bytes": 2189902,
+    "sha256": "4099742deb51038057724d7d99ce429ca947a809918f3c0d87f41ce0b132341b",
+    "largura": 852,
+    "altura": 1846,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/hero-contorno-organico-1024.webp",
+    "bytes": 151610,
+    "sha256": "c33d3c6cc35fb78f091dc059c439392be1c8c679c6af17baabf372820a092f36",
+    "largura": 1024,
+    "altura": 768,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/hero-contorno-organico-480.webp",
+    "bytes": 50808,
+    "sha256": "bc1f9ac079902e2c2945ddcd512404d32b19c0f5b058d323c729e2e762043fbc",
+    "largura": 480,
+    "altura": 360,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/hero-contorno-organico-768.webp",
+    "bytes": 98792,
+    "sha256": "fac79c053c727821aa80f5599148154ad33c572f6180b7f76abe4c8e3bffa850",
+    "largura": 768,
+    "altura": 576,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/hero-contorno-organico.png",
+    "bytes": 1848175,
+    "sha256": "8bc207dcdcab924dcb9714bf4c0601736e5c3920499079ee3dc1412a9f66488e",
+    "largura": 1448,
+    "altura": 1086,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/hero-desktop-1024.webp",
+    "bytes": 106728,
+    "sha256": "0a251d424a840ac1bc1e6a9126263f047e1eb0346f1b15286b5ef1de761c58b5",
+    "largura": 1024,
+    "altura": 683,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/hero-desktop-1440.webp",
+    "bytes": 170448,
+    "sha256": "9d166e72315bf3d07b36bcb10a94baf67c140de1be3c9fb419d2fe3d6793d79e",
+    "largura": 1440,
+    "altura": 960,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/hero-desktop-480.webp",
+    "bytes": 35038,
+    "sha256": "d2828c30eae7f16414e14fb6793a15f4a7aa56bc9ec8ddba33f50a10744984a2",
+    "largura": 480,
+    "altura": 320,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/hero-desktop-768.webp",
+    "bytes": 71454,
+    "sha256": "94b74339312b2c62b9225aa5d8841dfbd6c24b6fdd27e67d98e4c8697cf3c918",
+    "largura": 768,
+    "altura": 512,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/hero-desktop.jpg",
+    "bytes": 561117,
+    "sha256": "9919da634b1d406ea8cffe5240450c48913df8add579a634f48eb85c5bcad706",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/hero-mobile-1024.webp",
+    "bytes": 169122,
+    "sha256": "c7ab386fb9d3d1919174883cef24d8bf7f9f296fd0be80d0cd6d0dccbf144a78",
+    "largura": 1024,
+    "altura": 1280,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/hero-mobile-480.webp",
+    "bytes": 58452,
+    "sha256": "daba49ed41087f2532d540fcd067e807feab2916ce4219780d30ccd82aa7f4fa",
+    "largura": 480,
+    "altura": 600,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/hero-mobile-768.webp",
+    "bytes": 113044,
+    "sha256": "0cc14d3aedec404b624707a200844ea8cd4377b1e08de973a18fb7ea8e07d897",
+    "largura": 768,
+    "altura": 960,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/hero-mobile.jpg",
+    "bytes": 590985,
+    "sha256": "1ccb86e798edbe8c1731f1634a721a527b64250137bdf1164efd883702569f1b",
+    "largura": 1122,
+    "altura": 1402,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/cardapio-adaptavel.svg",
+    "bytes": 278,
+    "sha256": "7a6527e95bac79d777ca4335861a5f789174cc6cb875b6f4a253ba0c5b268283"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/cardapio-branco-96.png",
+    "bytes": 1605,
+    "sha256": "3c76edc1e1eba1f20b79af42a508d93148b627974cc4f87334ec5c3bac151634",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/cardapio-branco.svg",
+    "bytes": 273,
+    "sha256": "6b78db713bd00a308fbb0cff9e8c7a479e268311520915164fd88ba06649baca"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/cardapio-laranja-96.png",
+    "bytes": 2106,
+    "sha256": "7c7f67023a575bf42d81bce3922401b33f7e3adccc69a95d1c486aa4a119f58a",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/cardapio-laranja.svg",
+    "bytes": 273,
+    "sha256": "df384d745e41d198366e4aa31fc0378d61bb8a4d1467948935a72265589a779b"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/cardapio-marinho-96.png",
+    "bytes": 2193,
+    "sha256": "a866fed12ac4bd08dfa605b60ab756361c156c2d6769067b855382d5c0761991",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/cardapio-marinho.svg",
+    "bytes": 273,
+    "sha256": "fda5ec4f0b77994c2f329a37730f1bf67e8baae14d2cef3e79be5c3b8da7f25d"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/carrinho-adaptavel.svg",
+    "bytes": 283,
+    "sha256": "36462fb4648bec968b6a15ef06cccf99f7bb519dd0be4fd5174a439b84d7b3cf"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/carrinho-branco-96.png",
+    "bytes": 1292,
+    "sha256": "0ecdb1ff813fa6eb345147dc118cae509050f7f2d1beb819405f25c698307d45",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/carrinho-branco.svg",
+    "bytes": 278,
+    "sha256": "a06af726b3fbd9003aec5824687a5ea53c5bb7dcbd656f32f9068442ddac1c2e"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/carrinho-laranja-96.png",
+    "bytes": 1598,
+    "sha256": "4c063a3ead0f67d75bfb01a8ed01aa62824eee6984c863c5379686309105d68d",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/carrinho-laranja.svg",
+    "bytes": 278,
+    "sha256": "1124c4aa74ac62f129f81646ee1cd1787ca38941683ef79f35f062f42b5d8372"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/carrinho-marinho-96.png",
+    "bytes": 1608,
+    "sha256": "f5610ba72942192dd7b73c8590d43a975a1c600ea3c9f0e8dfca5d3e95ef584d",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/carrinho-marinho.svg",
+    "bytes": 278,
+    "sha256": "f4bd4fe36250ac968f6a77771a327d2394c56bc955a8833bf20eb9ba166201f3"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/check-adaptavel.svg",
+    "bytes": 216,
+    "sha256": "2908e0183d82282b56e01bb6bb2b53941927553526d26e7573c2c486f92d8394"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/check-branco-96.png",
+    "bytes": 806,
+    "sha256": "23557534043861c994612b68b537cce0bb094b910370e185ba1ddc037943df83",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/check-branco.svg",
+    "bytes": 211,
+    "sha256": "0cc16d48123f446414af81d018526d567235d651cfac32f8ec6fbdbd097b259a"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/check-laranja-96.png",
+    "bytes": 884,
+    "sha256": "eb8dcc571ca1e02ad31c42a98e6b9983c93ed019304791ae84bc3359e7c75f1a",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/check-laranja.svg",
+    "bytes": 211,
+    "sha256": "586f46e0d1e3a2c4172fc377c7237d93e0f574ede614d0c4fd624883baec3069"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/check-marinho-96.png",
+    "bytes": 912,
+    "sha256": "8a41fc5f765c2a026f5f1cab0fdf2c96398a7d339c595e407dacf3503f0f9d9b",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/check-marinho.svg",
+    "bytes": 211,
+    "sha256": "525bc307ed27db7044201e87cd96f311fdea01c09762167399624410c7ca4756"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/chevron-baixo-adaptavel.svg",
+    "bytes": 214,
+    "sha256": "3111aae06a24e3527eceed6177b7ec7aec7a303ca570a37df3844b9967ae3b08"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/chevron-baixo-branco-96.png",
+    "bytes": 753,
+    "sha256": "8d1b4c548dde856fb96e68ad2adbb3e108b798f5ec257367ba81d1f5ea30a393",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/chevron-baixo-branco.svg",
+    "bytes": 209,
+    "sha256": "7dc4d8ccbc3ef472a54966d7f2b5b24c467344c3036fd7ff061251512b478689"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/chevron-baixo-laranja-96.png",
+    "bytes": 838,
+    "sha256": "46cca49753d0c81ebd783c85a2481c3f14aaaa162ff80ced1debc21ca5159e92",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/chevron-baixo-laranja.svg",
+    "bytes": 209,
+    "sha256": "245e06a428b66a01d581cb07b40f479f91d213841115f4bab63692009c277d8e"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/chevron-baixo-marinho-96.png",
+    "bytes": 861,
+    "sha256": "44a73dfa8520eb4006379b9b115ac4231a8def7506047a5d9782949474d5372a",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/chevron-baixo-marinho.svg",
+    "bytes": 209,
+    "sha256": "76b4275f1d439c5357f16f1015fe5415200e1e002b6d149efe12643781c61982"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/garcom-adaptavel.svg",
+    "bytes": 245,
+    "sha256": "e31dce45716d88cd2698bda0099896b0ed5f6ad2a416800f435fc0299eecba1a"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/garcom-branco-96.png",
+    "bytes": 1474,
+    "sha256": "b9137044947dc173622121064a89608af8d36ecdea774e6ba53ad2225d046bbf",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/garcom-branco.svg",
+    "bytes": 240,
+    "sha256": "ec8c077c20956edd47b6aa165da82f7cb6a8a72362a3e209f71f9ba42adc1613"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/garcom-laranja-96.png",
+    "bytes": 1828,
+    "sha256": "88501de83e687a7fce4e9995f86c3c2374e54a38f7b63335a2040a6b71b692ed",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/garcom-laranja.svg",
+    "bytes": 240,
+    "sha256": "43deafc1fb2d73f9e8f3f822b933abffb7f37e75b33f7e1a668619a785fed691"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/garcom-marinho-96.png",
+    "bytes": 1917,
+    "sha256": "99100fbf120fb8476b292367ee0332f450c91f0b3f579324f2f3e53f1d44089a",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/garcom-marinho.svg",
+    "bytes": 240,
+    "sha256": "3ae56c6e68cf74d6930d79c9eefac2797efc4206ec96d0bc41a90542eaf3179e"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/menu-adaptavel.svg",
+    "bytes": 225,
+    "sha256": "46fc49b13bab915051c34f61591310ba9f7053ca77388bc3f1d5b84c512e543d"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/menu-branco-96.png",
+    "bytes": 506,
+    "sha256": "7a322a16c3f1718c24456e5d7c19e82f5071c1b4b6c0b544d533e581610cadf7",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/menu-branco.svg",
+    "bytes": 220,
+    "sha256": "dd59902819889fa9e57b35dcfa7643af62e18ec24746b6d1b2d2cfd5f94a637d"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/menu-laranja-96.png",
+    "bytes": 540,
+    "sha256": "639a7241d0670cfe5eaf652334796287c638548cd8255dc876ba6b7276c538f4",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/menu-laranja.svg",
+    "bytes": 220,
+    "sha256": "1a3cff363cc9e34059b076c1f6cd1ef1df126bb397f520c806e24b093454d220"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/menu-marinho-96.png",
+    "bytes": 548,
+    "sha256": "c53607065698607c19889df3002e8f478674bc81efbab742ee144907eb0d1747",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/menu-marinho.svg",
+    "bytes": 220,
+    "sha256": "996012805ec6561da7c8f588b66f4273f4eb196780abf3da598cad5774cf627b"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/mesa-adaptavel.svg",
+    "bytes": 242,
+    "sha256": "c128c3ba871c611f6a5937661a4befe6424d4d9ce7b4764d0929728f9e715149"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/mesa-branco-96.png",
+    "bytes": 946,
+    "sha256": "3f7daa79847419f8645614451f14627cd7c8bd745837c265c5ddad18c76a0961",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/mesa-branco.svg",
+    "bytes": 237,
+    "sha256": "da1afd6636ec9409448ac2d4eb1a6ea665701e4c5e3a66eda3b7c58fb6e84eb9"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/mesa-laranja-96.png",
+    "bytes": 1100,
+    "sha256": "11dc57d9ce76e03fa4908508ad0b68d3e9d557f84a9927f1dda0e00a72207dd7",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/mesa-laranja.svg",
+    "bytes": 237,
+    "sha256": "75a86cb84a7736cd4f3c33ebb42ebc19839fa0b3b7e161d40abd13d513fda9fc"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/mesa-marinho-96.png",
+    "bytes": 1134,
+    "sha256": "dd2e1e931840cac9e118ef9de765866f35a9e6d1f0fe9921d77a5ecd296ce83b",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/mesa-marinho.svg",
+    "bytes": 237,
+    "sha256": "af3f250d9a5298e5e3c52a5cadbb4d438c2a04b97dcd9ba94d425ee974509beb"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/nfc-adaptavel.svg",
+    "bytes": 263,
+    "sha256": "2b61fcffa2a84c219b9443503070b1cf097d34d210da225a6d08e1bd6abcc39c"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/nfc-branco-96.png",
+    "bytes": 2161,
+    "sha256": "069c37f1bf6985c48a0bc416a23df3079ad25b8bb090ba92adcc2526eea23a85",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/nfc-branco.svg",
+    "bytes": 258,
+    "sha256": "bcd341931eb89ba282f03f9ea963f189b9e242a1c9e0bf60fb7d75951c59e19a"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/nfc-laranja-96.png",
+    "bytes": 2822,
+    "sha256": "b2129c6fa13eaabd553ac504dcc01302f97fe90489c73376d5521a2ca0a802b5",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/nfc-laranja.svg",
+    "bytes": 258,
+    "sha256": "ea059a91fd7cea9a9e64d7c95a948d6c9f23fd45e980bd04006d03a179d21957"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/nfc-marinho-96.png",
+    "bytes": 2967,
+    "sha256": "0b3850c7b18f56a53b71b76dce955d0bad0ef901124f0ca87ac8022e49372fe3",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/nfc-marinho.svg",
+    "bytes": 258,
+    "sha256": "36285ef330ca543b1401d6b7220ed67c3879fc9ef6b7e097ac2d442e8e83a8bf"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/opcionais-adaptavel.svg",
+    "bytes": 333,
+    "sha256": "e128e5739cb749c19bfa03c70f01f1ad5ea4866891dbd9e1b3f405a4d9a11753"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/opcionais-branco-96.png",
+    "bytes": 1120,
+    "sha256": "07a2835cfa67f77b1b04217c4094966584b2516710a1e0934c4584acc4e3c2d7",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/opcionais-branco.svg",
+    "bytes": 328,
+    "sha256": "428f5e10783b7c8f2a32f56d8734247754ba0d9fd7f8bc8dcc034eeeabb9af24"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/opcionais-laranja-96.png",
+    "bytes": 1293,
+    "sha256": "e71d0c3c5d123486d74f275d2bd21818c41dcff6028d85a4ddff0c43aa8c7dc3",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/opcionais-laranja.svg",
+    "bytes": 328,
+    "sha256": "ce18cefafb10cc884cb76514410f8067b7b84195610b6b69eede301c9ed1349c"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/opcionais-marinho-96.png",
+    "bytes": 1309,
+    "sha256": "5ce242eadef349a7fe5282c844843320b5704568dfc2709b8072954a6a0e5823",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/opcionais-marinho.svg",
+    "bytes": 328,
+    "sha256": "06322be7aa22448e996d8d46c56865d3f0636b89b4121d009b9ff94a256f7dc1"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/pedidos-adaptavel.svg",
+    "bytes": 229,
+    "sha256": "ce1b2e55e4d2d4b721f0093a2d2cc99e1345307301908ed70a36304afa4f9b2c"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/pedidos-branco-96.png",
+    "bytes": 1611,
+    "sha256": "0b37ed779d1616dcacb65f9169453975391f830fd9aef5c58f85788982bd5402",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/pedidos-branco.svg",
+    "bytes": 224,
+    "sha256": "ddbb8eab5d42960b683e490fe62dba93941223eb76038fd86ecb6403a39e4e09"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/pedidos-laranja-96.png",
+    "bytes": 1899,
+    "sha256": "1d74c9460ed294864583d34cab1d52fe4ee0f85b021dcf2db789297483c4b52b",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/pedidos-laranja.svg",
+    "bytes": 224,
+    "sha256": "9f3f2ef3d3399abcfc95fd3b1bc5880712c007b2cd3275b3d3621123247dc7ed"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/pedidos-marinho-96.png",
+    "bytes": 1963,
+    "sha256": "def4af691568fc3eaa741076d31504f0460336b69fc8be26c871b325aff8b9bb",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/pedidos-marinho.svg",
+    "bytes": 224,
+    "sha256": "56b3e40699655b10536b017d7f6206a58e8652bddc502be12eb730b22b79c8f9"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/play-adaptavel.svg",
+    "bytes": 217,
+    "sha256": "224d39158e6db1e16d36521c540705e679ea242e30f3aab4ef5e06e1c49ec59a"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/play-branco-96.png",
+    "bytes": 939,
+    "sha256": "429e95c8b0eb84dce84de5132bd7cbbdbcbbf42b9f988dbe6e5c48dade1a01e6",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/play-branco.svg",
+    "bytes": 212,
+    "sha256": "215dbcd1e7dcf066252690f7287d844bec121f9943a9647c1fa99068f2318c07"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/play-laranja-96.png",
+    "bytes": 1073,
+    "sha256": "2d45fcc205b6f2e964693d0efac6131469863f74c8525c0e478d74bbf27639c3",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/play-laranja.svg",
+    "bytes": 212,
+    "sha256": "2a133c24ef9253f59b3d2093e3446553a4962c6cd8a67b9d14e087b97296460e"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/play-marinho-96.png",
+    "bytes": 1071,
+    "sha256": "0fbc230d1872c9935af6d5927dd9d81fbc0bc9dbcb744bc706d8006e2ce541dc",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/play-marinho.svg",
+    "bytes": 212,
+    "sha256": "01ab6d3cfca21215764b6e161c372147e40be0f2a0141057b3e2d00df5d65380"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/seta-direita-adaptavel.svg",
+    "bytes": 223,
+    "sha256": "282e5e3ada40707a9430e9908d7a271d75bd1d8e6923d52d45d90d3d49075560"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/seta-direita-branco-96.png",
+    "bytes": 745,
+    "sha256": "dca3b1473233402fb2ced704fd321e132b81e948214f3ce5e340d2b6db02801b",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/seta-direita-branco.svg",
+    "bytes": 218,
+    "sha256": "196ca50534ede755e779e2398d294d6875fc15dd745cfc1f872708f0fa5bd911"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/seta-direita-laranja-96.png",
+    "bytes": 801,
+    "sha256": "b40d468f48495353c4d2552077aeeea65e014caac1b5e320f133182a7338c1b9",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/seta-direita-laranja.svg",
+    "bytes": 218,
+    "sha256": "ea211eb07afbea75e9944b7ed4911f3d7216868b47202c8a72813556f970843b"
+  },
+  {
+    "arquivo": "02-landing-assets/icones/seta-direita-marinho-96.png",
+    "bytes": 820,
+    "sha256": "b51fca623b3c4bd322887389d343638bbb86c9221dc5728308bea4bbb99b2569",
+    "largura": 96,
+    "altura": 96,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/icones/seta-direita-marinho.svg",
+    "bytes": 218,
+    "sha256": "36f324a97abfd485048cddfcf7254f1945f7c0c306b5181648077ab745bf95fd"
+  },
+  {
+    "arquivo": "02-landing-assets/painel-ao-vivo.png",
+    "bytes": 1586569,
+    "sha256": "ef2e97ba515533c6d9799f7282d10a494d83e78c3a3f82ca35bb3e083c3788ce",
+    "largura": 1586,
+    "altura": 992,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "02-landing-assets/placa-nfc-sem-fundo-1024.webp",
+    "bytes": 137144,
+    "sha256": "9c1ffdf348d8b23fa54007aefcc41abf9c99a4de29905bb053acae7198fb1d69",
+    "largura": 1024,
+    "altura": 1280,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/placa-nfc-sem-fundo-480.webp",
+    "bytes": 46490,
+    "sha256": "bee812c84bf17174beb881f31cafea95d0f902ae9bb783602f71eae807275594",
+    "largura": 480,
+    "altura": 600,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/placa-nfc-sem-fundo-768.webp",
+    "bytes": 86072,
+    "sha256": "a7d3cc53799fee7ff1d65b0a53843b67567f7a34fa7ddd7d4a91ed5d1aba40ca",
+    "largura": 768,
+    "altura": 960,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "02-landing-assets/placa-nfc-sem-fundo.png",
+    "bytes": 1677136,
+    "sha256": "938b867222dd9942445c4a6751116a2704184a82023fbf4e47bc79d888ee38b2",
+    "largura": 1122,
+    "altura": 1402,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "03-loja-e-icones/apple-touch-icon.png",
+    "bytes": 27232,
+    "sha256": "f054dec5e04f6e297dc02b48070352113c569b2e09f144996e1ddf281eb83eda",
+    "largura": 180,
+    "altura": 180,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      255,
+      255
+    ]
+  },
+  {
+    "arquivo": "03-loja-e-icones/favicon-16.png",
+    "bytes": 551,
+    "sha256": "b081ec6a0ba7d73dce50e0ca4fa9ec0b9b0f58a0e69e27d40c6ddffa10dd9f1d",
+    "largura": 16,
+    "altura": 16,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "03-loja-e-icones/favicon-32.png",
+    "bytes": 1150,
+    "sha256": "d0d5efc620c6026386282b4c02e1c1ccc332724f18df76c3c68bc252a1f854b8",
+    "largura": 32,
+    "altura": 32,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "03-loja-e-icones/favicon-48.png",
+    "bytes": 1845,
+    "sha256": "9b1ea3f70de687dc0c75455b015cc4ea4497740730498a22572d7df67cc57d52",
+    "largura": 48,
+    "altura": 48,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "03-loja-e-icones/favicon-64.png",
+    "bytes": 2412,
+    "sha256": "4bee186e1ef7b93188a9e55146632db2b6d2181051f8505c029dc53daf382315",
+    "largura": 64,
+    "altura": 64,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "03-loja-e-icones/favicon.ico",
+    "bytes": 20376,
+    "sha256": "4bea2768439fd982b0947e27f5cee14f4aaf81f0d0d4bef8678857a7a39acc5e",
+    "largura": 256,
+    "altura": 256,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "03-loja-e-icones/favicon.svg",
+    "bytes": 10138,
+    "sha256": "2383f52ced162965e66d880c99956e93697e1e91f27b8592103c9393690b1942"
+  },
+  {
+    "arquivo": "03-loja-e-icones/icone-app-1024.png",
+    "bytes": 707709,
+    "sha256": "6b7202632d3c6f2f109650a4887f545cc148b76f1e28b850bafe481eeeb47585",
+    "largura": 1024,
+    "altura": 1024,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      255,
+      255
+    ]
+  },
+  {
+    "arquivo": "03-loja-e-icones/icone-app-128.png",
+    "bytes": 12916,
+    "sha256": "1a2a9b709d7633559397d47fb3822d22aeb29e636e08e8c9972b4d8bff890a14",
+    "largura": 128,
+    "altura": 128,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      255,
+      255
+    ]
+  },
+  {
+    "arquivo": "03-loja-e-icones/icone-app-180.png",
+    "bytes": 25310,
+    "sha256": "6e8de14e20a6c1571657601f3d3329be2f4abd8fb28d34478d357cc122ce6f7f",
+    "largura": 180,
+    "altura": 180,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      255,
+      255
+    ]
+  },
+  {
+    "arquivo": "03-loja-e-icones/icone-app-192.png",
+    "bytes": 28821,
+    "sha256": "30b6ed495a70ea5afbd0ab7a772dde5975600f0c1411e4c369c04c6c0a9b0ace",
+    "largura": 192,
+    "altura": 192,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      255,
+      255
+    ]
+  },
+  {
+    "arquivo": "03-loja-e-icones/icone-app-256.png",
+    "bytes": 52605,
+    "sha256": "fe36b944c12e749162c2eb14c10f25d50a74c2429af34aa520c5c7fcf7bd3d2f",
+    "largura": 256,
+    "altura": 256,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      255,
+      255
+    ]
+  },
+  {
+    "arquivo": "03-loja-e-icones/icone-app-32.png",
+    "bytes": 1464,
+    "sha256": "c0ad78b9b4cba7b24915ca8d4e36d1b065c168f1e4bef7f440946936f2602cd2",
+    "largura": 32,
+    "altura": 32,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      255,
+      255
+    ]
+  },
+  {
+    "arquivo": "03-loja-e-icones/icone-app-48.png",
+    "bytes": 2546,
+    "sha256": "470f210f120ded5abdfb0a278a3d02da526988705937a141bd6f91addfcbb453",
+    "largura": 48,
+    "altura": 48,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      255,
+      255
+    ]
+  },
+  {
+    "arquivo": "03-loja-e-icones/icone-app-512.png",
+    "bytes": 211270,
+    "sha256": "97e16f1203ed8a928bc1298992ffff49e1c8de213d99bd430d576f8dfe7992ec",
+    "largura": 512,
+    "altura": 512,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      255,
+      255
+    ]
+  },
+  {
+    "arquivo": "03-loja-e-icones/icone-app-64.png",
+    "bytes": 3988,
+    "sha256": "06ce1e128dafd5f96110b46365e27af60dfe4b17d534a9ea710cc8a11fef9598",
+    "largura": 64,
+    "altura": 64,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      255,
+      255
+    ]
+  },
+  {
+    "arquivo": "03-loja-e-icones/icone-app-master-nativo.png",
+    "bytes": 942991,
+    "sha256": "6403cd63c379a18ea9f67afcf0dd49ba525554de8fdfa1e2722ed6b7c9565ac0",
+    "largura": 1254,
+    "altura": 1254,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      255,
+      255
+    ]
+  },
+  {
+    "arquivo": "03-loja-e-icones/play-store-banner-master.jpg",
+    "bytes": 572202,
+    "sha256": "8e207b57a5cf7b54649d47032404856dffa2437ea56d5c245f9545dce9eaff5d",
+    "largura": 1795,
+    "altura": 876,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "03-loja-e-icones/play-store-feature-1024x500.jpg",
+    "bytes": 208851,
+    "sha256": "e17bfc9267dcd7cf8e59be210d50d3eabad904ad5dbb859c563872dae3925ef5",
+    "largura": 1024,
+    "altura": 500,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "03-loja-e-icones/play-store-feature-1024x500.png",
+    "bytes": 630540,
+    "sha256": "ed74327c370a8af49dbc37a8c93d25652f93568183fefec27062fb5fcdac31dc",
+    "largura": 1024,
+    "altura": 500,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "03-loja-e-icones/simbolo-quadrado-2048.png",
+    "bytes": 49585,
+    "sha256": "e6f980081750ec9a7a4bd776b79e24ad1b44509bb7dd3a54e2af02ceee882345",
+    "largura": 2048,
+    "altura": 2048,
+    "modo": "RGBA",
+    "alpha_min_max": [
+      0,
+      255
+    ]
+  },
+  {
+    "arquivo": "04-referencias-aprovadas/landing-desktop.png",
+    "bytes": 1937096,
+    "sha256": "71e2928d847ff93e13608202d0d035e0703d297857375f4e323444c5e83e220d",
+    "largura": 793,
+    "altura": 1983,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "04-referencias-aprovadas/landing-mobile.png",
+    "bytes": 1734440,
+    "sha256": "1ebf10a818cc2f3f6eb6af651e65cc01e4b8661d6c763af185e154fabcd045b8",
+    "largura": 724,
+    "altura": 2172,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "04-referencias-aprovadas/landing-referencia-alta-resolucao.png",
+    "bytes": 1994750,
+    "sha256": "163164f85ce4756e61bd39828ee76b457282c287712098c157aed2c917f0937b",
+    "largura": 724,
+    "altura": 2172,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "04-referencias-aprovadas/landing-referencia-aprovada.png",
+    "bytes": 114840,
+    "sha256": "0cc76ee369d2b183427fceb7d0c41e7fdd77efb91c8c13f703ac122b811fcf9c",
+    "largura": 512,
+    "altura": 1536,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "04-referencias-aprovadas/logo-aprovada-original.png",
+    "bytes": 1076828,
+    "sha256": "cf4d934b6f510c7d05d747ca2a9b6686d9a48c89ceaf82e3044d3dc2f420788c",
+    "largura": 2172,
+    "altura": 724,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "05-telas-cliente/M1.png",
+    "bytes": 1070750,
+    "sha256": "d952f27c507eae38c69c85cce81e26f2e5d329336ddadb5fce8dd5e55de4813e",
+    "largura": 852,
+    "altura": 1846,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "05-telas-cliente/M10.png",
+    "bytes": 1498386,
+    "sha256": "957e507e21b0c5195cbd5b2d9a02525199b15ec8088201c83022ad0e95677901",
+    "largura": 852,
+    "altura": 1846,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "05-telas-cliente/M11.png",
+    "bytes": 1438729,
+    "sha256": "e98e6c65545a7614be5b760954192cda6cf06749e1ecb287dc36c638527eabb8",
+    "largura": 852,
+    "altura": 1846,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "05-telas-cliente/M12.png",
+    "bytes": 1208434,
+    "sha256": "30e6d681a7a2e47ddd75df88f38e4d356cb2395fda735d8193f5a0eb1385b313",
+    "largura": 852,
+    "altura": 1846,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "05-telas-cliente/M2.png",
+    "bytes": 1878306,
+    "sha256": "2b9cb080d987e7cee785bd1e7b69e389107cdbea2c52ae4db5b85719c4a3f478",
+    "largura": 852,
+    "altura": 1846,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "05-telas-cliente/M3.png",
+    "bytes": 2189902,
+    "sha256": "4099742deb51038057724d7d99ce429ca947a809918f3c0d87f41ce0b132341b",
+    "largura": 852,
+    "altura": 1846,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "05-telas-cliente/M4.png",
+    "bytes": 2065650,
+    "sha256": "90c15b3e3fbc876c1c1641869a924e938400dc7d7c361b9f42444fc33729f0d7",
+    "largura": 852,
+    "altura": 1846,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "05-telas-cliente/M5.png",
+    "bytes": 1928812,
+    "sha256": "f7bbf90b0174f504415c470f8c52d3b1662d408052f3cce9d4439379c967c139",
+    "largura": 852,
+    "altura": 1846,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "05-telas-cliente/M6.png",
+    "bytes": 1404133,
+    "sha256": "36b38892425bd72decb1bbcdcc6a2b28c1d57d7804eaeb8b2deeeee328bfe513",
+    "largura": 852,
+    "altura": 1846,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "05-telas-cliente/M7.png",
+    "bytes": 1463044,
+    "sha256": "059527e45aee8efea678c4b3a415fbae2f9d85eb1d61892739a3a46900a8795f",
+    "largura": 852,
+    "altura": 1846,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "05-telas-cliente/M8.png",
+    "bytes": 1247322,
+    "sha256": "a94b0d9af8147a55607c36b0684d6a5b3c9f22dd065ddcb49bc9d990241120b0",
+    "largura": 852,
+    "altura": 1846,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "05-telas-cliente/M9.png",
+    "bytes": 1418397,
+    "sha256": "1bebdfc21fb45d4e5c9d0bfa01e81c0a5dc6303b2c2b54b174f2e4ae7a1d1973",
+    "largura": 852,
+    "altura": 1846,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "06-painel-restaurante/P0.png",
+    "bytes": 1829545,
+    "sha256": "35ac9e1eba9d023f717cac754cdb51da4bf873be044e1d0c633a70e3a7ede0ce",
+    "largura": 1586,
+    "altura": 992,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "06-painel-restaurante/P1-desktop.png",
+    "bytes": 1586569,
+    "sha256": "ef2e97ba515533c6d9799f7282d10a494d83e78c3a3f82ca35bb3e083c3788ce",
+    "largura": 1586,
+    "altura": 992,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "06-painel-restaurante/P1-tablet.png",
+    "bytes": 1764186,
+    "sha256": "7a44c9a8b69ef470d6df39fd20c6687be20eb6fc2681ecb3a8089e16a5587e0f",
+    "largura": 1505,
+    "altura": 1045,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "06-painel-restaurante/P10.png",
+    "bytes": 1393921,
+    "sha256": "46677c68df391e753673f359f2a5125146abe5ceacf5beb7e3620963c57a20c8",
+    "largura": 1586,
+    "altura": 992,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "06-painel-restaurante/P11.png",
+    "bytes": 1546658,
+    "sha256": "02a309824e1403efed7e9c25dbfab2884229549ce010d1173680b7b37dbe8186",
+    "largura": 1586,
+    "altura": 992,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "06-painel-restaurante/P12.png",
+    "bytes": 1378382,
+    "sha256": "d803e865dfb11a05c9f89135bc58b2b841f69eaa39cce911ea4cc87f06207241",
+    "largura": 1586,
+    "altura": 992,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "06-painel-restaurante/P13.png",
+    "bytes": 1449333,
+    "sha256": "20097c6bee83b75105fb040185065544b6578cd1620879682510b6ae7e4edece",
+    "largura": 1586,
+    "altura": 992,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "06-painel-restaurante/P2.png",
+    "bytes": 1757456,
+    "sha256": "210c86ff7e9f886d7d646b27ac58be97dbf558b36b7d4e29b84515be8efe4dfd",
+    "largura": 1487,
+    "altura": 1058,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "06-painel-restaurante/P3.png",
+    "bytes": 1436872,
+    "sha256": "99f92287392ce307f203741f49d2eb64da92decd1b5383224b0cd253056f21a2",
+    "largura": 1586,
+    "altura": 992,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "06-painel-restaurante/P4.png",
+    "bytes": 1736765,
+    "sha256": "3ce697ce2d68c891e3237c81076807298b06253705c14ff86eac5cee614926ba",
+    "largura": 1585,
+    "altura": 992,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "06-painel-restaurante/P5.png",
+    "bytes": 1657048,
+    "sha256": "37a4183b342a75f7ea29f52f00b795d71c870996c1450a1428576f92f68c4d7b",
+    "largura": 1586,
+    "altura": 992,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "06-painel-restaurante/P6.png",
+    "bytes": 1478590,
+    "sha256": "7a9ffe013e1b634650085487288ac2e177c99648915d846243614962ef090611",
+    "largura": 1586,
+    "altura": 992,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "06-painel-restaurante/P7-1.png",
+    "bytes": 1146536,
+    "sha256": "e2634bd5626fa37e9f368d6dffdd928947da7d19ee0e9f3f5ec18a363906c8bc",
+    "largura": 852,
+    "altura": 1846,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "06-painel-restaurante/P7-2.png",
+    "bytes": 1630544,
+    "sha256": "38cc6fa6354c843b75d6d12cd562f6e4342dace6a56b1e6e6df33437ef79a05c",
+    "largura": 852,
+    "altura": 1846,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "06-painel-restaurante/P7-3.png",
+    "bytes": 1217669,
+    "sha256": "8dd7243a095bbec44bad4e4ed315bf8d32610f8106c6e60f2b9d0b343300cf05",
+    "largura": 853,
+    "altura": 1844,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "06-painel-restaurante/P7-4.png",
+    "bytes": 1128690,
+    "sha256": "4b639af9c1669ac6e14007cc487c61f0591e8c5318701a2ce5640bd0c4a965b8",
+    "largura": 852,
+    "altura": 1846,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "06-painel-restaurante/P8.png",
+    "bytes": 1523560,
+    "sha256": "35c8229c548ca4bca64dd88418628f9cc5c45d2dd1262cf4f1858137f89f8faa",
+    "largura": 1586,
+    "altura": 992,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "06-painel-restaurante/P9.png",
+    "bytes": 1509388,
+    "sha256": "9ebd59190477ffa8a3674a15fe4336f0db3a2c548db8ef4efce60fdc08d24cec",
+    "largura": 1586,
+    "altura": 992,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "07-manual-visual/01.png",
+    "bytes": 1023507,
+    "sha256": "d69e075eaf33472ffe1be5ce0a795c860f8efb0f9daa7b50e35822491eec5e4a",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "07-manual-visual/02.png",
+    "bytes": 1106526,
+    "sha256": "46caf2b4d8a8c68d4b7321e3a8da1934e054f4419acdfd92d8164c3074e7b2b3",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "07-manual-visual/03.png",
+    "bytes": 1192066,
+    "sha256": "8a793b2b7a33229e488cc1eaf602b61f04dfbcc27f5f06f4d64a0988fa89cca8",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "07-manual-visual/04.png",
+    "bytes": 1063869,
+    "sha256": "513076422cb4e4375b3b69947882fd7490b8b852a81c0e768f7fb1d2e5eb28bd",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "07-manual-visual/05.png",
+    "bytes": 1217073,
+    "sha256": "49aa8caf8a4b9915c1fd2681cde6aec9e2d9ad5e58570757559c5a782c78fb14",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "07-manual-visual/06.png",
+    "bytes": 1683192,
+    "sha256": "41bfc7f5b8fd9f01a268501e72a4d11e9c7f4102dab166c2ab4ee513d236577e",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "07-manual-visual/07.png",
+    "bytes": 1844068,
+    "sha256": "ee40ecbac4fc197a45a4b4ed38a82352d51cd1ec04772ff0dae35f79b5d9421d",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "07-manual-visual/08.png",
+    "bytes": 1724344,
+    "sha256": "155325b5b3f240b94c4a13f3dfc1818b8b558e7c4c95f05b5ada51cee800467b",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "07-manual-visual/09.png",
+    "bytes": 1340622,
+    "sha256": "79786cccc814be6f1676f96d6ba12f52c14ed1e5a130a1b3c348c8d380a1a36f",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "07-manual-visual/10.png",
+    "bytes": 1694554,
+    "sha256": "6e4ef15cb605157dc376b071b1261acd0d7ae366d19ebe8a81e650ae82661605",
+    "largura": 1536,
+    "altura": 1024,
+    "modo": "RGB"
+  },
+  {
+    "arquivo": "08-implementacao/Especificacao-das-Telas.md",
+    "bytes": 14401,
+    "sha256": "22eeecc76a47a3fde98846d35e2817f0e39ec833f69dc2edb62e144afc392df1"
+  },
+  {
+    "arquivo": "08-implementacao/Notas-das-Telas.md",
+    "bytes": 15473,
+    "sha256": "49fcccc2dcc4187844059619c03351c5c5adfe469b217b27e9c703412667d589"
+  },
+  {
+    "arquivo": "08-implementacao/exemplo-assets.html",
+    "bytes": 1089,
+    "sha256": "bc32f2bef304470dd337adb67c51a04b06ddf2ce2f0c9c9949c10a99209ba809"
+  },
+  {
+    "arquivo": "08-implementacao/tokens.css",
+    "bytes": 793,
+    "sha256": "455ec2e95c912feeb86f3cc380cc53029ab652c8e45293c43911202b857ee4fe"
+  },
+  {
+    "arquivo": "README.md",
+    "bytes": 4191,
+    "sha256": "7377feb80b12b48da9268099e446ca5faa04395e37564c0e970ce9c51458270f"
+  }
+]

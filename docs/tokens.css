@@ -1,0 +1,20 @@
+/* Tokens da identidade aprovada — não embutir textos da landing em imagens. */
+:root {
+  --garfeed-primary: #FE581D;
+  --garfeed-primary-pressed: #E54A12;
+  --garfeed-navy: #142433;
+  --garfeed-cream: #FFF8F2;
+  --garfeed-peach: #FFE9DC;
+  --garfeed-white: #FFFFFF;
+  --garfeed-text-secondary: #3A4756;
+  --garfeed-border: #E6E8EC;
+  --garfeed-font-heading: 'Nunito', sans-serif;
+  --garfeed-font-body: 'Inter', sans-serif;
+  --garfeed-radius-media: 24px;
+  --garfeed-radius-button: 999px;
+  --garfeed-content-max: 1200px;
+}
+/* As fontes do conteúdo não substituem o lettering da logo. */
+.garfeed-media { display:block; width:100%; height:auto; }
+.garfeed-media-photo { border-radius:var(--garfeed-radius-media); }
+.garfeed-section-dark { background:var(--garfeed-navy); color:white; }

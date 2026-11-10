@@ -1,0 +1,11 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>Integração dos assets Garfeed</title>
+<link rel="icon" href="../03-loja-e-icones/favicon.ico">
+<link rel="icon" type="image/svg+xml" href="../03-loja-e-icones/favicon.svg">
+<link rel="apple-touch-icon" href="../03-loja-e-icones/apple-touch-icon.png">
+<link rel="stylesheet" href="tokens.css">
+<!-- Exemplo técnico de seleção de imagem; não é a landing implementada. -->
+<picture>
+ <source media="(max-width: 767px)" type="image/webp" srcset="../02-landing-assets/hero-mobile-480.webp 480w, ../02-landing-assets/hero-mobile-768.webp 768w, ../02-landing-assets/hero-mobile-1024.webp 1024w" sizes="100vw">
+ <source type="image/webp" srcset="../02-landing-assets/hero-desktop-768.webp 768w, ../02-landing-assets/hero-desktop-1024.webp 1024w, ../02-landing-assets/hero-desktop-1440.webp 1440w" sizes="(min-width: 1200px) 50vw, 100vw">
+ <img class="garfeed-media garfeed-media-photo" src="../02-landing-assets/hero-desktop.jpg" alt="Celular com o feed de pratos e placa NFC da Garfeed" fetchpriority="high">
+</picture></html>
