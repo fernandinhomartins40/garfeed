@@ -1,0 +1,391 @@
+// Modelo de dados — PRD seção 8. Acréscimos registrados em docs/DECISOES.md.
+// Enums espelhados em packages/shared/src/enums.ts.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Plan {
+  ESSENTIAL
+  PRO
+  NETWORK
+}
+enum RestStatus {
+  TRIAL
+  ACTIVE
+  SUSPENDED
+}
+enum Role {
+  SUPERADMIN
+  OWNER
+  MANAGER
+  WAITER
+  KITCHEN
+}
+enum TagStatus {
+  UNASSIGNED
+  ACTIVE
+  BLOCKED
+}
+enum SessionStatus {
+  OPEN
+  CLOSED
+  EXPIRED
+}
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY
+  DELIVERED
+  REJECTED
+  CANCELED
+}
+enum CallType {
+  WAITER
+  BILL
+}
+enum CallStatus {
+  OPEN
+  DONE
+}
+enum MediaType {
+  VIDEO
+  IMAGE
+}
+enum MediaStatus {
+  UPLOADING
+  PROCESSING
+  READY
+  FAILED
+}
+enum Sector {
+  KITCHEN
+  BAR
+}
+
+model Restaurant {
+  id                  String     @id @default(cuid())
+  slug                String     @unique
+  name                String
+  logoUrl             String?
+  accentColor         String?
+  plan                Plan       @default(ESSENTIAL)
+  status              RestStatus @default(TRIAL)
+  requireConfirmation Boolean    @default(true)
+  soundEnabled        Boolean    @default(true)
+  timezone            String     @default("America/Sao_Paulo")
+  wifiName            String?
+  wifiPassword        String?
+  instagram           String?
+  googleReviewUrl     String?
+  openingHours        Json? // { mon: [["11:00","15:00"],["18:00","23:00"]], ... }
+  createdAt           DateTime   @default(now())
+
+  users         User[]
+  categories    Category[]
+  items         Item[]
+  media         Media[]
+  optionGroups  OptionGroup[]
+  tables        Table[]
+  tags          Tag[]
+  sessions      TableSession[]
+  orders        Order[]
+  orderCounters OrderCounter[]
+  calls         ServiceCall[]
+  events        Event[]
+}
+
+model User {
+  id           String    @id @default(cuid())
+  restaurantId String? // null para SUPERADMIN
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         Role
+  sector       Sector? // setor do usuário KITCHEN (cozinha/bar)
+  active       Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+
+  restaurant    Restaurant?        @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  refreshTokens RefreshToken[]
+  pushSubs      PushSubscription[]
+  callsDone     ServiceCall[]
+
+  @@index([restaurantId])
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique // sha256 do token do cookie
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Category {
+  id           String  @id @default(cuid())
+  restaurantId String
+  name         String
+  position     Int
+  sector       Sector  @default(KITCHEN)
+  visible      Boolean @default(true)
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  items      Item[]
+
+  @@index([restaurantId, position])
+}
+
+model Item {
+  id              String   @id @default(cuid())
+  restaurantId    String
+  categoryId      String
+  name            String
+  description     String?
+  priceCents      Int
+  promoPriceCents Int?
+  badges          String[] // MOST_ORDERED, NEW, VEGAN, SPICY
+  position        Int
+  visible         Boolean  @default(true)
+  soldOut         Boolean  @default(false)
+  mediaId         String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  restaurant   Restaurant        @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  category     Category          @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  media        Media?            @relation(fields: [mediaId], references: [id], onDelete: SetNull)
+  optionGroups ItemOptionGroup[]
+  orderItems   OrderItem[]
+
+  @@index([restaurantId])
+  @@index([categoryId, position])
+}
+
+model Media {
+  id           String      @id @default(cuid())
+  restaurantId String
+  type         MediaType
+  status       MediaStatus @default(UPLOADING)
+  mimeType     String
+  sizeBytes    Int
+  originalKey  String
+  url          String?
+  posterUrl    String?
+  thumbUrl     String?
+  durationMs   Int?
+  width        Int?
+  height       Int?
+  error        String?
+  createdAt    DateTime    @default(now())
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  items      Item[]
+
+  @@index([restaurantId])
+}
+
+model OptionGroup {
+  id           String @id @default(cuid())
+  restaurantId String
+  name         String
+  min          Int    @default(0)
+  max          Int    @default(1)
+
+  restaurant Restaurant        @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  options    Option[]
+  items      ItemOptionGroup[]
+
+  @@index([restaurantId])
+}
+
+model Option {
+  id         String @id @default(cuid())
+  groupId    String
+  name       String
+  priceCents Int    @default(0)
+  position   Int
+
+  group OptionGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([groupId])
+}
+
+model ItemOptionGroup {
+  itemId   String
+  groupId  String
+  position Int
+
+  item  Item        @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  group OptionGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@id([itemId, groupId])
+  @@index([groupId])
+}
+
+model Table {
+  id           String  @id @default(cuid())
+  restaurantId String
+  name         String
+  area         String?
+  active       Boolean @default(true)
+
+  restaurant Restaurant     @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  tag        Tag?
+  sessions   TableSession[]
+  orders     Order[]
+  calls      ServiceCall[]
+
+  @@unique([restaurantId, name])
+}
+
+model Tag {
+  id           String    @id @default(cuid())
+  code         String    @unique // GF7K2P
+  status       TagStatus @default(UNASSIGNED)
+  restaurantId String? // pré-atribuição (lote) ou dono após vínculo
+  tableId      String?   @unique
+  batch        String?
+  activatedAt  DateTime?
+  lastReadAt   DateTime?
+  createdAt    DateTime  @default(now())
+
+  restaurant Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: SetNull)
+  table      Table?      @relation(fields: [tableId], references: [id], onDelete: SetNull)
+
+  @@index([restaurantId])
+  @@index([batch])
+}
+
+// Só pode haver UMA sessão OPEN por mesa: índice único parcial criado em SQL na migração inicial.
+model TableSession {
+  id             String        @id @default(cuid())
+  restaurantId   String
+  tableId        String
+  status         SessionStatus @default(OPEN)
+  openedAt       DateTime      @default(now())
+  closedAt       DateTime?
+  lastActivityAt DateTime      @default(now())
+
+  restaurant Restaurant    @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  table      Table         @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  orders     Order[]
+  calls      ServiceCall[]
+  events     Event[]
+
+  @@index([restaurantId, status])
+  @@index([tableId, status])
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  restaurantId   String
+  sessionId      String
+  tableId        String
+  day            String // AAAA-MM-DD no fuso do restaurante; escopo de `number`
+  number         Int // sequencial por restaurante/dia (OrderCounter)
+  customerName   String?
+  status         OrderStatus @default(PENDING)
+  totalCents     Int
+  rejectReason   String?
+  idempotencyKey String // gerado pelo cliente; evita pedido duplicado em reenvio
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  restaurant Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  session    TableSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  table      Table        @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  items      OrderItem[]
+
+  @@unique([restaurantId, day, number])
+  @@unique([sessionId, idempotencyKey])
+  @@index([restaurantId, status])
+  @@index([sessionId])
+}
+
+// Contador atômico do número do pedido: upsert com increment dentro da transação do pedido.
+model OrderCounter {
+  restaurantId String
+  day          String
+  last         Int    @default(0)
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@id([restaurantId, day])
+}
+
+model OrderItem {
+  id             String  @id @default(cuid())
+  orderId        String
+  itemId         String
+  nameSnapshot   String
+  unitPriceCents Int
+  quantity       Int
+  options        Json // [{group, option, priceCents}]
+  note           String?
+  sector         Sector
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  item  Item  @relation(fields: [itemId], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
+}
+
+model ServiceCall {
+  id           String     @id @default(cuid())
+  restaurantId String
+  sessionId    String
+  tableId      String
+  type         CallType
+  status       CallStatus @default(OPEN)
+  createdAt    DateTime   @default(now())
+  doneAt       DateTime?
+  doneById     String?
+
+  restaurant Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  session    TableSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  table      Table        @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  doneBy     User?        @relation(fields: [doneById], references: [id], onDelete: SetNull)
+
+  @@index([restaurantId, status])
+  @@index([sessionId, type, createdAt])
+}
+
+model Event {
+  id           BigInt   @id @default(autoincrement())
+  restaurantId String
+  sessionId    String?
+  itemId       String?
+  categoryId   String?
+  type         String
+  value        Int?
+  createdAt    DateTime @default(now())
+
+  restaurant Restaurant    @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  session    TableSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+
+  @@index([restaurantId, createdAt])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  keys      Json // { p256dh, auth }
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
