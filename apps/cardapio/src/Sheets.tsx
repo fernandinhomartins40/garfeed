@@ -17,7 +17,7 @@ function useEsc(onClose: () => void) {
 function Sheet({ label, onClose, children }: { label: string; onClose: () => void; children: ReactNode }) {
   useEsc(onClose);
   return (
-    <div className="fixed inset-0 z-40 flex items-end justify-center bg-gf-navy/50" onClick={onClose}>
+    <div className="fixed inset-0 z-40 flex items-end justify-center bg-[#142433]/50" onClick={onClose}>
       <div role="dialog" aria-modal="true" aria-label={label} onClick={(e) => e.stopPropagation()}
         className="sheet-in max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-t-sheet bg-white px-4 pb-[max(16px,env(safe-area-inset-bottom))] pt-3">
         <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-gf-border" />
@@ -110,7 +110,7 @@ export function OptionsSheet({ item, optionIds = [], note: note0 = '', canOrder,
 const Row = ({ icon, title, sub, action }: { icon: IconName; title: string; sub: string; action?: ReactNode }) => (
   <div className="flex min-h-16 items-center gap-4 border-b border-gf-border py-3 last:border-0">
     <Icon name={icon} className="h-7 w-7 shrink-0" />
-    <div className="min-w-0 flex-1"><p className="font-heading text-lg font-extrabold">{title}</p><p className="truncate text-gf-muted">{sub}</p></div>
+    <div className="min-w-0 flex-1"><p className="font-heading text-lg font-extrabold">{title}</p><p className="break-words text-gf-muted">{sub}</p></div>
     {action}
   </div>
 );
@@ -135,9 +135,9 @@ export function Hub({ restaurant: r, table, hasSession, onClose, onCall, onBill,
   return (
     <Sheet label="Menu da mesa" onClose={onClose}>
       <div className="flex items-center gap-3">
-        <RestLogo r={r} className="h-20 w-20 text-2xl" />
+        <RestLogo r={r} className="h-16 w-16 text-xl" />
         <div className="min-w-0 flex-1">
-          <h2 className="font-heading text-2xl font-black leading-tight">{r.name}</h2>
+          <h2 className="font-heading text-xl font-black leading-tight">{r.name}</h2>
           <p className={`flex items-center gap-2 ${r.isOpen ? 'text-success' : 'text-gf-muted'}`}>
             <span className={`h-2.5 w-2.5 rounded-full ${r.isOpen ? 'bg-success' : 'bg-gf-muted'}`} />
             {r.isOpen ? (until ? `Aberto até ${until}` : 'Aberto agora') : 'Fechado agora'}
@@ -181,7 +181,7 @@ export function CallDialog({ dialog, table, onClose, onAgain }: { dialog: Dialog
   const left = Math.max(0, Math.ceil((dialog.until - now) / 1000));
   const where = table ? ` da ${table.name}` : '';
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-gf-navy/45 p-6">
+    <div className="fixed inset-0 z-50 grid place-items-center bg-[#142433]/45 p-6">
       <div role="alertdialog" aria-modal="true" aria-labelledby="call-t" className="w-full max-w-sm rounded-3xl bg-white p-6 text-center shadow-xl">
         <span className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-gf-orange-soft text-gf-orange">
           <Icon name={dialog.type === 'BILL' ? 'receipt' : 'bell'} className="h-10 w-10" />

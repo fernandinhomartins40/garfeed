@@ -103,7 +103,7 @@ export function Feed(p: Props) {
           })}
         </nav>
         {!p.canOrder && (
-          <p role="status" className="mx-3 rounded-card bg-gf-navy/85 px-4 py-2 text-center text-sm font-medium text-white backdrop-blur">
+          <p role="status" className="mx-3 rounded-card bg-[#142433]/85 px-4 py-2 text-center text-sm font-medium text-white backdrop-blur">
             {p.restaurant.isOpen ? 'Pedidos pelo celular indisponíveis agora.' : 'Fechado agora.'} Cardápio só para visualização.
           </p>
         )}
