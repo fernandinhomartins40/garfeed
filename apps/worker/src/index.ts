@@ -1,19 +1,23 @@
 // Consumidor da fila de mídia (FFmpeg/sharp). Ver src/media.ts.
 import { UnrecoverableError, Worker } from 'bullmq';
 import { Redis } from 'ioredis';
+import { Emitter } from '@socket.io/redis-emitter';
 import { pino } from 'pino';
-import { QUEUES, type MediaJobData } from '@garfeed/shared';
+import { QUEUES, rooms, type MediaJobData, type ServerToClientEvents } from '@garfeed/shared';
 import { MediaRejected, markFailed, prisma, processMedia } from './media';
 
 const logger = pino({ level: process.env.LOG_LEVEL ?? 'info' });
 const connection = new Redis(process.env.REDIS_URL ?? 'redis://localhost:6379', { maxRetriesPerRequest: null });
 const cache = connection.duplicate();
+// Publica pelo mesmo canal do adapter Redis do Socket.io da API: painel e feeds abertos recarregam o cardápio.
+const io = new Emitter<ServerToClientEvents>(cache);
 
 const worker = new Worker<MediaJobData>(
   QUEUES.media,
   async (job) => {
     try {
       const r = await processMedia(job.data.mediaId, cache);
+      if (r) io.to([rooms.restaurant(r.media.restaurantId), rooms.guests(r.media.restaurantId)]).emit('menu:updated', {});
       logger.info({ jobId: job.id, mediaId: job.data.mediaId, outputBytes: r?.outputBytes }, 'mídia pronta');
     } catch (err) {
       const rejected = err instanceof MediaRejected;
