@@ -46,3 +46,25 @@ Além dos 5 itens do protótipo, o seed cria "Smash Clássico" em **Lanches** pa
   Reavaliar a imagem do compose de produção.
 - Portas no host do compose dev: Postgres **5434**, Redis **6380** (evitam conflito com instâncias locais); MinIO 9000/9001.
 - API/worker em produção: `tsup` empacota `@garfeed/shared` (por isso ele é devDependency nos apps).
+
+## 2026-11-10 — API completa (semanas 2–6)
+- **Rate limit** (Redis, janela fixa): `/public` por IP (`PUBLIC_RATE_LIMIT_PER_MIN`, padrão 600 — o Wi-Fi do restaurante
+  soma todos os celulares); pedido 30/min, chamado 20/min e eventos 30/min **por sessão da mesa**.
+- **Cooldown de chamado**: `SET NX EX 60` no Redis por sessão+tipo (atômico); `retryAfterSec` = TTL restante.
+- **Limite de pedidos**: contagem no banco dos pedidos da sessão na última hora; `retryAfterSec` = quando o mais antigo sai da janela.
+- **Expiração de sessão (3 h)**: `setInterval` de 5 min no processo da API (`jobs/sessions.ts`) + checagem na entrada/rotas do
+  cliente. A fila `QUEUES.sessions` não é usada.
+- **Horário**: sem `openingHours` = sempre aberto; faixa que vira a noite (`["18:00","02:00"]`) vale até o dia seguinte.
+  Fora do horário ou `SUSPENDED` → `canOrder=false`; pedido e chamado respondem `RESTAURANT_UNAVAILABLE`. Entrar na mesa continua permitido (só visualização).
+- **Placa ACTIVE em mesa desativada** é tratada como "não ativada" (`restaurant: null`).
+- **Vincular placa já ativa em outra mesa**: 409 `CONFLICT` com `details.table`; reenviar com `confirm: true` move a placa.
+  A placa anterior da mesa de destino volta a `UNASSIGNED` (continua do restaurante).
+- **KITCHEN**: lista só pedidos com itens do seu setor (e só esses itens); só pode mudar para `PREPARING`/`READY`.
+- **Exclusões protegidas**: item já pedido e mesa com pedidos não são excluídos (409: oculte/desative); categoria com itens → 409.
+- **Fechar mesa** conclui os chamados abertos da sessão. Pedido `CANCELED` também guarda o motivo em `rejectReason`.
+- **Usuários**: o dono não pode desativar a si mesmo nem perder o papel OWNER; mudar senha/papel/desativar revoga os refresh tokens.
+- **Cache do cardápio** em `menu:{restaurantId}` (`menuCacheKey` no shared); o worker também invalida quando a mídia fica pronta,
+  mas não emite `menu:updated` (o painel acompanha por `GET /media/:id`).
+- **Admin**: "hoje" (pedidos/dia) no fuso de São Paulo. Lote de placas: `L{AAAAMMDD}-{hex}`; restaurante do lote = dono comum a todas as placas.
+- **Mídia**: original em `{restaurantId}/{uuid}/original.ext`; derivados na mesma pasta. HEIC é convertido com FFmpeg antes do sharp
+  (o sharp pré-compilado não decodifica HEVC).

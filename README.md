@@ -50,7 +50,7 @@ Mesas 1–20 com placas `GF0001`–`GF0020` ativas; `GF0021`–`GF0023` soltas p
 | Comando | O que faz |
 |---|---|
 | `pnpm dev` | todos os apps em modo dev |
-| `pnpm test` | vitest (shared) + vitest/supertest (api — precisa do docker dev + migrate + seed) |
+| `pnpm test` | vitest (shared) + vitest/supertest (api) + worker (FFmpeg real) — precisa do docker dev + migrate + seed e `ffmpeg`/`ffprobe` no PATH |
 | `pnpm typecheck` | `tsc --noEmit` em todos os pacotes |
 | `pnpm lint` | ESLint |
 | `pnpm build` | build de api e worker (`dist/`) |
@@ -62,6 +62,11 @@ Tudo que painel e cardápio consomem vem de `@garfeed/shared`:
 - `api` (`contract.ts`): cada rota com método, caminho, autenticação, papéis e schemas de `params`/`query`/`body`/`response`.
 - `schemas.ts`: schemas Zod e tipos (`z.infer`). Erros sempre no formato `ErrorResponse` (`{ error: { code, message } }`, mensagem pt-BR).
 - `socket.ts`: salas, eventos e payloads do Socket.io (`PanelServerEvents`, `GuestServerEvents`).
+
+Worker de mídia: `apps/worker` lê a fila `media` (BullMQ), baixa o original do MinIO, gera com FFmpeg
+`video.mp4` (720×1280, H.264 ~1,5 Mbps, sem áudio, faststart) + `poster.jpg` + `thumb.webp` (imagens: sharp → WebP)
+na mesma pasta do original e marca a `Media` como `READY`/`FAILED`. Usa o Prisma Client gerado a partir de
+`apps/api/prisma/schema.prisma` (postinstall). Requer `ffmpeg` e `ffprobe` no PATH (no Docker, instalados na imagem).
 
 Padrão multi-tenant na API: `restaurantId` sempre de `tenantId(req)` (token) — ver `apps/api/src/modules/menu/router.ts`
 e o teste-modelo `apps/api/test/tenant-isolation.test.ts`.
