@@ -18,6 +18,7 @@ export const OpeningHours = z.partialRecord(
   z.enum(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']),
   z.array(z.tuple([Hhmm, Hhmm])).max(4),
 );
+export type OpeningHours = z.infer<typeof OpeningHours>;
 const optionalText = (max: number) => z.string().trim().max(max).nullish();
 
 export const IdParams = z.object({ id: Id });
@@ -135,6 +136,8 @@ export const PublicRestaurant = z.object({
   isOpen: z.boolean(),
   /** false → cardápio só para ver (suspenso / fora do horário) — RF-01. */
   canOrder: z.boolean(),
+  /** Fuso IANA do restaurante (ex.: America/Sao_Paulo) para interpretar openingHours. */
+  timezone: z.string(),
 });
 export type PublicRestaurant = z.infer<typeof PublicRestaurant>;
 
@@ -213,9 +216,14 @@ export type SessionMeResponse = z.infer<typeof SessionMeResponse>;
 /** POST /public/calls — 429 CALL_COOLDOWN se repetir o mesmo tipo em < 60 s. */
 export const CreateCallBody = z.object({ type: CallType });
 export type CreateCallBody = z.infer<typeof CreateCallBody>;
-export const CreateCallResponse = PublicCall;
+/** retryAfterSec = segundos até poder repetir este tipo de chamado (cooldown). */
+export const CreateCallResponse = PublicCall.extend({ retryAfterSec: z.number().int() });
+export type CreateCallResponse = z.infer<typeof CreateCallResponse>;
 
-/** POST /public/events — lote (a cada 10 s ou ao sair). Resposta 204. Sem dados pessoais. */
+/**
+ * POST /public/events — lote (a cada 10 s ou ao sair). Resposta 204. Sem dados pessoais.
+ * Aceita application/json ou text/plain com o mesmo JSON (navigator.sendBeacon no pagehide, sem preflight).
+ */
 export const EventsBody = z.object({
   events: z.array(z.object({
     type: EventType,
