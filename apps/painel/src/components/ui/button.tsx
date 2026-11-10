@@ -21,7 +21,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', loading, disabled, children, type = 'button', ...p }, ref) => (
     <button
       ref={ref} type={type} disabled={disabled || loading}
-      className={cn('inline-flex shrink-0 items-center justify-center gap-2 rounded-pill font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gf-orange focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+      className={cn('inline-flex shrink-0 items-center justify-center gap-2 rounded-pill [&_svg]:shrink-0 font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gf-orange focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
         variants[variant], sizes[size], className)}
       {...p}
     >

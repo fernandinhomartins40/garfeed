@@ -79,7 +79,7 @@ function SettingsForm({ s }: { s: Settings }) {
                     {logoUrl ? <img src={logoUrl} alt="Logo" className="h-full w-full object-cover" /> : <Store className="h-12 w-12 text-white/60" />}
                   </span>
                   <div>
-                    <label className={cn('inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-gf-border bg-gf-bg px-4 font-medium', logo.busy && 'opacity-60')}>
+                    <label className={cn('inline-flex h-10 cursor-pointer items-center gap-2 whitespace-nowrap rounded-lg border border-gf-border bg-gf-bg px-4 font-medium', logo.busy && 'opacity-60')}>
                       <Upload className="h-4 w-4" />{logo.busy ? (logo.phase === 'uploading' ? `Enviando ${logo.progress}%` : 'Processando…') : 'Trocar logo'}
                       <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" disabled={logo.busy} onChange={(e) => { const f = e.target.files?.[0]; if (f) void logo.start(f); e.target.value = ''; }} />
                     </label>

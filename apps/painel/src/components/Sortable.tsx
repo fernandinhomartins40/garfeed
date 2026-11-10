@@ -18,7 +18,7 @@ export function SortableList({ ids, onReorder, horizontal, children }: { ids: st
     onReorder(arrayMove(ids, from, to), from, to);
   };
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd} accessibility={{ container: document.body }}>
       <SortableContext items={ids} strategy={horizontal ? horizontalListSortingStrategy : verticalListSortingStrategy}>{children}</SortableContext>
     </DndContext>
   );

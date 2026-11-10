@@ -137,7 +137,7 @@ export function RestaurantLayout() {
     { to: '/configuracoes', label: 'Configurações', icon: Settings, show: can(r, 'OWNER') },
   ];
   const first = user.name.split(' ')[0];
-  const sector = user.role === 'KITCHEN' && user.sector ? ` (${user.sector === 'BAR' ? 'Bar' : 'Cozinha'})` : '';
+  const sector = user.role === 'KITCHEN' && user.sector === 'BAR' ? ' (Bar)' : '';
   return (
     <Shell items={items} footer={<><UserBox icon={Store} title={restaurant?.name ?? 'Restaurante'} subtitle={`${first} · ${ROLE_LABEL[r]}${sector}`} /><SoundToggle /></>} banners />
   );

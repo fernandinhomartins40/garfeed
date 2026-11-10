@@ -48,9 +48,9 @@ export function LivePage() {
           <span className={cn('h-2.5 w-2.5 rounded-full', connected ? 'bg-success' : 'bg-warning')} />{connected ? 'Conectado' : 'Reconectando…'}
         </span>
         <div className="flex flex-wrap gap-2 xl:ml-2">
-          <Counter icon={Inbox} tone="bg-blue-50 text-info" label={`${cols.novos.length} novos`} />
+          <Counter icon={Inbox} tone="bg-blue-50 text-info" label={`${cols.novos.length} ${cols.novos.length === 1 ? 'novo' : 'novos'}`} />
           <Counter icon={ChefHat} tone="bg-amber-50 text-amber-600" label={`${cols.preparo.length} em preparo`} />
-          <Counter icon={CircleCheck} tone="bg-green-50 text-success" label={`${cols.prontos.length} prontos`} />
+          <Counter icon={CircleCheck} tone="bg-green-50 text-success" label={`${cols.prontos.length} ${cols.prontos.length === 1 ? 'pronto' : 'prontos'}`} />
         </div>
         {user.role !== 'KITCHEN' && (
           <div role="group" aria-label="Filtrar por setor" className="ml-auto flex rounded-xl border border-gf-border bg-white p-1 shadow-card">
@@ -127,17 +127,17 @@ function OrderCard({ o, now, sector, onReject }: { o: PanelOrder; now: number; s
   const items = sector ? o.items.filter((i) => i.sector === sector) : o.items;
   const notes = items.filter((i) => i.note);
   return (
-    <article className={cn('rounded-card border bg-white p-4 shadow-card', late ? 'border-2 border-danger bg-red-50/40' : o.status === 'PENDING' ? 'border-gf-orange/60' : 'border-gf-border')}>
-      <header className="flex items-start gap-3">
-        <Armchair className="mt-1 h-7 w-7 shrink-0 text-gf-navy" />
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-heading text-3xl font-black leading-none">{o.table.name}</h3>
-            {late && <span className="inline-flex items-center gap-1 rounded-pill bg-red-100 px-2.5 py-1 text-sm font-semibold text-danger"><AlertCircle className="h-4 w-4" />Atrasado · {ago(o.createdAt, now)}</span>}
-          </div>
-          <p className="mt-1 text-gf-navy-80">Pedido nº{num(o.number)}{o.customerName && ` · ${o.customerName}`}</p>
+    <article className={cn('rounded-card border bg-white p-3 shadow-card xl:p-4', late ? 'border-2 border-danger bg-red-50/40' : o.status === 'PENDING' ? 'border-gf-orange/60' : 'border-gf-border')}>
+      <header>
+        <div className="flex flex-wrap items-center gap-2">
+          <Armchair className="h-7 w-7 shrink-0 text-gf-navy" />
+          <h3 className="font-heading text-3xl font-black leading-none">{o.table.name}</h3>
+          {late && <span className="inline-flex items-center gap-1 rounded-pill bg-red-100 px-2.5 py-1 text-sm font-semibold text-danger"><AlertCircle className="h-4 w-4" />Atrasado · {ago(o.createdAt, now)}</span>}
         </div>
-        {!late && <span className="whitespace-nowrap font-semibold text-gf-orange">{ago(o.createdAt, now)}</span>}
+        <p className="mt-1 flex justify-between gap-2 text-gf-navy-80">
+          <span className="truncate">Pedido nº{num(o.number)}{o.customerName && ` · ${o.customerName}`}</span>
+          {!late && <span className="whitespace-nowrap font-semibold text-gf-orange">{ago(o.createdAt, now)}</span>}
+        </p>
       </header>
       <ul className="mt-3 divide-y divide-gf-border">
         {items.map((i) => (
@@ -162,8 +162,8 @@ function OrderCard({ o, now, sector, onReject }: { o: PanelOrder; now: number; s
       </div>
       <div className="mt-3 flex gap-3">
         {o.status === 'PENDING' && <>
-          <Button className="h-12 flex-1 rounded-xl text-lg" loading={m.isPending} onClick={() => m.mutate({ status: 'CONFIRMED' })}><Check className="h-5 w-5" />Aceitar</Button>
-          <Button variant="outline" className="h-12 flex-1 rounded-xl border-0 bg-gf-bg text-lg" disabled={m.isPending} onClick={onReject}><X className="h-5 w-5" />Recusar</Button>
+          <Button className="h-12 min-w-0 flex-1 rounded-xl px-3 text-lg" loading={m.isPending} onClick={() => m.mutate({ status: 'CONFIRMED' })}><Check className="h-5 w-5" />Aceitar</Button>
+          <Button variant="outline" className="h-12 min-w-0 flex-1 rounded-xl border-0 bg-gf-bg px-3 text-lg" disabled={m.isPending} onClick={onReject}><X className="h-5 w-5" />Recusar</Button>
         </>}
         {(o.status === 'CONFIRMED' || o.status === 'PREPARING') &&
           <Button variant="info" className="h-12 flex-1 rounded-xl text-lg" loading={m.isPending} onClick={() => m.mutate({ status: 'READY' })}><Check className="h-5 w-5" />Pronto</Button>}
