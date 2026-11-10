@@ -19,6 +19,12 @@ const Env = z.object({
   MINIO_BUCKET: z.string().default('garfeed-media'),
   MEDIA_PUBLIC_URL: z.string().min(1),
   TAG_BASE_URL: z.string().default('https://g.garfeed.com.br'),
+  // Web Push: vazio = push desligado (o resto funciona normalmente)
+  VAPID_PUBLIC_KEY: z.string().optional().transform((s) => s || undefined),
+  VAPID_PRIVATE_KEY: z.string().optional().transform((s) => s || undefined),
+  VAPID_SUBJECT: z.string().default('mailto:contato@garfeed.com.br'),
+  /** Requisições por minuto por IP nas rotas /public (o Wi-Fi do restaurante soma todos os celulares). */
+  PUBLIC_RATE_LIMIT_PER_MIN: z.coerce.number().int().positive().default(600),
 });
 
 export const env = Env.parse(process.env);

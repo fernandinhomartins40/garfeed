@@ -32,6 +32,7 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   if (err instanceof AppError) e = err;
   else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') e = new AppError('CONFLICT', 'Já existe um registro com esses dados');
   else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') e = notFound();
+  else if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2003') e = new AppError('CONFLICT', 'Registro em uso por outros dados; não pode ser excluído');
   else if (err?.type === 'entity.parse.failed') e = new AppError('VALIDATION', 'JSON inválido');
   else {
     logger.error({ err }, 'erro não tratado');

@@ -28,6 +28,7 @@
     "pino": "^9.0.0",
     "pino-http": "^10.0.0",
     "socket.io": "^4.8.0",
+    "web-push": "^3.6.7",
     "zod": "^4.1.0"
   },
   "devDependencies": {
@@ -38,6 +39,7 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.0.0",
     "@types/supertest": "^6.0.2",
+    "@types/web-push": "^3.6.4",
     "dotenv-cli": "^8.0.0",
     "prisma": "^6.19.0",
     "supertest": "^7.0.0",

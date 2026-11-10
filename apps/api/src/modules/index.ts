@@ -3,6 +3,8 @@
 import { Router } from 'express';
 import { ROLES, type Role } from '@garfeed/shared';
 import { requireAuth, requireRole } from '../lib/auth';
+import { env } from '../lib/env';
+import { rateLimit } from '../lib/rateLimit';
 import * as admin from './admin/router';
 import * as auth from './auth/router';
 import * as calls from './calls/router';
@@ -22,7 +24,7 @@ export const routes = Router();
 routes.use('/auth', auth.router);
 
 // Pública (cliente anônimo). Cada publicRouter define o caminho completo abaixo de /public.
-routes.use('/public', tags.publicRouter, menu.publicRouter, orders.publicRouter, sessions.publicRouter, calls.publicRouter, events.publicRouter);
+routes.use('/public', rateLimit('public', env.PUBLIC_RATE_LIMIT_PER_MIN, 60), tags.publicRouter, menu.publicRouter, orders.publicRouter, sessions.publicRouter, calls.publicRouter, events.publicRouter);
 
 const staff = (roles: readonly Role[]) => [requireAuth, requireRole(...roles)];
 routes.use('/menu', staff(ROLES.MANAGE), menu.router);

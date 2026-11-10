@@ -45,19 +45,17 @@ export function initRealtime(server: HttpServer) {
   return io;
 }
 
-function getIo() {
-  if (!io) throw new Error('initRealtime não foi chamado');
-  return io;
-}
+// Sem initRealtime (testes com supertest) os emissores viram no-op.
+const getIo = () => io;
 
 // Emissores tipados — use estes nos módulos (ex.: emitToRestaurant(rid, 'order:new', order)).
 export function emitToRestaurant<E extends keyof PanelServerEvents>(restaurantId: string, event: E, ...args: Parameters<PanelServerEvents[E]>) {
-  getIo().to(rooms.restaurant(restaurantId)).emit(event, ...(args as Parameters<ServerToClientEvents[E]>));
+  getIo()?.to(rooms.restaurant(restaurantId)).emit(event, ...(args as Parameters<ServerToClientEvents[E]>));
 }
 export function emitToSession<E extends keyof GuestServerEvents>(sessionId: string, event: E, ...args: Parameters<GuestServerEvents[E]>) {
-  getIo().to(rooms.session(sessionId)).emit(event, ...(args as Parameters<ServerToClientEvents[E]>));
+  getIo()?.to(rooms.session(sessionId)).emit(event, ...(args as Parameters<ServerToClientEvents[E]>));
 }
 /** menu:updated para o painel e para todos os clientes com o feed aberto. */
 export function emitMenuUpdated(restaurantId: string, payload: Parameters<PanelServerEvents['menu:updated']>[0] = {}) {
-  getIo().to([rooms.restaurant(restaurantId), rooms.guests(restaurantId)]).emit('menu:updated', payload);
+  getIo()?.to([rooms.restaurant(restaurantId), rooms.guests(restaurantId)]).emit('menu:updated', payload);
 }
