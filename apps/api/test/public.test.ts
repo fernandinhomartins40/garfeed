@@ -60,6 +60,7 @@ describe('chamados', () => {
     const { cookie } = await joinTable(f.codes[2]!);
     const a = await request(app).post('/public/calls').set('Cookie', cookie).send({ type: 'WAITER' });
     expect(a.status).toBe(201);
+    expect(a.body.retryAfterSec).toBe(60);
     const b = await request(app).post('/public/calls').set('Cookie', cookie).send({ type: 'WAITER' });
     expect(b.status).toBe(429);
     expect(b.body.error.code).toBe('CALL_COOLDOWN');
@@ -87,6 +88,15 @@ describe('eventos', () => {
     expect(r.status).toBe(204);
     expect(await prisma.event.count({ where: { sessionId: res.body.session.id } })).toBe(2);
   });
+
+  it('aceita text/plain (navigator.sendBeacon) com o mesmo schema', async () => {
+    const { cookie, res } = await joinTable(f.codes[0]!);
+    const send = (body: string) => request(app).post('/public/events').set('Cookie', cookie).set('Content-Type', 'text/plain;charset=UTF-8').send(body);
+    expect((await send(JSON.stringify({ events: [{ type: 'favorite', itemId: f.burger.id }] }))).status).toBe(204);
+    expect(await prisma.event.count({ where: { sessionId: res.body.session.id, type: 'favorite' } })).toBe(1);
+    expect((await send('não é json')).status).toBe(400);
+    expect((await send(JSON.stringify({ events: [{ type: 'inventado' }] }))).status).toBe(400);
+  });
 });
 
 describe('cardápio público', () => {
@@ -94,6 +104,7 @@ describe('cardápio público', () => {
     const owner = await f.token('OWNER');
     const m1 = PublicMenuResponse.parse((await request(app).get(`/public/restaurants/${f.r.slug}/menu`)).body);
     expect(m1.categories.map((c) => c.name)).toEqual(['Lanches', 'Bebidas']);
+    expect(m1.restaurant.timezone).toBe('America/Sao_Paulo');
     expect(m1.categories[0]!.items[0]!.optionGroups.map((g) => g.name)).toEqual(['Ponto', 'Adicionais']);
     await request(app).patch(`/menu/categories/${f.bebidas.id}`).set(bearer(owner)).send({ visible: false });
     const m2 = PublicMenuResponse.parse((await request(app).get(`/public/restaurants/${f.r.slug}/menu`)).body);

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { CreateCallBody, IdParams, LIMITS, ListCallsQuery } from '@garfeed/shared';
+import { CreateCallBody, IdParams, LIMITS, ListCallsQuery, type CreateCallResponse } from '@garfeed/shared';
 import { prisma } from '../../lib/prisma';
 import { redis } from '../../lib/redis';
 import { AppError, notFound } from '../../lib/errors';
@@ -40,7 +40,8 @@ publicRouter.post('/calls', requireGuest, rateLimit('calls', 20, 60), validate({
     body: 'Toque para abrir o painel',
     tag: `call-${call.id}`,
   });
-  res.status(201).json(toPublicCall(call));
+  const body: CreateCallResponse = { ...toPublicCall(call), retryAfterSec: LIMITS.callCooldownSec };
+  res.status(201).json(body);
 });
 
 router.get('/', validate({ query: ListCallsQuery }), async (req, res) => {

@@ -38,5 +38,6 @@ export function toPublicRestaurant(r: Restaurant, now = new Date()): PublicResta
     openingHours: OpeningHours.safeParse(r.openingHours).data ?? null,
     isOpen,
     canOrder: isOpen && r.status !== 'SUSPENDED',
+    timezone: r.timezone,
   };
 }

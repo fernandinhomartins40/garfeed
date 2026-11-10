@@ -1,9 +1,10 @@
-import { Router } from 'express';
+import express, { Router, type RequestHandler } from 'express';
 import { EventsBody } from '@garfeed/shared';
 import { prisma } from '../../lib/prisma';
 import { requireGuest } from '../../lib/auth';
 import { openGuestSession } from '../../lib/guest';
 import { rateLimit } from '../../lib/rateLimit';
+import { AppError } from '../../lib/errors';
 import { validate } from '../../middleware/validate';
 
 /** /public/events (requireGuest) — lote de eventos RF-27. Sem dados pessoais. */
@@ -11,7 +12,15 @@ export const publicRouter = Router();
 
 const DAY = 86_400_000;
 
-publicRouter.post('/events', requireGuest, rateLimit('events', 30, 60), validate({ body: EventsBody }), async (req, res) => {
+/** sendBeacon envia o JSON como text/plain (evita preflight): converte e segue para o mesmo schema. */
+const textJson: RequestHandler = (req, _res, next) => {
+  if (typeof req.body === 'string') {
+    try { req.body = JSON.parse(req.body); } catch { throw new AppError('VALIDATION', 'JSON inválido'); }
+  }
+  next();
+};
+
+publicRouter.post('/events', express.text({ type: 'text/plain', limit: '256kb' }), textJson, requireGuest, rateLimit('events', 30, 60), validate({ body: EventsBody }), async (req, res) => {
   const session = await openGuestSession(req);
   const rid = session.restaurantId;
   const { events } = req.body as EventsBody;
