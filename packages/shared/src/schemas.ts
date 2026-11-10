@@ -112,7 +112,12 @@ export const PublicOrder = z.object({
 export type PublicOrder = z.infer<typeof PublicOrder>;
 
 /** Pedido no painel. */
-export const PanelOrder = PublicOrder.extend({ sessionId: Id, table: TableRef });
+export const PanelOrder = PublicOrder.extend({
+  sessionId: Id,
+  table: TableRef,
+  /** Itens com miniatura da mídia atual do item (null se não houver mídia pronta). */
+  items: z.array(OrderItem.extend({ thumbUrl: z.string().nullable() })),
+});
 export type PanelOrder = z.infer<typeof PanelOrder>;
 
 export const PublicCall = z.object({ id: Id, type: CallType, status: CallStatus, createdAt: IsoDate });
