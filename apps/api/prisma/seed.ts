@@ -3,7 +3,8 @@ import { PrismaClient, type Role, type Sector } from '@prisma/client';
 import argon2 from 'argon2';
 
 const prisma = new PrismaClient();
-const password = process.env.SEED_PASSWORD ?? 'garfeed123';
+const password = process.env.SEED_PASSWORD ?? (process.env.NODE_ENV === 'production' ? '' : 'garfeed123');
+if (password.length < 8) throw new Error('Defina SEED_PASSWORD (mín. 8 caracteres) para rodar o seed em produção');
 
 async function main() {
   const passwordHash = await argon2.hash(password);

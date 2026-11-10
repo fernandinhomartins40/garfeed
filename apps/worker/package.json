@@ -18,12 +18,12 @@
     "ioredis": "^5.4.0",
     "minio": "^8.0.7",
     "pino": "^9.0.0",
+    "prisma": "^6.19.3",
     "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@garfeed/shared": "workspace:*",
     "@types/node": "^22.0.0",
-    "prisma": "^6.19.3",
     "tsup": "^8.3.0",
     "tsx": "^4.19.0",
     "vitest": "^4.1.12"
