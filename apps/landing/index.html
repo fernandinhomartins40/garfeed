@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Garfeed — Deu fome? Rolou, pediu.</title>
+<meta name="description" content="Cardápio digital em vídeo para restaurantes: o cliente aproxima o celular da placa NFC ou escaneia o QR da mesa, rola o feed e faz o pedido. Sem baixar app, sem cadastro.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#142433">
+<link rel="canonical" href="https://garfeed.com.br/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Garfeed">
+<meta property="og:url" content="https://garfeed.com.br/">
+<meta property="og:title" content="Garfeed — Deu fome? Rolou, pediu.">
+<meta property="og:description" content="Seu cardápio vira um feed de vídeos que dá vontade de pedir. Pedido pela mesa, com NFC ou QR Code.">
+<meta property="og:image" content="https://garfeed.com.br/assets/img/og-garfeed.jpg">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="500">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nunito:wght@800;900&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+
+<header class="topo">
+  <div class="wrap topo__in">
+    <a href="/" class="logo" aria-label="Garfeed — início">
+      <img src="assets/marca/logo-horizontal-cor.svg" alt="Garfeed" width="160" height="45">
+    </a>
+    <nav class="nav" aria-label="Principal">
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#restaurantes">Para restaurantes</a>
+        <a href="#planos">Planos</a>
+        <a href="#duvidas">Dúvidas</a>
+        <!-- TODO: confirmar URL do painel do restaurante -->
+        <a href="https://app.garfeed.com.br" class="nav__entrar">Entrar</a>
+        <a href="#contato" class="btn btn--sm">Agendar demonstração</a>
+    </nav>
+    <!-- shortcut: menu duplicado em <details> para funcionar sem JS; manter os dois em sincronia -->
+    <details class="menu">
+      <summary aria-label="Menu"><img src="assets/icones/menu-marinho.svg" alt="" width="28" height="28"></summary>
+      <nav aria-label="Principal (celular)">
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#restaurantes">Para restaurantes</a>
+        <a href="#planos">Planos</a>
+        <a href="#duvidas">Dúvidas</a>
+        <!-- TODO: confirmar URL do painel do restaurante -->
+        <a href="https://app.garfeed.com.br" class="nav__entrar">Entrar</a>
+        <a href="#contato" class="btn btn--sm">Agendar demonstração</a>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<main id="conteudo">
+
+<section class="hero">
+  <div class="wrap hero__in">
+    <div class="hero__txt">
+      <p class="selo">Cardápio digital em vídeo</p>
+      <h1>O prato encanta.<br>O pedido acontece.</h1>
+      <p class="lead">Transforme seu cardápio em um feed que dá vontade de pedir.</p>
+      <div class="hero__acoes">
+        <a href="#contato" class="btn">Quero no meu restaurante</a>
+        <a href="#como-funciona" class="link-play"><img src="assets/icones/play-laranja.svg" alt="" width="24" height="24">Ver como funciona</a>
+      </div>
+      <p class="nota">Sem baixar app. Sem cadastro.</p>
+    </div>
+    <picture class="hero__img">
+      <source media="(max-width: 767px)" type="image/webp" srcset="assets/img/hero-mobile-480.webp 480w, assets/img/hero-mobile-768.webp 768w" sizes="calc(100vw - 32px)" width="480" height="600">
+      <source type="image/webp" srcset="assets/img/hero-contorno-organico-768.webp 768w, assets/img/hero-contorno-organico-1024.webp 1024w" sizes="(min-width: 1200px) 640px, 100vw">
+      <img src="assets/img/hero-contorno-organico.png" width="1448" height="1086" alt="Celular mostrando o feed do Garfeed com um hambúrguer em tela cheia, ao lado da placa NFC e QR Code da mesa." fetchpriority="high">
+    </picture>
+  </div>
+</section>
+
+<section id="como-funciona" class="passos">
+  <div class="wrap">
+    <h2>Da mesa ao pedido, sem complicar.</h2>
+    <ol class="passos__lista">
+      <li>
+        <span class="passos__num">01</span><img src="assets/icones/nfc-laranja.svg" alt="" width="40" height="40">
+        <h3>Aproxime ou escaneie</h3>
+        <p>O cliente acessa o cardápio da mesa com NFC ou QR Code.</p>
+      </li>
+      <li>
+        <span class="passos__num">02</span><img src="assets/icones/play-laranja.svg" alt="" width="40" height="40">
+        <h3>Role e descubra</h3>
+        <p>Navega por fotos e vídeos em tela cheia que dão vontade de pedir.</p>
+      </li>
+      <li>
+        <span class="passos__num">03</span><img src="assets/icones/carrinho-laranja.svg" alt="" width="40" height="40">
+        <h3>Escolha e peça</h3>
+        <p>Escolhe os opcionais e envia. O pedido chega pela mesa, sem app e sem cadastro.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="exp">
+  <div class="wrap exp__in">
+    <picture class="exp__img">
+      <source media="(max-width: 767px)" type="image/webp" srcset="assets/img/experiencia-mobile-480.webp 480w, assets/img/experiencia-mobile-768.webp 768w" sizes="calc(100vw - 32px)" width="480" height="600">
+      <source type="image/webp" srcset="assets/img/experiencia-desktop-768.webp 768w, assets/img/experiencia-desktop-1024.webp 1024w, assets/img/experiencia-desktop-1440.webp 1440w" sizes="(min-width: 1200px) 620px, calc(100vw - 64px)">
+      <img src="assets/img/experiencia-desktop-1024.webp" width="1024" height="683" loading="lazy" alt="Mão segurando o celular com o feed do Garfeed aberto, ao lado da placa da mesa, de um prato e de um chope.">
+    </picture>
+    <div class="exp__txt">
+      <h2>Comida em destaque.<br>Vontade de descobrir.</h2>
+      <ul class="itens">
+        <li><img src="assets/icones/play-laranja.svg" alt="" width="32" height="32"><div><h3>Fotos e vídeos em tela cheia</h3><p>Seus pratos valorizados, do jeito que merecem.</p></div></li>
+        <li><img src="assets/icones/opcionais-laranja.svg" alt="" width="32" height="32"><div><h3>Opcionais do seu jeito</h3><p>Adicionais e preferências na hora do pedido.</p></div></li>
+        <li><img src="assets/icones/garcom-laranja.svg" alt="" width="32" height="32"><div><h3>Garçom e conta a um toque</h3><p>O cliente chama o garçom ou pede a conta pelo próprio cardápio.</p></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="restaurantes" class="rest">
+  <div class="wrap">
+    <p class="selo">Para quem opera</p>
+    <h2>Tudo chega à mesa certa.</h2>
+    <p class="lead">Pedidos e chamados organizados para sua equipe, em tempo real e com alerta sonoro.</p>
+    <picture>
+      <source type="image/webp" srcset="assets/img/painel-ao-vivo-480.webp 480w, assets/img/painel-ao-vivo-768.webp 768w, assets/img/painel-ao-vivo-1024.webp 1024w, assets/img/painel-ao-vivo-1440.webp 1440w" sizes="(min-width: 1232px) 1200px, calc(100vw - 32px)">
+      <img class="rest__painel" src="assets/img/painel-ao-vivo-1024.webp" width="1024" height="624" loading="lazy" alt="Painel Ao vivo do Garfeed com pedidos organizados em colunas Novos, Em preparo e Prontos, cada um com o número da mesa.">
+    </picture>
+    <ul class="rest__itens">
+      <li><img src="assets/icones/pedidos-laranja.svg" alt="" width="32" height="32"><div><h3>Pedidos ao vivo</h3><p>Acompanhe e organize os pedidos em tempo real.</p></div></li>
+      <li><img src="assets/icones/cardapio-laranja.svg" alt="" width="32" height="32"><div><h3>Cardápio atualizado</h3><p>Edite preços, fotos, vídeos e “esgotado” na hora.</p></div></li>
+      <li><img src="assets/icones/mesa-laranja.svg" alt="" width="32" height="32"><div><h3>Gestão de mesas</h3><p>Ative cada placa pelo celular e acompanhe chamados e contas.</p></div></li>
+    </ul>
+    <p class="nota nota--centro">Complementa seu caixa e seu PDV.</p>
+  </div>
+</section>
+
+<section id="planos" class="planos">
+  <div class="wrap">
+    <h2>Planos simples, sem surpresa.</h2>
+    <p class="lead">Mensalidade fixa. No anual, pague 10 e leve 12.</p>
+    <div class="planos__grade">
+      <article class="plano">
+        <h3>Essencial</h3>
+        <p class="plano__preco">R$ 129<span>/mês</span></p>
+        <ul>
+          <li>Cardápio em feed</li>
+          <li>Até 15 mesas</li>
+          <li>Pedidos e chamados</li>
+          <li>Painel com alerta sonoro</li>
+          <li>1 usuário</li>
+        </ul>
+        <a href="#contato" class="btn btn--contorno">Falar com a gente</a>
+      </article>
+      <article class="plano plano--destaque">
+        <p class="plano__tag">Mais escolhido</p>
+        <h3>Pro</h3>
+        <p class="plano__preco">R$ 199<span>/mês</span></p>
+        <ul>
+          <li>Tudo do Essencial</li>
+          <li>Mesas ilimitadas</li>
+          <li>Até 5 usuários (garçons e cozinha)</li>
+          <li>Relatórios</li>
+          <li>Cardápio em inglês e espanhol</li>
+        </ul>
+        <a href="#contato" class="btn">Quero o Pro</a>
+      </article>
+      <article class="plano">
+        <h3>Rede</h3>
+        <p class="plano__preco">Sob consulta</p>
+        <ul>
+          <li>Várias unidades</li>
+          <li>Relatórios consolidados</li>
+          <li>Atendimento dedicado</li>
+        </ul>
+        <a href="#contato" class="btn btn--contorno">Pedir proposta</a>
+      </article>
+    </div>
+    <p class="nota nota--centro">Placas NFC + QR e produção de vídeos dos pratos disponíveis à parte.</p>
+  </div>
+</section>
+
+<section id="duvidas" class="faq">
+  <div class="wrap wrap--estreito">
+    <h2>Dúvidas antes do primeiro pedido?</h2>
+    <details open>
+      <summary>Precisa baixar aplicativo?</summary>
+      <p>Não. Abre no navegador do celular, sem cadastro.</p>
+    </details>
+    <details>
+      <summary>Funciona com NFC e QR Code?</summary>
+      <p>Sim. A mesma placa tem NFC para quem aproxima o celular e QR Code para qualquer aparelho.</p>
+    </details>
+    <details>
+      <summary>Substitui meu caixa?</summary>
+      <p>Não. O Garfeed se soma ao que você já usa: caixa, PDV, garçom e comanda continuam como estão.</p>
+    </details>
+    <details>
+      <summary>Quem cadastra o cardápio?</summary>
+      <p>A equipe Garfeed faz o cadastro na ativação. Depois você edita preços, fotos e itens esgotados pelo painel.</p>
+    </details>
+  </div>
+</section>
+
+<section id="contato" class="cta">
+  <div class="wrap cta__in">
+    <div class="cta__txt">
+      <h2>Deu fome? Rolou, pediu.</h2>
+      <p>Veja como o Garfeed pode funcionar no seu restaurante.</p>
+      <div class="cta__acoes">
+        <!-- TODO: trocar pelo e-mail comercial real antes de publicar -->
+        <a href="mailto:contato@garfeed.com.br?subject=Demonstra%C3%A7%C3%A3o%20Garfeed" class="btn">Agendar demonstração</a>
+        <!-- TODO: trocar 55XXXXXXXXXXX pelo número de WhatsApp comercial real -->
+        <a href="https://wa.me/55XXXXXXXXXXX" class="cta__wpp">Chamar no WhatsApp</a>
+      </div>
+    </div>
+    <picture class="cta__img">
+      <source type="image/webp" srcset="assets/img/cta-comida-sem-fundo-480.webp 480w, assets/img/cta-comida-sem-fundo-768.webp 768w" sizes="(min-width: 768px) 420px, 80vw">
+      <img src="assets/img/cta-comida-sem-fundo-480.webp" width="480" height="320" loading="lazy" alt="">
+    </picture>
+  </div>
+</section>
+
+</main>
+
+<footer class="rodape">
+  <div class="wrap rodape__in">
+    <img src="assets/marca/logo-horizontal-negativa.svg" alt="Garfeed" width="128" height="36">
+    <span>garfeed.com.br</span>
+    <nav aria-label="Rodapé">
+      <a href="#contato">Contato</a>
+      <!-- TODO: criar páginas de privacidade e termos -->
+      <a href="/privacidade">Privacidade</a>
+      <a href="/termos">Termos</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>
