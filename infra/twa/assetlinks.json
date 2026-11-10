@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "br.com.garfeed.painel",
+      "sha256_cert_fingerprints": ["TROCAR:PELO:SHA256:DA:CHAVE:DE:ASSINATURA:VER:infra/twa/README.md"]
+    }
+  }
+]
