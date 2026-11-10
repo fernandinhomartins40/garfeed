@@ -1,0 +1,9 @@
+# Teste local SEM SSL (infra/docker-compose.local.yml): mesmos sites em http://*.${DOMAIN}:8080
+# (DOMAIN=garfeed.localhost — o Chrome resolve *.localhost para 127.0.0.1 sem mexer no hosts).
+include /etc/nginx/snippets/http.conf;
+
+server { listen 80; server_name ${DOMAIN};        include /etc/nginx/snippets/landing.conf; }
+server { listen 80; server_name g.${DOMAIN};      include /etc/nginx/snippets/cardapio.conf; }
+server { listen 80; server_name painel.${DOMAIN}; include /etc/nginx/snippets/painel.conf; }
+server { listen 80; server_name api.${DOMAIN};    include /etc/nginx/snippets/api.conf; }
+server { listen 80; server_name midia.${DOMAIN};  include /etc/nginx/snippets/midia.conf; }

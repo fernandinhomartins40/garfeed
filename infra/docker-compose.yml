@@ -1,0 +1,181 @@
+# Produção do Garfeed numa VPS (PRD §7.3). Na raiz do repositório:
+#   docker compose --env-file .env -f infra/docker-compose.yml up -d --build
+# Só o nginx expõe portas (80/443). Passo a passo (DNS, certificado, backup) no README.
+name: garfeed
+
+x-app-env: &app-env
+  NODE_ENV: production
+  LOG_LEVEL: ${LOG_LEVEL:-info}
+  DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+  REDIS_URL: redis://redis:6379
+  MINIO_ENDPOINT: minio
+  MINIO_PORT: "9000"
+  MINIO_USE_SSL: "false"
+  MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+  MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+  MINIO_BUCKET: ${MINIO_BUCKET:-garfeed-media}
+  MEDIA_PUBLIC_URL: ${MEDIA_PUBLIC_URL}
+
+x-build-args: &build-args
+  VITE_API_URL: ${VITE_API_URL:-https://api.garfeed.com.br}
+  VITE_TAG_BASE_URL: ${VITE_TAG_BASE_URL:-https://g.garfeed.com.br}
+  VITE_VAPID_PUBLIC_KEY: ${VITE_VAPID_PUBLIC_KEY:-}
+
+services:
+  nginx:
+    build: { context: .., dockerfile: infra/Dockerfile, target: web, args: *build-args }
+    image: garfeed-web
+    restart: unless-stopped
+    # recarrega a cada 6 h para pegar o certificado renovado pelo certbot
+    command: ["/bin/sh", "-c", "while :; do sleep 6h; nginx -s reload; done & exec /docker-entrypoint.sh nginx -g 'daemon off;'"]
+    environment:
+      DOMAIN: ${DOMAIN:-garfeed.com.br}
+      NGINX_ENVSUBST_FILTER: ^DOMAIN$$
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/templates:ro
+      - ./nginx/snippets:/etc/nginx/snippets:ro
+      - ./twa/assetlinks.json:/srv/well-known/assetlinks.json:ro
+      - letsencrypt:/etc/letsencrypt:ro
+      - certbot_www:/var/www/certbot:ro
+      - nginx_cache:/var/cache/nginx/midia
+    depends_on:
+      api: { condition: service_healthy }
+      minio: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks: [garfeed_net]
+
+  certbot:
+    image: certbot/certbot:v4.1.1
+    restart: unless-stopped
+    # emissão inicial: ver README ("Certificado"); aqui só renova (webroot servido pelo nginx)
+    entrypoint: ["/bin/sh", "-c", "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done"]
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    networks: [garfeed_net]
+
+  api:
+    build: { context: .., dockerfile: infra/Dockerfile, target: api }
+    image: garfeed-api
+    restart: unless-stopped
+    environment:
+      <<: *app-env
+      API_PORT: "3000"
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      COOKIE_DOMAIN: ${COOKIE_DOMAIN:-}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      GUEST_TOKEN_SECRET: ${GUEST_TOKEN_SECRET}
+      REFRESH_TOKEN_DAYS: ${REFRESH_TOKEN_DAYS:-30}
+      PUBLIC_RATE_LIMIT_PER_MIN: ${PUBLIC_RATE_LIMIT_PER_MIN:-600}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:contato@garfeed.com.br}
+      TAG_BASE_URL: ${TAG_BASE_URL:-https://g.garfeed.com.br}
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      minio-init: { condition: service_completed_successfully }
+    networks: [garfeed_net]
+
+  worker:
+    build: { context: .., dockerfile: infra/Dockerfile, target: worker }
+    image: garfeed-worker
+    restart: unless-stopped
+    environment: *app-env
+    depends_on:
+      api: { condition: service_healthy } # a API aplica as migrações antes
+    networks: [garfeed_net]
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      start_period: 60s # a primeira inicialização do volume demora
+      retries: 10
+    networks: [garfeed_net]
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes: [redisdata:/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+    networks: [garfeed_net]
+
+  # minio/minio saiu do Docker Hub (2025); pgsty/minio é o fork mantido (ver docs/DECISOES.md)
+  minio:
+    image: pgsty/minio:${MINIO_IMAGE_TAG:-RELEASE.2026-08-04T00-00-00Z}
+    restart: unless-stopped
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes: [miniodata:/data]
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      retries: 10
+    networks: [garfeed_net]
+
+  # cria o bucket e libera só leitura anônima (a mídia é pública via midia.*; upload só com URL pré-assinada)
+  minio-init:
+    image: pgsty/minio:${MINIO_IMAGE_TAG:-RELEASE.2026-08-04T00-00-00Z}
+    restart: "no"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: ${MINIO_BUCKET:-garfeed-media}
+    entrypoint: ["/bin/sh", "-c", "mc alias set local http://minio:9000 \"$$MINIO_ROOT_USER\" \"$$MINIO_ROOT_PASSWORD\" && mc mb --ignore-existing local/$$MINIO_BUCKET && mc anonymous set download local/$$MINIO_BUCKET"]
+    depends_on:
+      minio: { condition: service_healthy }
+    networks: [garfeed_net]
+
+  # pg_dump diário + espelho do bucket em BACKUP_DIR; retenção de 14 dias (ver infra/backup)
+  backup:
+    build: { context: ./backup }
+    image: garfeed-backup
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: ${MINIO_BUCKET:-garfeed-media}
+      BACKUP_CRON: ${BACKUP_CRON:-0 6 * * *}
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-14}
+      BACKUP_REMOTE_URL: ${BACKUP_REMOTE_URL:-}
+      BACKUP_REMOTE_ACCESS_KEY: ${BACKUP_REMOTE_ACCESS_KEY:-}
+      BACKUP_REMOTE_SECRET_KEY: ${BACKUP_REMOTE_SECRET_KEY:-}
+      BACKUP_REMOTE_BUCKET: ${BACKUP_REMOTE_BUCKET:-garfeed-backup}
+    volumes: ["${BACKUP_DIR:-./backups}:/backups"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      minio: { condition: service_healthy }
+    networks: [garfeed_net]
+
+networks:
+  garfeed_net:
+
+volumes:
+  pgdata:
+  redisdata:
+  miniodata:
+  letsencrypt:
+  certbot_www:
+  nginx_cache:

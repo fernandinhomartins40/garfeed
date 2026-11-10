@@ -1,0 +1,14 @@
+**/node_modules
+**/dist
+**/.env
+**/.env.*
+.git
+.kit
+*.zip
+docs
+infra
+!infra/Dockerfile
+coverage
+playwright-report
+test-results
+e2e

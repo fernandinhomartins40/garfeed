@@ -8,3 +8,7 @@ dist/
 coverage/
 playwright-report/
 test-results/
+
+# backups do compose (produção e teste local)
+infra/backups/
+infra/backups-local/
