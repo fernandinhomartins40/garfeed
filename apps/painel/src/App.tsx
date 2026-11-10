@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, type ComponentType, type ReactNode } from 'react';
 import { createBrowserRouter, Navigate, RouterProvider, useLocation } from 'react-router-dom';
 import type { Role } from '@garfeed/shared';
 import { ROLES } from '@garfeed/shared';
@@ -7,19 +7,23 @@ import { refresh } from './lib/api';
 import { can } from './lib/live';
 import { AdminLayout, RestaurantLayout } from './components/Layout';
 import { Spinner } from './components/ui/misc';
-import { LoginPage } from './pages/Login';
-import { LivePage } from './pages/Live';
-import { TablesMapPage } from './pages/TablesMap';
-import { TablesManagePage } from './pages/TablesManage';
-import { MenuPage } from './pages/Menu';
-import { ItemEditPage } from './pages/ItemEdit';
-import { OptionGroupsPage } from './pages/OptionGroups';
-import { LinkTagPage } from './pages/LinkTag';
-import { TagsPage } from './pages/Tags';
-import { TeamPage } from './pages/Team';
-import { SettingsPage } from './pages/Settings';
-import { AdminRestaurantsPage } from './pages/admin/Restaurants';
-import { AdminTagBatchesPage } from './pages/admin/TagBatches';
+
+// Uma chunk por tela: o login e o Ao vivo não baixam dnd-kit, zxing, formulários etc.
+const page = <K extends string>(load: () => Promise<Record<K, ComponentType>>, name: K) =>
+  lazy(() => load().then((m) => ({ default: m[name] })));
+const LoginPage = page(() => import('./pages/Login'), 'LoginPage');
+const LivePage = page(() => import('./pages/Live'), 'LivePage');
+const TablesMapPage = page(() => import('./pages/TablesMap'), 'TablesMapPage');
+const TablesManagePage = page(() => import('./pages/TablesManage'), 'TablesManagePage');
+const MenuPage = page(() => import('./pages/Menu'), 'MenuPage');
+const ItemEditPage = page(() => import('./pages/ItemEdit'), 'ItemEditPage');
+const OptionGroupsPage = page(() => import('./pages/OptionGroups'), 'OptionGroupsPage');
+const LinkTagPage = page(() => import('./pages/LinkTag'), 'LinkTagPage');
+const TagsPage = page(() => import('./pages/Tags'), 'TagsPage');
+const TeamPage = page(() => import('./pages/Team'), 'TeamPage');
+const SettingsPage = page(() => import('./pages/Settings'), 'SettingsPage');
+const AdminRestaurantsPage = page(() => import('./pages/admin/Restaurants'), 'AdminRestaurantsPage');
+const AdminTagBatchesPage = page(() => import('./pages/admin/TagBatches'), 'AdminTagBatchesPage');
 
 const home = (role?: Role) => (role === 'SUPERADMIN' ? '/admin/restaurantes' : '/ao-vivo');
 
@@ -70,6 +74,6 @@ export function App() {
   // Restaura a sessão pelo cookie de refresh ao abrir o painel.
   useEffect(() => { void refresh(); }, []);
   if (!ready) return <Spinner />;
-  return <RouterProvider router={router} />;
+  return <Suspense fallback={<Spinner />}><RouterProvider router={router} /></Suspense>;
 }
 export { home };

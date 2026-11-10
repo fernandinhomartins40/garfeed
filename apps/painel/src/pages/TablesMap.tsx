@@ -11,7 +11,7 @@ import { printEmergencyQrs } from '@/lib/qr';
 import { ago, cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Confirm, Sheet } from '@/components/ui/dialog';
-import { Card, Empty, ErrorBox, PageTitle, Spinner } from '@/components/ui/misc';
+import { Card, Empty, ErrorBox, PageTitle, Spinner, Thumb } from '@/components/ui/misc';
 
 export const STATUS: Record<TableStatus, { label: string; hint: string; dot: string; chip: string; icon: string }> = {
   FREE: { label: 'Livre', hint: 'Mesa disponível', dot: 'bg-success', chip: 'bg-success text-white', icon: 'bg-green-50 text-success' },
@@ -125,8 +125,9 @@ function TableDrawer({ table, onClose }: { table: Table | null; onClose: () => v
             {orders.isLoading ? <Spinner /> : (
               <ul className="divide-y divide-gf-border">
                 {items.map((i) => (
-                  <li key={i.id} className="flex justify-between gap-3 py-3">
-                    <div><p className="font-heading text-lg font-extrabold leading-tight">{i.name}</p>
+                  <li key={i.id} className="flex items-start gap-3 py-3">
+                    <Thumb src={i.thumbUrl} />
+                    <div className="min-w-0 flex-1"><p className="font-heading text-lg font-extrabold leading-tight">{i.name}</p>
                       {i.options.length > 0 && <p className="text-sm text-gf-muted">{i.options.map((x) => x.option).join(', ')}</p>}
                       <p className="text-sm text-gf-navy-80">{i.quantity} un.</p></div>
                     <b className="font-heading text-lg font-black">{formatBRL(i.unitPriceCents * i.quantity)}</b>

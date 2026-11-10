@@ -13,7 +13,7 @@ import { enableNotifications, notifSupported } from '@/lib/alerts';
 import { ago, cn, minutesSince } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
-import { Card, Empty, ErrorBox } from '@/components/ui/misc';
+import { Card, Empty, ErrorBox, Thumb } from '@/components/ui/misc';
 import { Input } from '@/components/ui/input';
 
 const LATE_MIN = 5;
@@ -136,13 +136,14 @@ function OrderCard({ o, now, sector, onReject }: { o: PanelOrder; now: number; s
         </div>
         <p className="mt-1 flex justify-between gap-2 text-gf-navy-80">
           <span className="truncate">Pedido nº{num(o.number)}{o.customerName && ` · ${o.customerName}`}</span>
-          {!late && <span className="whitespace-nowrap font-semibold text-gf-orange">{ago(o.createdAt, now)}</span>}
+          {!late && <span className="whitespace-nowrap font-semibold text-gf-orange">{o.status === 'PREPARING' ? 'Em preparo · ' : ''}{ago(o.createdAt, now)}</span>}
         </p>
       </header>
       <ul className="mt-3 divide-y divide-gf-border">
         {items.map((i) => (
-          <li key={i.id} className="flex justify-between gap-3 py-2">
-            <div>
+          <li key={i.id} className="flex items-start gap-3 py-2">
+            <Thumb src={i.thumbUrl} />
+            <div className="min-w-0 flex-1">
               <p className="font-heading text-lg font-extrabold leading-tight">{i.quantity}× {i.name}</p>
               {i.options.length > 0 && <p className="text-sm text-gf-muted">{i.options.map((x) => x.option).join(', ')}</p>}
             </div>
@@ -165,8 +166,10 @@ function OrderCard({ o, now, sector, onReject }: { o: PanelOrder; now: number; s
           <Button className="h-12 min-w-0 flex-1 rounded-xl px-3 text-lg" loading={m.isPending} onClick={() => m.mutate({ status: 'CONFIRMED' })}><Check className="h-5 w-5" />Aceitar</Button>
           <Button variant="outline" className="h-12 min-w-0 flex-1 rounded-xl border-0 bg-gf-bg px-3 text-lg" disabled={m.isPending} onClick={onReject}><X className="h-5 w-5" />Recusar</Button>
         </>}
+        {o.status === 'CONFIRMED' &&
+          <Button variant="outline" className="h-12 min-w-0 flex-1 rounded-xl px-3 text-lg" disabled={m.isPending} onClick={() => m.mutate({ status: 'PREPARING' })}><ChefHat className="h-5 w-5" />Iniciar preparo</Button>}
         {(o.status === 'CONFIRMED' || o.status === 'PREPARING') &&
-          <Button variant="info" className="h-12 flex-1 rounded-xl text-lg" loading={m.isPending} onClick={() => m.mutate({ status: 'READY' })}><Check className="h-5 w-5" />Pronto</Button>}
+          <Button variant="info" className="h-12 min-w-0 flex-1 rounded-xl px-3 text-lg" loading={m.isPending} onClick={() => m.mutate({ status: 'READY' })}><Check className="h-5 w-5" />Pronto</Button>}
         {o.status === 'READY' &&
           <Button variant="success" className="h-12 flex-1 rounded-xl text-lg" loading={m.isPending} onClick={() => m.mutate({ status: 'DELIVERED' })}><Truck className="h-5 w-5" />Entregue</Button>}
       </div>

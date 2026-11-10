@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { Suspense, useEffect, useState, type ReactNode } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import {
   BarChart3, ChevronDown, Layers, LogOut, Menu, QrCode, Radio, Settings, Store, Armchair, User, Users, UtensilsCrossed, Volume2, VolumeX, WifiOff, type LucideIcon,
@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { Switch } from './ui/switch';
 import { Dropdown } from './ui/dropdown';
 import { Sheet } from './ui/dialog';
+import { Spinner } from './ui/misc';
 
 type NavItem = { to: string; label: string; icon: LucideIcon; show: boolean; soon?: boolean; badge?: number };
 
@@ -80,7 +81,7 @@ function Shell({ items, footer, banners }: { items: NavItem[]; footer: ReactNode
       <Sheet open={open} onOpenChange={setOpen} title="Menu" side="left" className="max-w-[17rem] bg-gf-navy [&>button]:text-white">
         <Sidebar items={items} footer={footer} />
       </Sheet>
-      <main className="md:pl-64">{banners && <Banners />}<Outlet /></main>
+      <main className="md:pl-64">{banners && <Banners />}<Suspense fallback={<Spinner />}><Outlet /></Suspense></main>
     </div>
   );
 }

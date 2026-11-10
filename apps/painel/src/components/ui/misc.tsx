@@ -47,3 +47,10 @@ export const ErrorBox = ({ error, retry }: { error: unknown; retry?: () => void 
     {retry && <button className="font-semibold underline" onClick={retry}>Tentar de novo</button>}
   </div>
 );
+
+/** Miniatura do item (48 px); vazio mantém o alinhamento. */
+export function Thumb({ src }: { src: string | null }) {
+  return src
+    ? <img src={src} alt="" loading="lazy" className="h-12 w-12 shrink-0 rounded-lg object-cover" />
+    : <span aria-hidden className="h-12 w-12 shrink-0 rounded-lg bg-gf-bg" />;
+}
