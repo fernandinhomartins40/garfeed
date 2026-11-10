@@ -63,8 +63,17 @@ Além dos 5 itens do protótipo, o seed cria "Smash Clássico" em **Lanches** pa
 - **Exclusões protegidas**: item já pedido e mesa com pedidos não são excluídos (409: oculte/desative); categoria com itens → 409.
 - **Fechar mesa** conclui os chamados abertos da sessão. Pedido `CANCELED` também guarda o motivo em `rejectReason`.
 - **Usuários**: o dono não pode desativar a si mesmo nem perder o papel OWNER; mudar senha/papel/desativar revoga os refresh tokens.
-- **Cache do cardápio** em `menu:{restaurantId}` (`menuCacheKey` no shared); o worker também invalida quando a mídia fica pronta,
-  mas não emite `menu:updated` (o painel acompanha por `GET /media/:id`).
+- **Cache do cardápio** em `menu:{restaurantId}` (`menuCacheKey` no shared); o worker também invalida quando a mídia fica pronta
+  e emite `menu:updated` (via `@socket.io/redis-emitter`, mesmo canal do adapter Redis da API).
 - **Admin**: "hoje" (pedidos/dia) no fuso de São Paulo. Lote de placas: `L{AAAAMMDD}-{hex}`; restaurante do lote = dono comum a todas as placas.
 - **Mídia**: original em `{restaurantId}/{uuid}/original.ext`; derivados na mesma pasta. HEIC é convertido com FFmpeg antes do sharp
   (o sharp pré-compilado não decodifica HEVC).
+
+## 2026-11-10 — Fase 3 (fechamento do MVP)
+- **Status `PREPARING`**: "Aceitar" continua levando a `CONFIRMED` (cliente vê "Confirmado", fluxo B do PRD). Na coluna
+  "Em preparo" do Ao vivo, o card `CONFIRMED` mostra **"Iniciar preparo"** (→ `PREPARING`, cliente vê "Em preparo") e
+  **"Pronto"**; pular o preparo continua permitido (`CONFIRMED → READY`) para itens de bar/prontos.
+- **Miniatura no pedido do painel**: `PanelOrder.items[].thumbUrl` = mídia **atual** do item (`thumbUrl` ou pôster), não um
+  snapshot — se a foto do item mudar, pedidos antigos mostram a nova. Aceitável para identificação visual na cozinha.
+- **Variáveis `VITE_*`** documentadas no `.env.example` da raiz e passadas como build args no compose de produção. O Vite
+  continua lendo `.env` da pasta do app (ler o da raiz traria `NODE_ENV=development` e geraria build de dev do React).
