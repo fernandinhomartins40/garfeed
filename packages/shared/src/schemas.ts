@@ -401,8 +401,11 @@ export const Tag = z.object({
   lastReadAt: IsoDate.nullable(),
 });
 export type Tag = z.infer<typeof Tag>;
-/** POST /tags/link — placa do próprio restaurante (ou sem dono) → ACTIVE na mesa. Troca a placa anterior da mesa. */
-export const LinkTagBody = z.object({ code: TagCode, tableId: Id });
+/**
+ * POST /tags/link — placa do próprio restaurante (ou sem dono) → ACTIVE na mesa. Troca a placa anterior da mesa.
+ * Se a placa já está ativa em OUTRA mesa: 409 CONFLICT com `details.table` (TableRef); reenvie com `confirm: true` para mover.
+ */
+export const LinkTagBody = z.object({ code: TagCode, tableId: Id, confirm: z.boolean().optional() });
 export type LinkTagBody = z.infer<typeof LinkTagBody>;
 
 /** POST /sessions/:id/close → { id, status: CLOSED } */
@@ -492,6 +495,9 @@ export const PushSubscribeBody = z.object({
   keys: z.object({ p256dh: z.string().min(1), auth: z.string().min(1) }),
 });
 export type PushSubscribeBody = z.infer<typeof PushSubscribeBody>;
+/** GET /push/vapid-public-key — applicationServerKey para pushManager.subscribe (null = push desligado no servidor). */
+export const VapidPublicKeyResponse = z.object({ publicKey: z.string().nullable() });
+export type VapidPublicKeyResponse = z.infer<typeof VapidPublicKeyResponse>;
 
 // =====================================================================
 // ADMIN GARFEED (SUPERADMIN)

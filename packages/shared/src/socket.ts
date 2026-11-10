@@ -46,3 +46,5 @@ export const SOCKET_EVENTS = [
 // ---------- Filas BullMQ (api → worker) ----------
 export const QUEUES = { media: 'media', sessions: 'sessions' } as const;
 export type MediaJobData = { mediaId: string; restaurantId: string };
+/** Chave Redis do cache do cardápio público (api grava; api e worker invalidam). */
+export const menuCacheKey = (restaurantId: string) => `menu:${restaurantId}`;

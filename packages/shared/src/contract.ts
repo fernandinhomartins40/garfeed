@@ -107,6 +107,7 @@ export const api = {
   },
   push: {
     subscribe: r({ method: 'POST', path: '/push/subscribe', auth: 'jwt', roles: ROLES.STAFF, body: s.PushSubscribeBody, response: null }),
+    vapidPublicKey: r({ method: 'GET', path: '/push/vapid-public-key', auth: 'jwt', roles: ROLES.STAFF, response: s.VapidPublicKeyResponse }),
   },
   admin: {
     stats: r({ method: 'GET', path: '/admin/stats', auth: 'jwt', roles: ROLES.ADMIN, response: s.AdminStats }),
