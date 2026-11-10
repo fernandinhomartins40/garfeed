@@ -1,0 +1,22 @@
+@import '@garfeed/ui/tokens.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { --accent: var(--gf-orange); --on-accent: #fff; }
+html, body, #root { height: 100%; }
+body { @apply bg-white font-sans text-gf-navy antialiased; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+/* Fundo elegante quando o item não tem mídia (ou ela ainda está processando). */
+.media-fallback { background: radial-gradient(120% 70% at 30% 25%, color-mix(in srgb, var(--accent) 55%, transparent), transparent 60%), radial-gradient(90% 60% at 80% 85%, #2a3f55, transparent 70%), #142433; }
+@keyframes kenburns { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.12) translate(-2%, -2%); } }
+.kenburns { animation: kenburns 9s ease-in-out infinite alternate; }
+@keyframes nudge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.nudge { animation: nudge 1.4s ease-in-out infinite; }
+@keyframes up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.sheet-in { animation: up .25s ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .kenburns, .nudge, .sheet-in { animation: none; }
+  html { scroll-behavior: auto; }
+}
