@@ -1,0 +1,24 @@
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/nunito/800.css';
+@import '@fontsource/nunito/900.css';
+@import '@garfeed/ui/tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body { @apply bg-gf-bg font-sans text-gf-navy antialiased; }
+}
+
+@keyframes gf-pulse-ring { 0%, 100% { box-shadow: 0 0 0 0 rgb(220 38 38 / .35); } 50% { box-shadow: 0 0 0 8px rgb(220 38 38 / 0); } }
+.animate-ring { animation: gf-pulse-ring 1.6s ease-in-out infinite; }
+@keyframes gf-pulse-ring-green { 0%, 100% { box-shadow: 0 0 0 0 rgb(22 163 74 / .3); } 50% { box-shadow: 0 0 0 8px rgb(22 163 74 / 0); } }
+.animate-ring-green { animation: gf-pulse-ring-green 1.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .animate-ring, .animate-ring-green { animation: none; } }
+
+@media print {
+  .no-print { display: none !important; }
+}
