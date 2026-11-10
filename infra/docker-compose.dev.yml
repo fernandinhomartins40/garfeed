@@ -1,0 +1,51 @@
+# Dependências locais para desenvolvimento: postgres, redis, minio (+ criação do bucket).
+# Uso (na raiz): docker compose -f infra/docker-compose.dev.yml up -d
+name: garfeed-dev
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: garfeed
+      POSTGRES_PASSWORD: garfeed
+      POSTGRES_DB: garfeed
+    ports: ["5434:5432"] # 5434 no host: 5432/5433 costumam estar ocupadas por outro Postgres local
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U garfeed"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    ports: ["6380:6379"] # 6380 no host para não colidir com outro Redis local
+    volumes: [redisdata:/data]
+
+  # minio/minio saiu do Docker Hub (2025); pgsty/minio é um fork mantido, compatível e com `mc` incluso.
+  minio:
+    image: pgsty/minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: garfeed
+      MINIO_ROOT_PASSWORD: garfeed-minio-dev
+    ports: ["9000:9000", "9001:9001"]
+    volumes: [miniodata:/data]
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      retries: 10
+
+  # Cria o bucket e libera leitura anônima (mídia é pública; em produção vai via Nginx com cache).
+  minio-init:
+    image: pgsty/minio
+    depends_on:
+      minio: { condition: service_healthy }
+    entrypoint: >
+      sh -c "mc alias set local http://minio:9000 garfeed garfeed-minio-dev &&
+             mc mb --ignore-existing local/garfeed-media &&
+             mc anonymous set download local/garfeed-media"
+
+volumes:
+  pgdata:
+  redisdata:
+  miniodata:
