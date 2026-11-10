@@ -1,19 +1,28 @@
-// Consumidor da fila de mídia. Processamento real (FFmpeg 720×1280 H.264 ~1,5 Mbps faststart + pôster JPG
-// + miniatura WebP; sharp para imagens) fica para a semana 2 — ver PRD RF-16.
-import { Worker } from 'bullmq';
+// Consumidor da fila de mídia (FFmpeg/sharp). Ver src/media.ts.
+import { UnrecoverableError, Worker } from 'bullmq';
 import { Redis } from 'ioredis';
 import { pino } from 'pino';
 import { QUEUES, type MediaJobData } from '@garfeed/shared';
+import { MediaRejected, markFailed, prisma, processMedia } from './media';
 
 const logger = pino({ level: process.env.LOG_LEVEL ?? 'info' });
 const connection = new Redis(process.env.REDIS_URL ?? 'redis://localhost:6379', { maxRetriesPerRequest: null });
+const cache = connection.duplicate();
 
 const worker = new Worker<MediaJobData>(
   QUEUES.media,
   async (job) => {
-    logger.info({ jobId: job.id, ...job.data }, 'mídia recebida');
-    // TODO(semana 2): baixar originalKey do MinIO → ffmpeg/sharp → subir derivados → Media READY (ou FAILED com error).
-    throw new Error('Processamento de mídia ainda não implementado');
+    try {
+      const r = await processMedia(job.data.mediaId, cache);
+      logger.info({ jobId: job.id, mediaId: job.data.mediaId, outputBytes: r?.outputBytes }, 'mídia pronta');
+    } catch (err) {
+      const rejected = err instanceof MediaRejected;
+      // última tentativa (ou arquivo inválido): o painel passa a mostrar "Falhou"
+      if (rejected || job.attemptsMade + 1 >= (job.opts.attempts ?? 1)) {
+        await markFailed(job.data.mediaId, rejected ? err.message : 'Não foi possível processar o arquivo');
+      }
+      throw rejected ? new UnrecoverableError(err.message) : err;
+    }
   },
   { connection, concurrency: 2 },
 );
@@ -23,7 +32,7 @@ logger.info(`worker ouvindo a fila "${QUEUES.media}"`);
 
 const shutdown = async () => {
   await worker.close();
-  await connection.quit();
+  await Promise.all([connection.quit(), cache.quit(), prisma.$disconnect()]);
   process.exit(0);
 };
 process.on('SIGTERM', shutdown);

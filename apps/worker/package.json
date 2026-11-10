@@ -7,17 +7,24 @@
     "dev": "tsx watch --env-file=../../.env src/index.ts",
     "start": "node dist/index.js",
     "build": "tsup src/index.ts --format esm --target node20 --clean",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "postinstall": "prisma generate --schema ../api/prisma/schema.prisma"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.3",
     "bullmq": "^5.0.0",
     "ioredis": "^5.4.0",
-    "pino": "^9.0.0"
+    "minio": "^8.0.7",
+    "pino": "^9.0.0",
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@garfeed/shared": "workspace:*",
     "@types/node": "^22.0.0",
+    "prisma": "^6.19.3",
     "tsup": "^8.3.0",
-    "tsx": "^4.19.0"
+    "tsx": "^4.19.0",
+    "vitest": "^4.1.12"
   }
 }
