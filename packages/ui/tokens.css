@@ -1,0 +1,29 @@
+/* Tokens de design do Garfeed (CLAUDE.md). Importe uma vez no CSS de entrada do app:
+   @import '@garfeed/ui/tokens.css';
+   Fontes (Nunito 800/900, Inter 400/500/600) devem ser self-hosted no app (ex.: @fontsource). */
+:root {
+  --gf-orange: #FE581D;
+  --gf-orange-hover: #E54A12;
+  --gf-orange-soft: #FFF1EA;
+  --gf-navy: #142433;
+  --gf-navy-80: #3A4756;
+  --gf-muted: #6B7480;
+  --gf-border: #E6E8EC;
+  --gf-bg: #F6F7F9;
+  --gf-white: #FFFFFF;
+  --gf-cream: #FFF8F2;
+  --gf-peach: #FFE9DC;
+
+  --success: #16A34A;
+  --warning: #F59E0B;
+  --danger: #DC2626;
+  --info: #2563EB;
+
+  --gf-font-heading: 'Nunito', ui-rounded, system-ui, sans-serif;
+  --gf-font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --gf-radius-card: 12px;
+  --gf-radius-pill: 999px;
+  --gf-radius-sheet: 20px;
+  --gf-radius-media: 24px;
+}
