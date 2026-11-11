@@ -81,3 +81,20 @@ Além dos 5 itens do protótipo, o seed cria "Smash Clássico" em **Lanches** pa
 ## 2026-11-11 — Revogação imediata do access token
 - Desativar usuário ou trocar papel/senha grava `auth:revoked:{userId}` no Redis (timestamp, TTL = vida do access token); `requireAuth`
   e o handshake do Socket.io do painel recusam (401) tokens com `iat` anterior. Custa um GET no Redis por requisição; Redis fora → 500 (falha fechada).
+
+## 2026-11-11 — E-mail transacional pelo Velomail
+- **Provedor**: o envio usa o **Velomail**, servidor de e-mail **próprio do dono do projeto** (self-hosted, fora deste compose).
+  Não é SaaS de terceiros, então respeita a regra "tudo self-hosted"; e não é obrigatório: sem `VELOMAIL_API_KEY` a aplicação
+  funciona e só não envia (em dev o link sai no log). Integração por HTTP (`fetch`), sem SDK nem dependência nova.
+- **Domínio**: `garfeed.com.br` autenticado no Velomail — DKIM em `default._domainkey`, DMARC `p=none` (relatórios para o
+  Velomail) e return-path em `uz-mail.garfeed.com.br` (MX + SPF). Nada em `@`: o domínio ainda **não tem MX principal**,
+  então `contato@garfeed.com.br` (Reply-To) só recebe quando houver caixa de entrada configurada.
+- **Remetente** `nao-responda@garfeed.com.br`: a API do Velomail valida `from` como endereço puro (sem nome de exibição).
+- **Envio assíncrono simples** (`lib/mailer.ts`): *fire-and-forget* com 3 tentativas e log, em vez de fila BullMQ — a API não
+  tem worker próprio e os e-mails são reemitíveis pelo usuário ("esqueci minha senha", "reenviar convite").
+- **Convite = usuário sem senha** (`User.passwordHash` passou a ser opcional) + `UserToken` (tipo `INVITE`, 7 dias).
+  O mesmo token/tela serve para recuperação (`PASSWORD_RESET`, 1 h) e para as boas-vindas do dono criado pelo superadmin.
+  `POST /users` e `POST /admin/restaurants` continuam aceitando `password` (compatibilidade); sem ela, vai convite por e-mail.
+  O painel não pede mais senha inicial nessas telas.
+- **Cancelar convite** apaga o usuário (nunca entrou, não há histórico). **Convite pendente** não usa "Esqueci minha senha":
+  o dono reenvia. Lista completa de e-mails, gatilhos e limites em `docs/EMAILS.md`.
