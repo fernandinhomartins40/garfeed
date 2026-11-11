@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { AuthResponse, COOKIES } from '@garfeed/shared';
 import { createApp } from '../src/app';
+import { bearer, dropRestaurants, makeRestaurant } from './helpers';
 
 const app = createApp();
 const password = process.env.SEED_PASSWORD ?? 'garfeed123';
@@ -52,5 +53,26 @@ describe('auth', () => {
 
   it('rota autenticada sem token → 401', async () => {
     expect((await request(app).get('/menu/categories')).status).toBe(401);
+  });
+
+  it('usuário desativado: o access token antigo recebe 401 na hora; reativado, um novo login funciona', async () => {
+    const f = await makeRestaurant();
+    try {
+      const owner = await f.token('OWNER');
+      const waiter = await f.token('WAITER');
+      const users = await request(app).get('/users').set(bearer(owner));
+      const id = (users.body as { id: string; role: string }[]).find((u) => u.role === 'WAITER')!.id;
+      expect((await request(app).get('/orders').set(bearer(waiter))).status).toBe(200);
+
+      expect((await request(app).patch(`/users/${id}`).set(bearer(owner)).send({ active: false })).status).toBe(200);
+      expect((await request(app).get('/orders').set(bearer(waiter))).status).toBe(401);
+      expect((await request(app).get('/orders').set(bearer(owner))).status).toBe(200); // só o usuário afetado
+
+      expect((await request(app).patch(`/users/${id}`).set(bearer(owner)).send({ active: true })).status).toBe(200);
+      expect((await request(app).get('/orders').set(bearer(waiter))).status).toBe(401); // o token antigo continua morto
+      expect((await request(app).get('/orders').set(bearer(await f.token('WAITER')))).status).toBe(200);
+    } finally {
+      await dropRestaurants(f.r.id);
+    }
   });
 });

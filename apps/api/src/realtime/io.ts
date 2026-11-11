@@ -24,7 +24,7 @@ export function initRealtime(server: HttpServer) {
     try {
       const token: unknown = socket.handshake.auth?.token;
       if (typeof token === 'string') {
-        const auth = verifyAccessToken(token);
+        const auth = await verifyAccessToken(token);
         if (!auth.restaurantId) return next(new Error('Usuário sem restaurante'));
         await socket.join(rooms.restaurant(auth.restaurantId));
         return next();

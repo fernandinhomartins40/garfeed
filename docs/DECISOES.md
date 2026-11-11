@@ -77,3 +77,7 @@ Além dos 5 itens do protótipo, o seed cria "Smash Clássico" em **Lanches** pa
   snapshot — se a foto do item mudar, pedidos antigos mostram a nova. Aceitável para identificação visual na cozinha.
 - **Variáveis `VITE_*`** documentadas no `.env.example` da raiz e passadas como build args no compose de produção. O Vite
   continua lendo `.env` da pasta do app (ler o da raiz traria `NODE_ENV=development` e geraria build de dev do React).
+
+## 2026-11-11 — Revogação imediata do access token
+- Desativar usuário ou trocar papel/senha grava `auth:revoked:{userId}` no Redis (timestamp, TTL = vida do access token); `requireAuth`
+  e o handshake do Socket.io do painel recusam (401) tokens com `iat` anterior. Custa um GET no Redis por requisição; Redis fora → 500 (falha fechada).

@@ -4,7 +4,7 @@ import type { User } from '@prisma/client';
 import { CreateUserBody, IdParams, UpdateUserBody, type StaffUser } from '@garfeed/shared';
 import { prisma } from '../../lib/prisma';
 import { AppError, notFound } from '../../lib/errors';
-import { tenantId } from '../../lib/auth';
+import { revokeAccessTokens, tenantId } from '../../lib/auth';
 import { validate } from '../../middleware/validate';
 
 /** /users (OWNER). Contrato: api.users. O papel é sempre explícito no corpo (nunca OWNER por padrão). */
@@ -48,7 +48,10 @@ router.patch('/:id', validate({ params: IdParams, body: UpdateUserBody }), async
       ...(password ? { passwordHash: await argon2.hash(password) } : {}),
     },
   });
-  // senha, papel ou desativação: derruba as sessões (o access token vence em 15 min)
-  if (password || b.role || b.active === false) await prisma.refreshToken.updateMany({ where: { userId: id, revokedAt: null }, data: { revokedAt: new Date() } });
+  // senha, papel ou desativação: derruba as sessões (refresh no banco; access tokens já emitidos via Redis)
+  if (password || b.role || b.active === false) {
+    await prisma.refreshToken.updateMany({ where: { userId: id, revokedAt: null }, data: { revokedAt: new Date() } });
+    await revokeAccessTokens(id);
+  }
   res.json(toStaff(updated));
 });

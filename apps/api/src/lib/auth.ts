@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { AccessTokenPayload, COOKIES, LIMITS, type Role } from '@garfeed/shared';
 import { env, isProd } from './env';
 import { AppError } from './errors';
+import { redis } from './redis';
 
 export type GuestTokenPayload = { sessionId: string; restaurantId: string; tableId: string };
 
@@ -20,15 +21,29 @@ declare global {
 // ---------- JWT de acesso (painel) ----------
 export const ACCESS_TTL_SEC = LIMITS.accessTokenMinutes * 60;
 
+// iat fracionário (ms): a revogação compara com precisão de ms, senão um login no mesmo segundo seria barrado
 export const signAccessToken = (p: AccessTokenPayload) =>
-  jwt.sign(p, env.JWT_ACCESS_SECRET, { expiresIn: ACCESS_TTL_SEC, algorithm: 'HS256' });
+  jwt.sign({ ...p, iat: Date.now() / 1000 }, env.JWT_ACCESS_SECRET, { expiresIn: ACCESS_TTL_SEC, algorithm: 'HS256' });
 
-export function verifyAccessToken(token: string): AccessTokenPayload {
+const revokedKey = (userId: string) => `auth:revoked:${userId}`;
+
+/** Invalida na hora os access tokens já emitidos para o usuário (desativação, troca de papel ou de senha). */
+export const revokeAccessTokens = (userId: string) => redis.set(revokedKey(userId), Date.now() / 1000, 'EX', ACCESS_TTL_SEC);
+
+export async function verifyAccessToken(token: string): Promise<AccessTokenPayload> {
+  const expired = () => new AppError('UNAUTHORIZED', 'Sessão expirada. Entre novamente.');
+  let raw: jwt.JwtPayload;
+  let payload: AccessTokenPayload;
   try {
-    return AccessTokenPayload.parse(jwt.verify(token, env.JWT_ACCESS_SECRET, { algorithms: ['HS256'] }));
+    raw = jwt.verify(token, env.JWT_ACCESS_SECRET, { algorithms: ['HS256'] }) as jwt.JwtPayload;
+    payload = AccessTokenPayload.parse(raw);
   } catch {
-    throw new AppError('UNAUTHORIZED', 'Sessão expirada. Entre novamente.');
+    throw expired();
   }
+  // Redis fora do ar → erro 500 (falha fechada), não 401
+  const revokedAt = await redis.get(revokedKey(payload.sub));
+  if (revokedAt && (raw.iat ?? 0) <= Number(revokedAt)) throw expired();
+  return payload;
 }
 
 // ---------- Refresh token (cookie httpOnly; só o hash vai para o banco) ----------
@@ -54,10 +69,10 @@ export function verifyGuestToken(token: string): GuestTokenPayload {
 }
 
 // ---------- Middlewares ----------
-export const requireAuth: RequestHandler = (req, _res, next) => {
+export const requireAuth: RequestHandler = async (req, _res, next) => {
   const [scheme, token] = (req.headers.authorization ?? '').split(' ');
   if (scheme !== 'Bearer' || !token) throw new AppError('UNAUTHORIZED', 'Faça login para continuar.');
-  req.auth = verifyAccessToken(token);
+  req.auth = await verifyAccessToken(token);
   next();
 };
 
