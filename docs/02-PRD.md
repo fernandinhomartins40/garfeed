@@ -411,17 +411,17 @@ Cliente toca "Pedir a conta" → painel toca + faixa de chamados → garçom lev
 
 ## 11. Critérios de aceite do MVP
 
-- [ ] Placa nova mostra "não ativada"; após vínculo, abre o feed da mesa certa em iPhone e Android.
-- [ ] Vincular placa por QR, por NFC (Android) e por código leva < 15 s.
-- [ ] Feed rola com *snap*, vídeo toca mudo automaticamente, próximos 2 pré-carregados.
-- [ ] Item marcado "esgotado" some do pedido em < 3 s para quem está com o feed aberto.
-- [ ] Pedido aparece no painel em < 2 s com som; repete o som até ser aceito.
-- [ ] Dois celulares na mesma mesa veem os pedidos um do outro em "Meus pedidos da mesa".
-- [ ] Chamar garçom tem bloqueio de 60 s; pedidos limitados a 10/hora por sessão.
-- [ ] Usuário `WAITER` não acessa cardápio nem configurações; nenhum endpoint vaza dados de outro restaurante (teste automatizado).
-- [ ] Upload de vídeo de 50 MB vira mp4 720p < 6 MB com pôster, status "Pronto".
-- [ ] `docker compose up -d` sobe tudo do zero numa VPS limpa com o `.env.example` preenchido.
-- [ ] Backup diário gerado e restauração testada.
+- [ ] Placa nova mostra "não ativada"; após vínculo, abre o feed da mesa certa em iPhone e Android. — *comprovado em Chromium (E2E + testes da API); falta iPhone/Android reais.*
+- [ ] Vincular placa por QR, por NFC (Android) e por código leva < 15 s. — *implementado; falta testar câmera/NFC em aparelho real com placa física.*
+- [ ] Feed rola com *snap*, vídeo toca mudo automaticamente, próximos 2 pré-carregados. — *implementado; seed sem vídeo, falta validar com mídia real.*
+- [x] Item marcado "esgotado" some do pedido em < 3 s para quem está com o feed aberto. — *E2E: 91–298 ms.*
+- [ ] Pedido aparece no painel em < 2 s com som; repete o som até ser aceito. — *E2E: pedido chega em 185–279 ms; o som (repetição a cada 15 s) não tem teste automatizado.*
+- [x] Dois celulares na mesma mesa veem os pedidos um do outro em "Meus pedidos da mesa". — *teste da API.*
+- [x] Chamar garçom tem bloqueio de 60 s; pedidos limitados a 10/hora por sessão. — *testes da API + E2E.*
+- [x] Usuário `WAITER` não acessa cardápio nem configurações; nenhum endpoint vaza dados de outro restaurante (teste automatizado). — *testes da API (todos os módulos) + E2E.*
+- [ ] Upload de vídeo de 50 MB vira mp4 720p < 6 MB com pôster, status "Pronto". — *conversão testada com vídeo curto (FFmpeg real); falta medir o caso de 50 MB.*
+- [ ] `docker compose up -d` sobe tudo do zero numa VPS limpa com o `.env.example` preenchido. — *verificado localmente (stack de produção sem SSL); falta VPS real com DNS e certbot.*
+- [x] Backup diário gerado e restauração testada. — *backup, restauração em banco vazio e retenção de 14 dias verificados localmente; envio remoto não testado.*
 
 ## 12. Plano de entrega (6–8 semanas)
 

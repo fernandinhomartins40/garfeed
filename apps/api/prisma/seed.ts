@@ -9,7 +9,15 @@ if (password.length < 8) throw new Error('Defina SEED_PASSWORD (mín. 8 caracter
 async function main() {
   const passwordHash = await argon2.hash(password);
 
-  const r = await prisma.restaurant.upsert({
+  // Produção: SEED_ONLY_ADMIN=1 cria só o superadmin, sem restaurante nem usuários demo.
+  if (process.env.SEED_ONLY_ADMIN) {
+    const admin = { email: 'admin@garfeed.com.br', name: 'Admin Garfeed', role: 'SUPERADMIN' as const };
+    await prisma.user.upsert({ where: { email: admin.email }, update: { passwordHash }, create: { ...admin, passwordHash } });
+    console.log('Superadmin criado: admin@garfeed.com.br');
+    return;
+  }
+
+  const r =await prisma.restaurant.upsert({
     where: { slug: 'brasa-e-pao' },
     update: {},
     create: {

@@ -101,8 +101,9 @@ ao subir), worker (FFmpeg), postgres 16, redis 7 (AOF), minio (+ bucket) e backu
    ```
    A renovação é automática (serviço `certbot` + reload do nginx a cada 6 h).
 5. **Subir**: `$C up -d --build` → `$C ps` (tudo `healthy`) → `curl https://api.garfeed.com.br/health`.
-6. **Primeiro acesso**: o seed cria o superadmin `admin@garfeed.com.br` (e o restaurante demo) — em produção exige
-   `SEED_PASSWORD` forte: `$C exec -e SEED_PASSWORD='<senha forte>' api node dist/seed.js`. Troque/desative o que não usar no painel.
+6. **Primeiro acesso**: crie só o superadmin `admin@garfeed.com.br` (sem restaurante nem usuários demo), com senha forte:
+   `$C exec -e SEED_ONLY_ADMIN=1 -e SEED_PASSWORD='<senha forte>' api node dist/seed.js`.
+   Sem `SEED_ONLY_ADMIN`, o seed cria também o restaurante demo "Brasa & Pão" e seus usuários com a mesma senha — não use em produção.
 7. **Atualizar**: `git pull && $C up -d --build` (as migrações rodam na subida da API).
 8. **App Android (TWA)**: com o painel no ar em HTTPS, siga [`infra/twa/README.md`](infra/twa/README.md) (Bubblewrap, SHA-256 no
    `assetlinks.json`, Play Store).
