@@ -82,11 +82,13 @@ jobs:
     defaults:
       run:
         working-directory: apps/mobile
-    env:
-      KEYCHAIN: ${{ runner.temp }}/garfeed-build.keychain-db
-      ARCHIVE: ${{ runner.temp }}/Garfeed.xcarchive
     steps:
       - uses: actions/checkout@v4
+      # o contexto `runner` não existe em env de job: os caminhos temporários entram por GITHUB_ENV
+      - name: Caminhos temporários
+        run: |
+          echo "KEYCHAIN=$RUNNER_TEMP/garfeed-build.keychain-db" >> "$GITHUB_ENV"
+          echo "ARCHIVE=$RUNNER_TEMP/Garfeed.xcarchive" >> "$GITHUB_ENV"
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
