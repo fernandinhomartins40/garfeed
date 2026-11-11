@@ -1,0 +1,102 @@
+name: Build e deploy (GHCR -> VPS)
+
+# As imagens são construídas nas máquinas do GitHub e publicadas no GHCR; a VPS (compartilhada com outros
+# projetos) só baixa e sobe. O deploy entra por SSH com uma chave que só consegue rodar
+# /usr/local/bin/garfeed-deploy (infra/vps/garfeed-deploy). Segredos: VPS_HOST, VPS_SSH_KEY, VPS_KNOWN_HOSTS.
+
+"on":
+  push:
+    branches: [main]
+    # documentação não reconstrói nem reimplanta a produção
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+# Um deploy por vez; se chegou commit novo, o que importa é o último.
+concurrency:
+  group: deploy-vps
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  OWNER: fernandinhomartins40
+
+jobs:
+  # Sem banco: tipos, lint e unitários do pacote compartilhado. Falhou -> não implanta.
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm --filter @garfeed/shared test
+
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: garfeed-api, context: ., dockerfile: infra/Dockerfile, target: api }
+          - { name: garfeed-worker, context: ., dockerfile: infra/Dockerfile, target: worker }
+          - { name: garfeed-web, context: ., dockerfile: infra/Dockerfile, target: web }
+          - { name: garfeed-backup, context: infra/backup, dockerfile: infra/backup/Dockerfile, target: "" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build e push ${{ matrix.name }}
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          target: ${{ matrix.target }}
+          push: true
+          # `latest` e o SHA do commit (rollback: RELEASE=<sha> no .env da VPS)
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.OWNER }}/${{ matrix.name }}:latest
+            ${{ env.REGISTRY }}/${{ env.OWNER }}/${{ matrix.name }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.OWNER }}/${{ matrix.name }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.OWNER }}/${{ matrix.name }}:buildcache,mode=max
+          provenance: false
+          sbom: false
+          # VITE_* entram no bundle do navegador em tempo de build (só a imagem web usa)
+          build-args: |
+            VITE_API_URL=https://api.garfeed.com.br
+            VITE_TAG_BASE_URL=https://g.garfeed.com.br
+
+  deploy:
+    # Só implanta se TODAS as imagens foram publicadas e os testes passaram.
+    needs: [build, tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy na VPS (pull only, sem build)
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/deploy && chmod 600 ~/.ssh/deploy
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          # A chave só roda /usr/local/bin/garfeed-deploy, que lê: SHA, usuário e token do GHCR
+          printf '%s\n%s\n%s\n' "$GITHUB_SHA" "$GITHUB_ACTOR" "$GHCR_TOKEN" \
+            | ssh -i ~/.ssh/deploy -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o ServerAliveInterval=30 "root@${VPS_HOST}"
+          rm -f ~/.ssh/deploy

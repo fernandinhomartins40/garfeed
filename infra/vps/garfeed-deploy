@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# Deploy do Garfeed na VPS. Instalado em /usr/local/bin/garfeed-deploy e amarrado à chave SSH
+# "github-actions deploy garfeed" como comando forçado (authorized_keys): essa chave só consegue rodar isto.
+# Entrada (stdin, 3 linhas): SHA do commit, usuário do GHCR, token do GHCR. A VPS não compila: só baixa as imagens.
+# Ao mudar este arquivo, reinstale: scp infra/vps/garfeed-deploy garfeed-vps:/usr/local/bin/garfeed-deploy
+set -euo pipefail
+APP=/opt/garfeed
+OWNER=fernandinhomartins40
+
+read -r RELEASE; read -r GHCR_USER; read -r GHCR_TOKEN
+[[ $RELEASE =~ ^[0-9a-f]{40}$ ]] || { echo "ERRO: RELEASE inválida"; exit 1; }
+[[ $GHCR_USER =~ ^[A-Za-z0-9-]+$ ]] || { echo "ERRO: usuário inválido"; exit 1; }
+
+exec 9>/var/lock/garfeed-deploy.lock
+flock -n 9 || { echo "ERRO: já existe um deploy em andamento"; exit 1; }
+
+cd "$APP"
+echo "=== Sincronizando código (compose e nginx) ==="
+git fetch --prune --force "https://x-access-token:${GHCR_TOKEN}@github.com/${OWNER}/garfeed.git" "+refs/heads/main:refs/remotes/origin/main"
+git reset --hard "$RELEASE"
+
+RELEASE_ANTERIOR=$(grep -E '^RELEASE=' .env | tail -1 | cut -d= -f2- || true)
+sed -i '/^RELEASE=/d' .env
+echo "RELEASE=${RELEASE}" >> .env
+PORT=$(grep -E '^GARFEED_PORT=' .env | tail -1 | cut -d= -f2- || true); PORT=${PORT:-3140}
+DOMAIN=$(grep -E '^DOMAIN=' .env | tail -1 | cut -d= -f2- || true); DOMAIN=${DOMAIN:-garfeed.com.br}
+
+# Login isolado: não mexe no ~/.docker/config.json que os outros projetos da VPS usam
+DOCKER_CONFIG=$(mktemp -d); export DOCKER_CONFIG
+trap 'rm -rf "$DOCKER_CONFIG"' EXIT
+mkdir -p "$DOCKER_CONFIG/cli-plugins"
+for d in /usr/libexec/docker/cli-plugins /usr/local/lib/docker/cli-plugins /usr/lib/docker/cli-plugins /root/.docker/cli-plugins; do
+  if [ -d "$d" ]; then ln -sf "$d"/* "$DOCKER_CONFIG/cli-plugins/" 2>/dev/null || true; fi
+done
+echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin >/dev/null
+C="docker compose --env-file .env -f infra/docker-compose.yml -f infra/docker-compose.vps.yml"
+
+echo "=== Baixando imagens (a VPS não compila) ==="
+ok=0
+for t in 1 2 3 4 5; do
+  if $C pull nginx api worker backup postgres redis minio; then ok=1; break; fi
+  echo "Download falhou (tentativa $t de 5); nova tentativa em 20 s"; sleep 20
+done
+[ "$ok" = 1 ] || { echo "ERRO: não foi possível baixar as imagens"; exit 1; }
+
+echo "=== Subindo (a API aplica as migrações ao iniciar) ==="
+$C up -d --no-build --remove-orphans
+
+echo "=== Healthcheck ==="
+ok=0
+for t in $(seq 1 30); do
+  if curl -fsS -H "Host: api.${DOMAIN}" "http://127.0.0.1:${PORT}/health" >/dev/null 2>&1; then ok=1; break; fi
+  sleep 5
+done
+[ "$ok" = 1 ] || { echo "ERRO: a API não respondeu em 150 s"; $C ps; $C logs --tail=40 api; exit 1; }
+echo "OK: API respondendo"
+
+# Mantém a release atual e a anterior (rollback: trocar RELEASE no .env e subir); só imagens do Garfeed
+echo "=== Limpando versões antigas das imagens do Garfeed ==="
+docker images --format '{{.Repository}}:{{.Tag}}' | grep "^ghcr.io/${OWNER}/garfeed-" \
+  | grep -v -e ":latest$" -e ":${RELEASE}$" ${RELEASE_ANTERIOR:+-e ":${RELEASE_ANTERIOR}$"} \
+  | xargs -r docker rmi 2>/dev/null || true
+echo "=== Deploy concluído (RELEASE=${RELEASE}) ==="

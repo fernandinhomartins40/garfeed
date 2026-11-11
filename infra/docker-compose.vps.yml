@@ -1,0 +1,18 @@
+# VPS compartilhada (72.60.10.108): o nginx do HOST já ocupa 80/443 e termina o SSL (infra/vps/nginx-host.conf).
+# Este override troca o build local por imagens prontas do GHCR, publica o nginx do Garfeed só em
+# 127.0.0.1:GARFEED_PORT e desliga o certbot. Quem roda é /usr/local/bin/garfeed-deploy (infra/vps/garfeed-deploy):
+#   docker compose --env-file .env -f infra/docker-compose.yml -f infra/docker-compose.vps.yml up -d --no-build
+services:
+  nginx:
+    image: ghcr.io/fernandinhomartins40/garfeed-web:${RELEASE:-latest}
+    ports: !override ["127.0.0.1:${GARFEED_PORT:-3140}:80"]
+    volumes:
+      - ./nginx/conf.d-vps:/etc/nginx/templates:ro
+  certbot:
+    profiles: [ssl] # o certificado é do certbot do host
+  api:
+    image: ghcr.io/fernandinhomartins40/garfeed-api:${RELEASE:-latest}
+  worker:
+    image: ghcr.io/fernandinhomartins40/garfeed-worker:${RELEASE:-latest}
+  backup:
+    image: ghcr.io/fernandinhomartins40/garfeed-backup:${RELEASE:-latest}

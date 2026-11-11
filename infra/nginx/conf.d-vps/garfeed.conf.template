@@ -1,0 +1,16 @@
+# VPS compartilhada (infra/docker-compose.vps.yml): o nginx do HOST termina o SSL e repassa tudo para este
+# container em 127.0.0.1:GARFEED_PORT. Aqui é só HTTP, roteando pelo Host.
+include /etc/nginx/snippets/http.conf;
+
+# O IP real do cliente vem do nginx do host em X-Real-IP (a porta só escuta em 127.0.0.1, então só o host chega aqui)
+set_real_ip_from 10.0.0.0/8;
+set_real_ip_from 172.16.0.0/12;
+set_real_ip_from 192.168.0.0/16;
+real_ip_header X-Real-IP;
+
+server { listen 80; server_name www.${DOMAIN};    return 301 https://${DOMAIN}$request_uri; }
+server { listen 80; server_name ${DOMAIN};        include /etc/nginx/snippets/landing.conf; }
+server { listen 80; server_name g.${DOMAIN};      include /etc/nginx/snippets/cardapio.conf; }
+server { listen 80; server_name painel.${DOMAIN}; include /etc/nginx/snippets/painel.conf; }
+server { listen 80; server_name api.${DOMAIN};    include /etc/nginx/snippets/api.conf; }
+server { listen 80; server_name midia.${DOMAIN};  include /etc/nginx/snippets/midia.conf; }
