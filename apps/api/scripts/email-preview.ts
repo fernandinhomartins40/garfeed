@@ -11,6 +11,7 @@ const previews = {
   'recuperacao-de-senha': e.passwordResetEmail({ name: 'Carlos Souza', url: `${painel}/redefinir-senha?token=${token}` }),
   'convite-de-equipe': e.inviteEmail({ name: 'Ana Oliveira', restaurantName: 'Brasa & Pão', inviterName: 'Carlos Souza', role: 'WAITER', url: `${painel}/aceitar-convite?token=${token}` }),
   'boas-vindas-dono': e.ownerWelcomeEmail({ name: 'Carlos Souza', restaurantName: 'Brasa & Pão', url: `${painel}/aceitar-convite?token=${token}`, setPassword: true }),
+  'boas-vindas-cadastro': e.signupWelcomeEmail({ name: 'Carlos Souza', restaurantName: 'Brasa & Pão', url: loginUrl, trialDays: 30 }),
   'senha-alterada': e.passwordChangedEmail({ name: 'Carlos Souza' }),
   'conta-desativada': e.accountStatusEmail({ name: 'Ana Oliveira', restaurantName: 'Brasa & Pão', active: false, loginUrl }),
   'conta-reativada': e.accountStatusEmail({ name: 'Ana Oliveira', restaurantName: 'Brasa & Pão', active: true, loginUrl }),

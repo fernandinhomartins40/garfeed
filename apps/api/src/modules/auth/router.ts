@@ -1,12 +1,12 @@
 import { Router, type Response } from 'express';
 import argon2 from 'argon2';
-import type { Prisma } from '@prisma/client';
-import { ForgotPasswordBody, LoginBody, PasswordTokenBody, ResetPasswordBody, type AuthResponse, type PasswordTokenInfo } from '@garfeed/shared';
+import { Prisma } from '@prisma/client';
+import { ForgotPasswordBody, LoginBody, PasswordTokenBody, ResetPasswordBody, SignupBody, TRIAL_DAYS, type AuthResponse, type PasswordTokenInfo } from '@garfeed/shared';
 import { prisma } from '../../lib/prisma';
 import { env } from '../../lib/env';
 import { AppError } from '../../lib/errors';
 import { ACCESS_TTL_SEC, COOKIES, hashToken, newRefreshToken, refreshCookie, revokeAccessTokens, signAccessToken } from '../../lib/auth';
-import { passwordChangedEmail, passwordResetEmail } from '../../lib/emails';
+import { passwordChangedEmail, passwordResetEmail, signupWelcomeEmail } from '../../lib/emails';
 import { sendMail } from '../../lib/mailer';
 import { issuePasswordLink } from '../../lib/passwordTokens';
 import { rateLimit } from '../../lib/rateLimit';
@@ -44,6 +44,43 @@ router.post('/login', validate({ body: LoginBody }), async (req, res) => {
   if (!user || !ok || !user.active) throw invalid();
   await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
   res.json(await issueSession(res, user));
+});
+
+// ---------- Cadastro do restaurante pelo próprio dono (autoatendimento) ----------
+/** "Brasa & Pão" → "brasa-pao". Nome só com símbolos → "restaurante". */
+export const slugify = (name: string) =>
+  name.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 50).replace(/-+$/, '') || 'restaurante';
+
+const emailTaken = () => new AppError('CONFLICT', 'Este e-mail já tem cadastro. Entre com ele ou use "Esqueci minha senha".');
+const isUnique = (err: unknown, field: string) =>
+  err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002' && JSON.stringify(err.meta ?? {}).includes(field);
+
+/** Aqui o 409 revela que o e-mail existe (é cadastro); o limite por IP segura a enumeração em massa. */
+router.post('/signup', rateLimit('signup', 5, 3600), validate({ body: SignupBody }), async (req, res) => {
+  const b = req.body as SignupBody;
+  if (await prisma.user.count({ where: { email: b.email } })) throw emailTaken();
+  const passwordHash = await argon2.hash(b.password);
+  const base = slugify(b.restaurantName);
+  const taken = new Set((await prisma.restaurant.findMany({ where: { slug: { startsWith: base } }, select: { slug: true } })).map((r) => r.slug));
+  let n = 1;
+  const next = () => { while (taken.has(n === 1 ? base : `${base}-${n}`)) n++; return n === 1 ? base : `${base}-${n}`; };
+  for (let tries = 0; ; tries++) {
+    const slug = next();
+    try {
+      // create aninhado = uma transação: restaurante (TRIAL · Essencial · fuso padrão do schema) + dono
+      const r = await prisma.restaurant.create({
+        data: { slug, name: b.restaurantName, status: 'TRIAL', plan: 'ESSENTIAL', users: { create: { name: b.name, email: b.email, role: 'OWNER', passwordHash, lastLoginAt: new Date() } } },
+        include: { users: userWithRestaurant },
+      });
+      sendMail({ to: b.email, ...signupWelcomeEmail({ name: b.name, restaurantName: r.name, url: `${env.PAINEL_URL}/login`, trialDays: TRIAL_DAYS }) });
+      res.status(201).json(await issueSession(res, r.users[0]!));
+      return;
+    } catch (err) {
+      if (isUnique(err, 'email')) throw emailTaken(); // dois cadastros simultâneos com o mesmo e-mail
+      if (!isUnique(err, 'slug') || tries >= 5) throw err;
+      taken.add(slug); // outro cadastro pegou o slug no meio do caminho: tenta o próximo sufixo
+    }
+  }
 });
 
 /** Rotação: o refresh usado é revogado e um novo é emitido. */

@@ -137,6 +137,21 @@ export const ownerWelcomeEmail = (v: { name: string; restaurantName: string; url
     : `Precisa de ajuda para começar? Escreva para ${SUPPORT}.`,
 });
 
+/** Dono que se cadastrou sozinho (POST /auth/signup): já definiu a senha, então o link é o do painel. */
+export const signupWelcomeEmail = (v: { name: string; restaurantName: string; url: string; trialDays: number }) => render({
+  subject: `Bem-vindo ao Garfeed, ${first(v.name)}!`,
+  preheader: `O painel do ${v.restaurantName} está pronto. Você tem ${v.trialDays} dias grátis.`,
+  title: `O ${v.restaurantName} já está no Garfeed`,
+  body: [
+    `Olá, ${first(v.name)}!`,
+    `Sua conta foi criada e o painel do ${v.restaurantName} já está no ar. Você tem ${v.trialDays} dias grátis para testar, sem cartão.`,
+    'Para começar: cadastre o cardápio, crie as mesas e vincule as placas. Depois é só acompanhar os pedidos em tempo real.',
+  ],
+  facts: [['Restaurante', v.restaurantName], ['Teste grátis', `${v.trialDays} dias, sem cartão`]],
+  cta: { label: 'Abrir o painel', url: v.url },
+  note: `Entre com este e-mail e a senha que você criou. Precisa de ajuda para começar? Escreva para ${SUPPORT}.`,
+});
+
 export const passwordChangedEmail = (v: { name: string }) => render({
   subject: 'Sua senha do Garfeed foi alterada',
   preheader: 'Se foi você, não precisa fazer nada.',

@@ -41,6 +41,8 @@ export const api = {
   },
   auth: {
     login: r({ method: 'POST', path: '/auth/login', auth: 'none', body: s.LoginBody, response: s.AuthResponse }),
+    /** Autoatendimento: cria restaurante (TRIAL) + dono e já entra. 409 se o e-mail existir; 5 cadastros por IP por hora. */
+    signup: r({ method: 'POST', path: '/auth/signup', auth: 'none', body: s.SignupBody, response: s.AuthResponse }),
     /** Usa o cookie httpOnly de refresh (rotacionado a cada chamada). */
     refresh: r({ method: 'POST', path: '/auth/refresh', auth: 'none', response: s.AuthResponse }),
     logout: r({ method: 'POST', path: '/auth/logout', auth: 'none', response: null }),
@@ -135,6 +137,10 @@ export const api = {
   billing: {
     /** Card "Plano atual" do dono: restaurantId sempre do token. */
     mine: r({ method: 'GET', path: '/settings/billing', auth: 'jwt', roles: ROLES.OWNER, response: s.OwnerBilling }),
+    /** O próprio dono: informa CPF/CNPJ + contato e assina Essencial ou Pro pelo preço da tabela. */
+    subscribe: r({ method: 'POST', path: '/settings/billing/subscription', auth: 'jwt', roles: ROLES.OWNER, body: s.OwnerSubscribeBody, response: s.OwnerBilling }),
+    changeMine: r({ method: 'PATCH', path: '/settings/billing/subscription', auth: 'jwt', roles: ROLES.OWNER, body: s.OwnerPlanBody, response: s.OwnerBilling }),
+    cancelMine: r({ method: 'DELETE', path: '/settings/billing/subscription', auth: 'jwt', roles: ROLES.OWNER, response: s.OwnerBilling }),
     adminList: r({ method: 'GET', path: '/admin/billing', auth: 'jwt', roles: ROLES.ADMIN, response: s.AdminBillingList }),
     adminGet: r({ method: 'GET', path: '/admin/billing/:id', auth: 'jwt', roles: ROLES.ADMIN, params: s.IdParams, response: s.AdminBillingDetail }),
     /** CPF/CNPJ e contato de cobrança (também atualiza o cliente no Asaas, se já existir). */

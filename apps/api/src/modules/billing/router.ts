@@ -3,9 +3,9 @@ import { createHash, timingSafeEqual } from 'node:crypto';
 import { Router, type RequestHandler } from 'express';
 import type { Billing, BillingPayment as PaymentRow, Restaurant } from '@prisma/client';
 import {
-  ActivateSubscriptionBody, AsaasWebhookBody, BILLING_CYCLE_LABEL, BillingCustomerBody, BillingSubscriptionBody, IdParams, PLAN_LABEL,
-  planValueCents, TRIAL_DAYS,
-  type AdminBilling, type AdminBillingDetail, type AdminBillingList, type AsaasWebhookResponse, type BillingPayment, type OwnerBilling,
+  ActivateSubscriptionBody, AsaasWebhookBody, BILLING_CYCLE_LABEL, BillingCustomerBody, BillingSubscriptionBody, IdParams, OwnerPlanBody,
+  OwnerSubscribeBody, PLAN_LABEL, planValueCents, TRIAL_DAYS,
+  type AdminBilling, type AdminBillingDetail, type AdminBillingList, type AsaasWebhookResponse, type BillingCycle, type BillingPayment, type OwnerBilling, type Plan,
 } from '@garfeed/shared';
 import { prisma } from '../../lib/prisma';
 import { env } from '../../lib/env';
@@ -32,10 +32,11 @@ const nextDue = (b: Billing | null, rows: PaymentRow[]) => {
   return d ? day(d) : null;
 };
 
+const trialEnd = (r: { createdAt: Date }) => new Date(r.createdAt.getTime() + TRIAL_DAYS * 86_400_000);
 type Row = Restaurant & { billing: Billing | null; invoices: PaymentRow[] };
 const toAdmin = (r: Row): AdminBilling => ({
   restaurantId: r.id, name: r.name, slug: r.slug, plan: r.plan, status: r.status, createdAt: r.createdAt.toISOString(),
-  trialExpired: r.status === 'TRIAL' && Date.now() - r.createdAt.getTime() > TRIAL_DAYS * 86_400_000,
+  trialExpired: r.status === 'TRIAL' && trialEnd(r).getTime() < Date.now(),
   billing: r.billing && {
     cpfCnpj: r.billing.cpfCnpj, email: r.billing.email, phone: r.billing.phone, subscribed: !!r.billing.asaasSubscriptionId,
     cycle: r.billing.cycle, valueCents: r.billing.valueCents, nextDueDate: nextDue(r.billing, r.invoices), status: r.billing.status,
@@ -54,7 +55,8 @@ const valueOf = (b: BillingSubscriptionBody) => {
   if (v == null) throw new AppError('VALIDATION', 'Informe o valor da cobrança (plano Rede é sob consulta)');
   return v;
 };
-const describe = (b: BillingSubscriptionBody) => `Garfeed — plano ${PLAN_LABEL[b.plan]} (${BILLING_CYCLE_LABEL[b.cycle].toLowerCase()})`;
+type PlanChoice = { plan: Plan; cycle: BillingCycle; valueCents: number };
+const describe = (b: PlanChoice) => `Garfeed — plano ${PLAN_LABEL[b.plan]} (${BILLING_CYCLE_LABEL[b.cycle].toLowerCase()})`;
 
 /** Uma operação de cobrança por restaurante de cada vez: clique duplo não cria duas assinaturas no Asaas. */
 async function locked<T>(restaurantId: string, fn: () => Promise<T>): Promise<T> {
@@ -67,6 +69,64 @@ const withBilling = async (id: string) => {
   if (!r) throw notFound('Restaurante');
   return r;
 };
+
+// ---------- Operações compartilhadas por admin e dono. Chamar SEMPRE dentro de locked(). ----------
+async function saveCustomer(id: string, b: BillingCustomerBody) {
+  const data = { cpfCnpj: b.cpfCnpj, email: b.email ?? null, phone: b.phone ?? null };
+  const r = await withBilling(id);
+  if (r.billing?.asaasCustomerId) await asaas.updateCustomer(r.billing.asaasCustomerId, { name: r.name, ...data });
+  await prisma.billing.upsert({ where: { restaurantId: id }, create: { restaurantId: id, ...data }, update: data });
+}
+
+async function activate(id: string, b: PlanChoice & { nextDueDate: string }) {
+  const r = await withBilling(id);
+  if (!r.billing) throw new AppError('VALIDATION', 'Informe o CPF/CNPJ de cobrança antes de ativar a assinatura');
+  if (r.billing.asaasSubscriptionId) throw new AppError('CONFLICT', 'Este restaurante já tem assinatura. Troque o plano ou cancele antes.');
+  let customer = r.billing.asaasCustomerId;
+  if (!customer) {
+    customer = (await asaas.createCustomer({ name: r.name, cpfCnpj: r.billing.cpfCnpj, email: r.billing.email, phone: r.billing.phone, externalReference: id })).id;
+    // gravado antes da assinatura: se ela falhar, a nova tentativa não duplica o cliente no Asaas
+    await prisma.billing.update({ where: { restaurantId: id }, data: { asaasCustomerId: customer } });
+  }
+  const sub = await asaas.createSubscription({ customer, valueCents: b.valueCents, cycle: b.cycle, nextDueDate: b.nextDueDate, description: describe(b), externalReference: id });
+  await prisma.$transaction([
+    prisma.billing.update({ where: { restaurantId: id }, data: { asaasSubscriptionId: sub.id, cycle: b.cycle, valueCents: b.valueCents, nextDueDate: date(b.nextDueDate), status: 'PENDING' } }),
+    prisma.restaurant.update({ where: { id }, data: { plan: b.plan } }),
+  ]);
+  // Melhor esforço: espelha já a 1ª cobrança para a fatura abrir na hora, sem esperar o webhook PAYMENT_CREATED
+  // (que faz o mesmo upsert pelo id da cobrança). Falha aqui não desfaz a assinatura.
+  try {
+    for (const p of (await asaas.subscriptionPayments(sub.id)).data) {
+      const data = { valueCents: toCents(p.value), dueDate: date(p.dueDate), invoiceUrl: p.invoiceUrl ?? null, status: p.status };
+      await prisma.billingPayment.upsert({ where: { asaasId: p.id }, create: { restaurantId: id, asaasId: p.id, ...data }, update: data });
+    }
+  } catch (err) {
+    logger.warn({ err, restaurantId: id }, 'cobrança: 1ª fatura ainda não espelhada (chega pelo webhook)');
+  }
+}
+
+async function change(id: string, b: PlanChoice) {
+  const subId = (await withBilling(id)).billing?.asaasSubscriptionId;
+  if (!subId) throw new AppError('CONFLICT', 'Este restaurante não tem assinatura ativa');
+  const sub = await asaas.updateSubscription(subId, { valueCents: b.valueCents, cycle: b.cycle, description: describe(b) });
+  if (toCents(sub.value) !== b.valueCents) throw new AppError('BILLING_PROVIDER', 'O Asaas não aplicou o novo valor. Confira a assinatura no painel do Asaas.');
+  await prisma.$transaction([
+    prisma.billing.update({ where: { restaurantId: id }, data: { cycle: b.cycle, valueCents: b.valueCents } }),
+    prisma.restaurant.update({ where: { id }, data: { plan: b.plan } }),
+  ]);
+}
+
+// Cancelar não muda o status do restaurante: quem decide suspender é o admin (PATCH /admin/restaurants/:id).
+async function cancel(id: string) {
+  const subId = (await withBilling(id)).billing?.asaasSubscriptionId;
+  if (!subId) throw new AppError('CONFLICT', 'Este restaurante não tem assinatura ativa');
+  await asaas.deleteSubscription(subId);
+  await prisma.$transaction([
+    prisma.billing.update({ where: { restaurantId: id }, data: { asaasSubscriptionId: null, nextDueDate: null, status: 'CANCELED' } }),
+    // o Asaas remove as cobranças em aberto junto com a assinatura
+    prisma.billingPayment.updateMany({ where: { restaurantId: id, status: { in: OPEN } }, data: { status: 'DELETED' } }),
+  ]);
+}
 
 // ---------- /admin/billing (SUPERADMIN) ----------
 export const adminRouter = Router();
@@ -86,13 +146,7 @@ adminRouter.get('/:id', validate({ params: IdParams }), async (req, res) => {
 
 adminRouter.put('/:id/customer', validate({ params: IdParams, body: BillingCustomerBody }), async (req, res) => {
   const { id } = req.params as IdParams;
-  const b = req.body as BillingCustomerBody;
-  const data = { cpfCnpj: b.cpfCnpj, email: b.email ?? null, phone: b.phone ?? null };
-  await locked(id, async () => {
-    const r = await withBilling(id);
-    if (r.billing?.asaasCustomerId) await asaas.updateCustomer(r.billing.asaasCustomerId, { name: r.name, ...data });
-    await prisma.billing.upsert({ where: { restaurantId: id }, create: { restaurantId: id, ...data }, update: data });
-  });
+  await locked(id, () => saveCustomer(id, req.body as BillingCustomerBody));
   res.json(await detail(id));
 });
 
@@ -102,22 +156,7 @@ adminRouter.post('/:id/subscription', validate({ params: IdParams, body: Activat
   const valueCents = valueOf(b);
   const nextDueDate = b.nextDueDate ?? day(billingDay(new Date(), 3));
   if (nextDueDate < day(billingDay())) throw new AppError('VALIDATION', 'O primeiro vencimento não pode estar no passado');
-  await locked(id, async () => {
-    const r = await withBilling(id);
-    if (!r.billing) throw new AppError('VALIDATION', 'Informe o CPF/CNPJ de cobrança antes de ativar a assinatura');
-    if (r.billing.asaasSubscriptionId) throw new AppError('CONFLICT', 'Este restaurante já tem assinatura. Troque o plano ou cancele antes.');
-    let customer = r.billing.asaasCustomerId;
-    if (!customer) {
-      customer = (await asaas.createCustomer({ name: r.name, cpfCnpj: r.billing.cpfCnpj, email: r.billing.email, phone: r.billing.phone, externalReference: id })).id;
-      // gravado antes da assinatura: se ela falhar, a nova tentativa não duplica o cliente no Asaas
-      await prisma.billing.update({ where: { restaurantId: id }, data: { asaasCustomerId: customer } });
-    }
-    const sub = await asaas.createSubscription({ customer, valueCents, cycle: b.cycle, nextDueDate, description: describe(b), externalReference: id });
-    await prisma.$transaction([
-      prisma.billing.update({ where: { restaurantId: id }, data: { asaasSubscriptionId: sub.id, cycle: b.cycle, valueCents, nextDueDate: date(nextDueDate), status: 'PENDING' } }),
-      prisma.restaurant.update({ where: { id }, data: { plan: b.plan } }),
-    ]);
-  });
+  await locked(id, () => activate(id, { plan: b.plan, cycle: b.cycle, valueCents, nextDueDate }));
   res.status(201).json(await detail(id));
 });
 
@@ -125,51 +164,73 @@ adminRouter.patch('/:id/subscription', validate({ params: IdParams, body: Billin
   const { id } = req.params as IdParams;
   const b = req.body as BillingSubscriptionBody;
   const valueCents = valueOf(b);
-  await locked(id, async () => {
-    const subId = (await withBilling(id)).billing?.asaasSubscriptionId;
-    if (!subId) throw new AppError('CONFLICT', 'Este restaurante não tem assinatura ativa');
-    const sub = await asaas.updateSubscription(subId, { valueCents, cycle: b.cycle, description: describe(b) });
-    if (toCents(sub.value) !== valueCents) throw new AppError('BILLING_PROVIDER', 'O Asaas não aplicou o novo valor. Confira a assinatura no painel do Asaas.');
-    await prisma.$transaction([
-      prisma.billing.update({ where: { restaurantId: id }, data: { cycle: b.cycle, valueCents } }),
-      prisma.restaurant.update({ where: { id }, data: { plan: b.plan } }),
-    ]);
-  });
+  await locked(id, () => change(id, { plan: b.plan, cycle: b.cycle, valueCents }));
   res.json(await detail(id));
 });
 
-// Cancelar não muda o status do restaurante: quem decide suspender é o admin (PATCH /admin/restaurants/:id).
 adminRouter.delete('/:id/subscription', validate({ params: IdParams }), async (req, res) => {
   const { id } = req.params as IdParams;
-  await locked(id, async () => {
-    const subId = (await withBilling(id)).billing?.asaasSubscriptionId;
-    if (!subId) throw new AppError('CONFLICT', 'Este restaurante não tem assinatura ativa');
-    await asaas.deleteSubscription(subId);
-    await prisma.$transaction([
-      prisma.billing.update({ where: { restaurantId: id }, data: { asaasSubscriptionId: null, nextDueDate: null, status: 'CANCELED' } }),
-      // o Asaas remove as cobranças em aberto junto com a assinatura
-      prisma.billingPayment.updateMany({ where: { restaurantId: id, status: { in: OPEN } }, data: { status: 'DELETED' } }),
-    ]);
-  });
+  await locked(id, () => cancel(id));
   res.json(await detail(id));
 });
 
 // ---------- /settings/billing (OWNER; restaurantId sempre do token) ----------
 export const ownerRouter = Router();
 
-ownerRouter.get('/', async (req, res) => {
+async function mine(rid: string): Promise<OwnerBilling> {
   const r = await prisma.restaurant.findUniqueOrThrow({
-    where: { id: tenantId(req) },
+    where: { id: rid },
     include: { billing: true, invoices: { ...HISTORY, where: { status: { not: 'DELETED' } } } },
   });
   const subscribed = !!r.billing?.asaasSubscriptionId;
-  const body: OwnerBilling = {
+  return {
     plan: r.plan, status: r.status, billingStatus: r.billing?.status ?? 'NONE',
     cycle: subscribed ? r.billing!.cycle : null, valueCents: subscribed ? r.billing!.valueCents : null,
     nextDueDate: nextDue(r.billing, r.invoices), openInvoiceUrl: firstOpen(r.invoices)?.invoiceUrl ?? null,
     payments: r.invoices.map(toPayment),
+    trialEndsAt: r.status === 'TRIAL' ? trialEnd(r).toISOString() : null,
+    subscribed,
+    customer: r.billing && { cpfCnpj: r.billing.cpfCnpj, email: r.billing.email, phone: r.billing.phone },
   };
-  res.json(body);
+}
+/** O dono só assina pelo preço da tabela: o valor nunca vem do corpo (OwnerPlanBody nem tem o campo). */
+const tableChoice = (b: OwnerPlanBody): PlanChoice => {
+  const valueCents = planValueCents(b.plan, b.cycle);
+  if (valueCents == null) throw new AppError('VALIDATION', 'Este plano é sob consulta: fale com a gente');
+  return { plan: b.plan, cycle: b.cycle, valueCents };
+};
+
+ownerRouter.get('/', async (req, res) => {
+  res.json(await mine(tenantId(req)));
+});
+
+ownerRouter.post('/subscription', validate({ body: OwnerSubscribeBody }), async (req, res) => {
+  const rid = tenantId(req);
+  const { plan, cycle, ...customer } = req.body as OwnerSubscribeBody;
+  const choice = tableChoice({ plan, cycle });
+  await locked(rid, async () => {
+    const r = await withBilling(rid);
+    if (r.billing?.asaasSubscriptionId) throw new AppError('CONFLICT', 'Você já tem uma assinatura. Troque de plano ou cancele antes.');
+    await saveCustomer(rid, customer);
+    // Teste grátis respeitado: quem assina durante o TRIAL só paga no fim dos 30 dias (nunca antes de hoje + 3).
+    const soonest = billingDay(new Date(), 3);
+    const afterTrial = r.status === 'TRIAL' ? billingDay(trialEnd(r)) : soonest;
+    await activate(rid, { ...choice, nextDueDate: day(afterTrial > soonest ? afterTrial : soonest) });
+  });
+  res.status(201).json(await mine(rid));
+});
+
+ownerRouter.patch('/subscription', validate({ body: OwnerPlanBody }), async (req, res) => {
+  const rid = tenantId(req);
+  const choice = tableChoice(req.body as OwnerPlanBody);
+  await locked(rid, () => change(rid, choice));
+  res.json(await mine(rid));
+});
+
+ownerRouter.delete('/subscription', async (req, res) => {
+  const rid = tenantId(req);
+  await locked(rid, () => cancel(rid));
+  res.json(await mine(rid));
 });
 
 // ---------- POST /webhooks/asaas (público; autenticado pelo token do Asaas) ----------

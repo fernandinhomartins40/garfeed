@@ -9,7 +9,7 @@ const baseUrl = env.ASAAS_API_URL ?? (isProd ? 'https://api.asaas.com/v3' : 'htt
 
 type AsaasErrors = { errors?: { code?: string; description?: string }[] };
 
-async function request<T>(method: 'POST' | 'PUT' | 'DELETE', path: string, body?: object): Promise<T> {
+async function request<T>(method: 'GET' | 'POST' | 'PUT' | 'DELETE', path: string, body?: object): Promise<T> {
   if (!env.ASAAS_API_KEY) throw new AppError('BILLING_DISABLED', 'Cobrança desligada: configure ASAAS_API_KEY no servidor.');
   let res: Response;
   try {
@@ -55,6 +55,9 @@ export const asaas = {
       customer: s.customer, billingType: 'UNDEFINED', value: s.valueCents / 100, nextDueDate: s.nextDueDate,
       cycle: s.cycle, description: s.description, externalReference: s.externalReference,
     }),
+  /** Cobranças já geradas da assinatura. Formato não conferido contra o Asaas real: usado só em melhor esforço. */
+  subscriptionPayments: (id: string) =>
+    request<{ data: { id: string; value: number; dueDate: string; status: string; invoiceUrl?: string | null }[] }>('GET', `/subscriptions/${id}/payments`),
   /** Vale para as próximas cobranças e para as pendentes já geradas (updatePendingPayments). */
   updateSubscription: (id: string, s: SubscriptionInput) =>
     request<Subscription>('PUT', `/subscriptions/${id}`, { value: s.valueCents / 100, cycle: s.cycle, description: s.description, updatePendingPayments: true }),

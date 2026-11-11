@@ -269,6 +269,15 @@ export const AuthResponse = z.object({
 export type AuthResponse = z.infer<typeof AuthResponse>;
 
 const NewPassword = z.string().min(8, 'Mínimo de 8 caracteres').max(200);
+/** POST /auth/signup — o restaurante se cadastra sozinho: nasce em TRIAL (30 dias grátis) e já devolve a sessão (AuthResponse). */
+export const SignupBody = z.object({
+  restaurantName: z.string().trim().min(2, 'Informe o nome do restaurante').max(80),
+  name: z.string().trim().min(2, 'Informe o seu nome').max(80),
+  email: LoginBody.shape.email.max(254),
+  password: NewPassword,
+  acceptTerms: z.literal(true, 'Aceite os Termos de Uso e a Política de Privacidade para continuar'),
+});
+export type SignupBody = z.infer<typeof SignupBody>;
 /** POST /auth/forgot-password — a resposta é sempre 204, exista o e-mail ou não. */
 export const ForgotPasswordBody = LoginBody.pick({ email: true });
 export type ForgotPasswordBody = z.infer<typeof ForgotPasswordBody>;
@@ -602,6 +611,13 @@ export type BillingSubscriptionBody = z.infer<typeof BillingSubscriptionBody>;
 export const ActivateSubscriptionBody = BillingSubscriptionBody.extend({ nextDueDate: DateOnly.optional() });
 export type ActivateSubscriptionBody = z.infer<typeof ActivateSubscriptionBody>;
 
+/** Planos que o próprio dono assina/troca (valor sempre da tabela; Rede é sob consulta → só o admin). */
+export const OwnerPlanBody = z.object({ plan: Plan.exclude(['NETWORK'], 'O plano Rede é sob consulta: fale com a gente'), cycle: BillingCycle });
+export type OwnerPlanBody = z.infer<typeof OwnerPlanBody>;
+/** POST /settings/billing/subscription — dados de cobrança + plano. Qualquer outro campo (ex.: valor) é descartado. */
+export const OwnerSubscribeBody = BillingCustomerBody.extend(OwnerPlanBody.shape);
+export type OwnerSubscribeBody = z.infer<typeof OwnerSubscribeBody>;
+
 export const BillingInfo = z.object({
   cpfCnpj: z.string(),
   email: z.string().nullable(),
@@ -648,6 +664,12 @@ export const OwnerBilling = z.object({
   /** Fatura em aberto mais antiga (página de pagamento do Asaas: Pix, boleto ou cartão). */
   openInvoiceUrl: z.string().nullable(),
   payments: z.array(BillingPayment),
+  /** Fim do teste grátis (criação + TRIAL_DAYS) enquanto o restaurante está em TRIAL; senão null. */
+  trialEndsAt: IsoDate.nullable(),
+  /** Tem assinatura ativa no Asaas. */
+  subscribed: z.boolean(),
+  /** Dados de cobrança já informados (para preencher o formulário). */
+  customer: BillingCustomerBody.nullable(),
 });
 export type OwnerBilling = z.infer<typeof OwnerBilling>;
 
