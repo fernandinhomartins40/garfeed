@@ -81,6 +81,10 @@ services:
       MAIL_FROM: ${MAIL_FROM:-}
       MAIL_REPLY_TO: ${MAIL_REPLY_TO:-}
       PAINEL_URL: ${PAINEL_URL:-https://painel.garfeed.com.br}
+      ASAAS_API_KEY: ${ASAAS_API_KEY:-}
+      ASAAS_API_URL: ${ASAAS_API_URL:-}
+      ASAAS_WEBHOOK_TOKEN: ${ASAAS_WEBHOOK_TOKEN:-}
+      BILLING_GRACE_DAYS: ${BILLING_GRACE_DAYS:-7}
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
