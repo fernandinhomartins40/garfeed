@@ -81,3 +81,33 @@ Além dos 5 itens do protótipo, o seed cria "Smash Clássico" em **Lanches** pa
 ## 2026-11-11 — Revogação imediata do access token
 - Desativar usuário ou trocar papel/senha grava `auth:revoked:{userId}` no Redis (timestamp, TTL = vida do access token); `requireAuth`
   e o handshake do Socket.io do painel recusam (401) tokens com `iat` anterior. Custa um GET no Redis por requisição; Redis fora → 500 (falha fechada).
+
+## 2026-11-11 — Apps nativos do painel nas duas lojas (substitui "App nativo no MVP" de 10/11 no que conflitar)
+O app das lojas continua sendo só o **painel**; o cliente final segue sem app. Estrutura em `apps/mobile`, compilada pelo
+workflow manual `.github/workflows/apps-nativos.yml` (sem Mac). Guia: `docs/apps-nativos/COMPILAR-SEM-MAC.md`.
+- **Android = TWA (mantido).** Dentro da TWA quem roda é o Chrome: Web Push (VAPID), Web NFC e câmera funcionam sem
+  Firebase e sem código nativo. Um app Capacitor no Android usaria o WebView do sistema, que não tem Web Push nem Web NFC
+  — exigiria FCM (Firebase, proibido) ou um serviço próprio em segundo plano. O projeto Gradle foi gerado uma vez pelo
+  `@bubblewrap/core` e está **versionado** em `apps/mobile/android` (o CLI interativo do Bubblewrap não roda no CI);
+  versão e assinatura entram por variáveis de ambiente. `minSdk` 24 (exigência da androidbrowserhelper 2.7).
+- **iOS = Capacitor 8 com Swift Package Manager** (sem CocoaPods), `server.url` no painel de produção: cookies e CORS
+  continuam first-party e o painel atualiza sem nova versão na loja. `allowNavigation` só `garfeed.com.br` e subdomínios;
+  tela offline local (`www/offline.html`). Não existe TWA no iOS e o WKWebView não tem Web Push nem Web NFC, então:
+  - **Push por APNs direto da API** (`lib/apns.ts`: HTTP/2 + JWT ES256 com a chave `.p8`, usando `node:http2` e o
+    `jsonwebtoken` que já existia — nenhuma dependência nova, nada de Firebase). Tabela `ApnsDevice`, rota
+    `POST /push/apns-device`, envio dentro de `notifyRestaurant` (mesmos gatilhos do Web Push). Sem `APNS_*` = desligado.
+  - **NFC nativo** com `@capgo/capacitor-nfc` (mantido, com suporte a SPM e Capacitor 8; licença MPL-2.0, usada sem
+    modificação). Alternativa avaliada: `@exxili/capacitor-nfc` (0.0.x, pouco mantida).
+  - **Ponte sem dependência no painel:** como a página vem do `server.url`, o Capacitor injeta `window.Capacitor.Plugins`;
+    `apps/painel/src/lib/native.ts` usa isso direto. O bundle do painel não ganhou pacote novo.
+  - **Câmera (QR):** `getUserMedia` funciona no WKWebView (iOS 14.3+) com `NSCameraUsageDescription`; o Capacitor concede
+    o pedido de captura da página, ficando só o diálogo do sistema.
+- **`apps/mobile` fica fora do workspace pnpm** (`!apps/mobile` em `pnpm-workspace.yaml`): usa npm e `package-lock.json`
+  próprios. Motivo: o `Package.swift` gerado pelo Capacitor aponta para `node_modules` por caminho relativo, que no pnpm
+  inclui a versão no caminho; com npm o caminho é estável e o `pnpm-lock.yaml` da raiz não muda.
+- **Assinatura iOS:** a configuração Release do alvo `App` é `Manual` e lê `GF_SIGN_IDENTITY`, `GF_TEAM_ID` e `GF_PROFILE`
+  passados pelo `xcodebuild` no CI. Passar `CODE_SIGN_IDENTITY`/`PROVISIONING_PROFILE_SPECIFIER` direto na linha de comando
+  valeria também para os pacotes SPM, que não aceitam perfil.
+- **Limites conhecidos:** o token APNs continua ligado ao último usuário que abriu o app naquele aparelho mesmo depois do
+  logout (mesmo comportamento do Web Push atual); tocar na notificação abre o app, sem navegar para o pedido; a opção
+  "Aproximar (NFC)" aparece também no iPad, que não tem NFC (mostra erro e oferece digitar o código).
