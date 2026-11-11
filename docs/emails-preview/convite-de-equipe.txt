@@ -1,0 +1,21 @@
+Assunto: Carlos convidou você para o Brasa & Pão no Garfeed
+
+Você foi convidado para a equipe
+
+Olá, Ana!
+
+Carlos Souza adicionou você à equipe do Brasa & Pão no Garfeed. Para começar, é só definir a sua senha.
+
+Restaurante: Brasa & Pão
+Seu papel: Garçom
+Convite válido por: 7 dias
+
+Aceitar convite: https://painel.garfeed.com.br/aceitar-convite?token=EXEMPLO-nao-e-um-token-real
+
+Se o convite expirar, peça a quem convidou para reenviar. Não conhece este restaurante? Pode ignorar este e-mail.
+
+--
+Garfeed — cardápio em feed com pedido pela mesa
+https://garfeed.com.br
+Privacidade: https://garfeed.com.br/privacidade/
+Dúvidas: contato@garfeed.com.br

@@ -10,6 +10,7 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "prisma": "dotenv -e ../../.env -- prisma",
+    "emails:preview": "tsx scripts/email-preview.ts",
     "seed": "dotenv -e ../../.env -- tsx prisma/seed.ts",
     "postinstall": "prisma generate"
   },

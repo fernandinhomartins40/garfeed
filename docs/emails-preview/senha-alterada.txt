@@ -1,0 +1,15 @@
+Assunto: Sua senha do Garfeed foi alterada
+
+Senha alterada
+
+Olá, Carlos!
+
+A senha do seu acesso ao painel do Garfeed acabou de ser alterada. Por segurança, as sessões abertas foram encerradas: entre de novo com a senha nova.
+
+Não foi você? Fale com o dono do restaurante ou escreva para contato@garfeed.com.br.
+
+--
+Garfeed — cardápio em feed com pedido pela mesa
+https://garfeed.com.br
+Privacidade: https://garfeed.com.br/privacidade/
+Dúvidas: contato@garfeed.com.br

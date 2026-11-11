@@ -1,0 +1,16 @@
+Assunto: E-mail de teste do Garfeed
+
+O envio de e-mails está funcionando
+
+Olá, Admin!
+
+Este é um e-mail de teste do Garfeed, enviado pelo Velomail a partir do domínio garfeed.com.br. Nenhuma ação é necessária.
+
+Remetente: nao-responda@garfeed.com.br
+Autenticação: SPF, DKIM e DMARC
+
+--
+Garfeed — cardápio em feed com pedido pela mesa
+https://garfeed.com.br
+Privacidade: https://garfeed.com.br/privacidade/
+Dúvidas: contato@garfeed.com.br
