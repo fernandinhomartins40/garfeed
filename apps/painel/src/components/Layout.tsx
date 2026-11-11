@@ -1,12 +1,14 @@
 import { Suspense, useEffect, useState, type ReactNode } from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import {
-  BarChart3, ChevronDown, Layers, LogOut, Menu, QrCode, Radio, Settings, Store, Armchair, User, Users, UtensilsCrossed, Volume2, VolumeX, WifiOff, type LucideIcon,
+  BarChart3, ChevronDown, Clock, Layers, LogOut, Menu, QrCode, Radio, Settings, Store, Armchair, User, Users, UtensilsCrossed, Volume2, VolumeX, WifiOff, type LucideIcon,
 } from 'lucide-react';
-import { ROLE_LABEL, type Role } from '@garfeed/shared';
+import { api, ROLE_LABEL, type Role } from '@garfeed/shared';
 import logoNeg from '@/assets/logo-horizontal-negativa.svg';
 import { useAuth, useLive, usePrefs } from '@/lib/auth';
-import { logout } from '@/lib/api';
+import { call, logout } from '@/lib/api';
+import { isStoreApp } from '@/lib/storeApp';
 import { can, useRealtime } from '@/lib/live';
 import { audioLocked, subscribePush, unlockAudio } from '@/lib/alerts';
 import { cn } from '@/lib/utils';
@@ -86,10 +88,29 @@ function Shell({ items, footer, banners }: { items: NavItem[]; footer: ReactNode
   );
 }
 
-/** Banners globais: socket offline (P13) e áudio bloqueado até um gesto. */
+/** Aviso do teste grátis (só o dono vê): dias restantes e, depois dos 30 dias, "Seu teste terminou" (nada é suspenso sozinho). */
+function TrialBanner() {
+  const b = useQuery({ queryKey: ['settings', 'billing'], queryFn: () => call(api.billing.mine), staleTime: 5 * 60_000 }).data;
+  if (!b?.trialEndsAt || b.subscribed) return null;
+  const days = Math.ceil((Date.parse(b.trialEndsAt) - Date.now()) / 86_400_000);
+  const store = isStoreApp(); // no app da loja: só a informação, sem convite para assinar
+  return (
+    <div role="status" className={cn('flex flex-wrap items-center gap-x-3 gap-y-2 rounded-card border px-4 py-2 font-semibold text-gf-navy', days > 0 ? 'border-gf-peach bg-gf-orange-soft' : 'border-amber-200 bg-amber-100')}>
+      <Clock className="h-6 w-6 shrink-0 text-gf-orange" />
+      <span className="flex-1">
+        {days > 0 ? `Teste grátis: ${days === 1 ? 'falta 1 dia' : `faltam ${days} dias`}.` : 'Seu teste terminou.'}
+        {days <= 0 && !store && <span className="font-normal"> Assine um plano para continuar usando o Garfeed.</span>}
+      </span>
+      {!store && <Link to="/configuracoes?assinar=1" className="inline-flex h-11 items-center rounded-pill bg-gf-orange px-5 text-white hover:bg-gf-orange-hover">Assinar agora</Link>}
+    </div>
+  );
+}
+
+/** Banners globais: teste grátis, socket offline (P13) e áudio bloqueado até um gesto. */
 function Banners() {
   const { connected, everConnected } = useLive();
   const sound = usePrefs((s) => s.sound);
+  const owner = useAuth((s) => s.user?.role === 'OWNER');
   const [locked, setLocked] = useState(audioLocked);
   const [offline, setOffline] = useState(false);
   useEffect(() => {
@@ -106,6 +127,7 @@ function Banners() {
   }, [connected, everConnected]);
   return (
     <div className="sticky top-0 z-20 space-y-2 px-4 pt-3 empty:hidden md:px-8 [&:not(:empty)]:pb-1">
+      {owner && <TrialBanner />}
       {offline && (
         <div role="status" className="flex items-center gap-3 rounded-card border border-amber-200 bg-amber-100 px-4 py-3 font-semibold text-gf-navy">
           <WifiOff className="h-6 w-6 text-gf-orange" /><span className="border-l border-amber-300 pl-3">Sem conexão — tentando reconectar…</span>

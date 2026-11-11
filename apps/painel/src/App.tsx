@@ -5,6 +5,7 @@ import { ROLES } from '@garfeed/shared';
 import { useAuth } from './lib/auth';
 import { refresh } from './lib/api';
 import { can } from './lib/live';
+import { isStoreApp } from './lib/storeApp';
 import { AdminLayout, RestaurantLayout } from './components/Layout';
 import { Spinner } from './components/ui/misc';
 
@@ -12,6 +13,7 @@ import { Spinner } from './components/ui/misc';
 const page = <K extends string>(load: () => Promise<Record<K, ComponentType>>, name: K) =>
   lazy(() => load().then((m) => ({ default: m[name] })));
 const LoginPage = page(() => import('./pages/Login'), 'LoginPage');
+const SignupPage = page(() => import('./pages/Signup'), 'SignupPage');
 const ForgotPasswordPage = page(() => import('./pages/Password'), 'ForgotPasswordPage');
 const SetPasswordPage = page(() => import('./pages/Password'), 'SetPasswordPage');
 const LivePage = page(() => import('./pages/Live'), 'LivePage');
@@ -28,6 +30,8 @@ const AdminRestaurantsPage = page(() => import('./pages/admin/Restaurants'), 'Ad
 const AdminTagBatchesPage = page(() => import('./pages/admin/TagBatches'), 'AdminTagBatchesPage');
 const AdminPlansPage = page(() => import('./pages/admin/Plans'), 'AdminPlansPage');
 
+isStoreApp(); // 1ª carga: grava se o painel abriu dentro do app da loja (o referrer do TWA some depois)
+
 const home = (role?: Role) => (role === 'SUPERADMIN' ? '/admin/restaurantes' : '/ao-vivo');
 
 /** Exige login e (opcionalmente) um grupo de papéis do contrato (RF-22). */
@@ -42,6 +46,7 @@ function Guard({ group, children }: { group?: keyof typeof ROLES; children: Reac
 
 const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
+  { path: '/cadastro', element: <SignupPage /> },
   { path: '/esqueci-senha', element: <ForgotPasswordPage /> },
   // links dos e-mails (?token=): recuperação de senha e convite/boas-vindas
   { path: '/redefinir-senha', element: <SetPasswordPage /> },
