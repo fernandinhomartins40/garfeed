@@ -1,0 +1,19 @@
+{
+  "appId": "br.com.garfeed.painel",
+  "appName": "Garfeed",
+  "webDir": "www",
+  "backgroundColor": "#142433",
+  "server": {
+    "url": "https://painel.garfeed.com.br/ao-vivo",
+    "allowNavigation": ["garfeed.com.br", "*.garfeed.com.br"],
+    "errorPath": "offline.html"
+  },
+  "ios": {
+    "contentInset": "never"
+  },
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    }
+  }
+}

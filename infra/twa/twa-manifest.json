@@ -30,6 +30,6 @@
   "isChromeOSOnly": false,
   "isMetaQuest": false,
   "fullScopeUrl": "https://painel.garfeed.com.br/",
-  "minSdkVersion": 21,
+  "minSdkVersion": 24,
   "fingerprints": []
 }

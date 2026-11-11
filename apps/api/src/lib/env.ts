@@ -23,6 +23,15 @@ const Env = z.object({
   VAPID_PUBLIC_KEY: z.string().optional().transform((s) => s || undefined),
   VAPID_PRIVATE_KEY: z.string().optional().transform((s) => s || undefined),
   VAPID_SUBJECT: z.string().default('mailto:contato@garfeed.com.br'),
+  // Push nativo iOS (APNs direto, sem Firebase): faltando qualquer uma das quatro primeiras = desligado
+  APNS_KEY_ID: z.string().optional().transform((s) => s || undefined),
+  APNS_TEAM_ID: z.string().optional().transform((s) => s || undefined),
+  /** Conteúdo do AuthKey_XXXX.p8: em base64 (uma linha) ou o PEM com \n literais. */
+  APNS_KEY_P8: z.string().optional().transform((s) => (!s ? undefined : s.includes('BEGIN') ? s.replace(/\\n/g, '\n') : Buffer.from(s, 'base64').toString('utf8'))),
+  APNS_BUNDLE_ID: z.string().optional().transform((s) => s || undefined),
+  /** true = api.push.apple.com (TestFlight e App Store); false = sandbox (build de desenvolvimento pelo Xcode). */
+  APNS_PRODUCTION: z.stringbool().default(true),
+
   // E-mail transacional pelo Velomail (docs/EMAILS.md). Sem VELOMAIL_API_KEY = não envia; em dev o e-mail (com o link) vai para o log.
   VELOMAIL_API_URL: z.string().default('https://www.velomail.com.br/api/emails/send'),
   VELOMAIL_API_KEY: z.string().optional().transform((s) => s || undefined),

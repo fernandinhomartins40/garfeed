@@ -1,6 +1,7 @@
 packages:
   - apps/*
   - packages/*
+  - '!apps/mobile' # casca iOS (Capacitor): npm e lockfile próprios, fora do workspace
 
 # pnpm 10 bloqueia scripts de instalação por padrão; liberar só os necessários.
 onlyBuiltDependencies:

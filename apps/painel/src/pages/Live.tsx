@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -10,6 +10,7 @@ import { call, errMsg } from '@/lib/api';
 import { useAuth, useLive, usePrefs } from '@/lib/auth';
 import { can, qk, useActiveOrders, useNow, useOpenCalls } from '@/lib/live';
 import { enableNotifications, notifSupported } from '@/lib/alerts';
+import { isNative, nativePushPermission } from '@/lib/native';
 import { ago, cn, minutesSince } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
@@ -226,13 +227,15 @@ function CallCard({ c, now }: { c: PanelCall; now: number }) {
 function NotificationAsk() {
   const { notifDismissed, set } = usePrefs();
   const [perm, setPerm] = useState(() => (notifSupported() ? Notification.permission : 'denied'));
+  // App iOS: não existe Notification no WKWebView; a permissão vem do plugin nativo.
+  useEffect(() => { if (isNative()) void nativePushPermission().then(setPerm).catch(() => undefined); }, []);
   if (perm !== 'default' || notifDismissed) return null;
   return (
     <Card className="mt-4 flex flex-wrap items-center gap-4 p-4">
       <span className="grid h-14 w-14 place-items-center rounded-xl bg-blue-50 text-info"><Bell className="h-7 w-7" /></span>
       <div className="min-w-60 flex-1">
         <p className="font-heading text-xl font-black">Receba alertas de novos pedidos</p>
-        <p className="text-gf-navy-80">Permita as notificações do navegador para ser avisado na hora em que chegar um pedido.</p>
+        <p className="text-gf-navy-80">Permita as notificações para ser avisado na hora em que chegar um pedido.</p>
       </div>
       <Button variant="outline" onClick={() => set({ notifDismissed: true })}>Agora não</Button>
       <Button onClick={async () => setPerm(await enableNotifications())}>Ativar notificações</Button>

@@ -1,5 +1,6 @@
 import { api } from '@garfeed/shared';
 import { call } from './api';
+import { isNative, registerNativePush } from './native';
 
 // ---------- Som (Web Audio, sem arquivo) ----------
 let ctx: AudioContext | null = null;
@@ -41,6 +42,7 @@ const b64ToBytes = (b64: string) => {
 
 /** Pede permissão (só após clique do usuário), registra o SW e assina o Web Push se houver chave VAPID. */
 export async function enableNotifications(): Promise<NotificationPermission> {
+  if (isNative()) return registerNativePush(true); // app iOS: push nativo (APNs)
   const perm = await Notification.requestPermission();
   if (perm !== 'granted') return perm;
   await subscribePush().catch((e: unknown) => console.warn('Web Push indisponível', e));
@@ -48,6 +50,7 @@ export async function enableNotifications(): Promise<NotificationPermission> {
 }
 
 export async function subscribePush() {
+  if (isNative()) return void (await registerNativePush(false));
   if (!notifSupported() || Notification.permission !== 'granted') return;
   const reg = await navigator.serviceWorker.register('/sw.js');
   if (!('pushManager' in reg)) return;
