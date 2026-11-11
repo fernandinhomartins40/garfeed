@@ -76,6 +76,11 @@ services:
       VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
       VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:contato@garfeed.com.br}
       TAG_BASE_URL: ${TAG_BASE_URL:-https://g.garfeed.com.br}
+      VELOMAIL_API_URL: ${VELOMAIL_API_URL:-}
+      VELOMAIL_API_KEY: ${VELOMAIL_API_KEY:-}
+      MAIL_FROM: ${MAIL_FROM:-}
+      MAIL_REPLY_TO: ${MAIL_REPLY_TO:-}
+      PAINEL_URL: ${PAINEL_URL:-https://painel.garfeed.com.br}
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
