@@ -24,6 +24,7 @@ const TeamPage = page(() => import('./pages/Team'), 'TeamPage');
 const SettingsPage = page(() => import('./pages/Settings'), 'SettingsPage');
 const AdminRestaurantsPage = page(() => import('./pages/admin/Restaurants'), 'AdminRestaurantsPage');
 const AdminTagBatchesPage = page(() => import('./pages/admin/TagBatches'), 'AdminTagBatchesPage');
+const AdminPlansPage = page(() => import('./pages/admin/Plans'), 'AdminPlansPage');
 
 const home = (role?: Role) => (role === 'SUPERADMIN' ? '/admin/restaurantes' : '/ao-vivo');
 
@@ -59,6 +60,7 @@ const router = createBrowserRouter([
     children: [
       { path: '/admin/restaurantes', element: <AdminRestaurantsPage /> },
       { path: '/admin/placas', element: <AdminTagBatchesPage /> },
+      { path: '/admin/planos', element: <AdminPlansPage /> },
     ],
   },
   { path: '*', element: <HomeRedirect /> },
