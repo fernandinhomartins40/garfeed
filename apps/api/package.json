@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx watch --env-file=../../.env src/index.ts",
     "start": "node dist/index.js",
-    "build": "tsup src/index.ts prisma/seed.ts --format esm --target node20 --clean",
+    "build": "tsup --entry.index src/index.ts --entry.seed prisma/seed.ts --format esm --target node20 --clean",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "prisma": "dotenv -e ../../.env -- prisma",
