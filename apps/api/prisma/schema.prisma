@@ -105,7 +105,7 @@ model User {
   restaurantId String? // null para SUPERADMIN
   name         String
   email        String    @unique
-  passwordHash String
+  passwordHash String? // null = convite pendente (ainda não definiu senha)
   role         Role
   sector       Sector? // setor do usuário KITCHEN (cozinha/bar)
   active       Boolean   @default(true)
@@ -114,10 +114,31 @@ model User {
 
   restaurant    Restaurant?        @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   refreshTokens RefreshToken[]
+  tokens        UserToken[]
   pushSubs      PushSubscription[]
   callsDone     ServiceCall[]
 
   @@index([restaurantId])
+}
+
+enum UserTokenType {
+  PASSWORD_RESET
+  INVITE
+}
+
+/// Link de e-mail para definir senha (recuperação: 1 h · convite/boas-vindas: 7 dias). Uso único; só o hash é gravado.
+model UserToken {
+  id        String        @id @default(cuid())
+  userId    String
+  type      UserTokenType
+  tokenHash String        @unique // sha256 do token do link
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime      @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model RefreshToken {
