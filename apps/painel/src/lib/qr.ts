@@ -1,6 +1,7 @@
 import qrcode from 'qrcode-generator';
 import { tagUrl } from '@garfeed/shared';
 import logo from '@/assets/logo-horizontal-cor.svg';
+import { isNative } from './native';
 import { TAG_BASE_URL } from './utils';
 
 export const qrSvg = (text: string) => {
@@ -17,6 +18,11 @@ const esc = (s: string) => s.replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
  * do navegador — "Salvar como PDF" gera o PDF sem lib extra.
  */
 export function printEmergencyQrs(entries: { table: string; code: string }[]) {
+  // app iOS (WKWebView): não abre janela nova nem imprime — avisa em vez do falso "permita pop-ups"
+  if (isNative()) {
+    alert('A impressão dos QR não está disponível no app. Abra painel.garfeed.com.br em um computador para imprimir.');
+    return true;
+  }
   const w = window.open('', '_blank');
   if (!w) return false;
   const cards = entries.map(({ table, code }) => {

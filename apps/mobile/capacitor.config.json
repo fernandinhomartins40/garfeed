@@ -5,7 +5,7 @@
   "backgroundColor": "#142433",
   "server": {
     "url": "https://painel.garfeed.com.br/ao-vivo",
-    "allowNavigation": ["garfeed.com.br", "*.garfeed.com.br"],
+    "allowNavigation": ["painel.garfeed.com.br"],
     "errorPath": "offline.html"
   },
   "ios": {

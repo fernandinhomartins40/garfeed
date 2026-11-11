@@ -1,9 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { isStoreApp } from './storeApp';
 
-function world({ referrer = '', native, storage = true }: { referrer?: string; native?: boolean; storage?: boolean } = {}, store = new Map<string, string>()) {
+function world({ referrer = '', native, storage = true, search = '' }: { referrer?: string; native?: boolean; storage?: boolean; search?: string } = {}, store = new Map<string, string>()) {
   vi.stubGlobal('window', native === undefined ? {} : { Capacitor: { isNativePlatform: () => native } });
   vi.stubGlobal('document', { referrer });
+  vi.stubGlobal('location', { search });
   vi.stubGlobal('sessionStorage', storage
     ? { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v) }
     : { getItem: () => { throw new Error('bloqueado'); }, setItem: () => { throw new Error('bloqueado'); } });
@@ -30,6 +31,15 @@ describe('isStoreApp', () => {
     world({ referrer: '' }, store); // navegação seguinte: o referrer sumiu, o sessionStorage lembra
     expect(isStoreApp()).toBe(true);
     world({ referrer: '' }); // outra sessão do navegador
+    expect(isStoreApp()).toBe(false);
+  });
+
+  it('Android TWA: ?gfapp=android da LauncherActivity (sem depender do referrer)', () => {
+    const store = world({ search: '?gfapp=android' });
+    expect(isStoreApp()).toBe(true);
+    world({}, store);
+    expect(isStoreApp()).toBe(true);
+    world({ search: '?gfapp=outro' });
     expect(isStoreApp()).toBe(false);
   });
 

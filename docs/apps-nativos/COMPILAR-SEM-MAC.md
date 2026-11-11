@@ -167,7 +167,7 @@ idioma Português (Brasil), Bundle ID `br.com.garfeed.painel`, SKU `garfeed-pain
 
 | Segredo | Valor |
 |---|---|
-| `IOS_DIST_CERT_P12_BASE64` | `base64 -w0 ios-dist.p12` |
+| `IOS_DIST_CERT_P12` | `base64 -w0 ios-dist.p12` (o nome antigo `IOS_DIST_CERT_P12_BASE64` também é aceito) |
 | `IOS_DIST_CERT_PASSWORD` | senha de exportação do .p12 |
 | `IOS_PROFILE_BASE64` | `base64 -w0 Garfeed_Painel_App_Store.mobileprovision` |
 | `APPLE_TEAM_ID` | Team ID (10 caracteres) |
@@ -184,8 +184,8 @@ Faltando **qualquer um**, o job do iOS compila sem assinatura (só valida o proj
 1. GitHub → aba **Actions** → **Apps nativos (Android + iOS)** → **Run workflow**.
 2. `plataforma`: `ambos`, `android` ou `ios`. `versao`: a versão que aparece na loja (ex.: `1.0.0`).
    O número interno do build (versionCode / CFBundleVersion) é o número da execução e sobe sozinho.
-3. **Android:** ao terminar, abra a execução → seção **Artifacts** → baixe `garfeed-painel-<versão>-<build>-aab` (zip com o
-   `.aab`, guardado por 30 dias). Envie em Play Console → **Testar e lançar → Teste interno → Criar nova versão**.
+3. **Android:** ao terminar, abra a execução → seção **Artifacts** → baixe `garfeed-painel-android-<versão>-<build>` (zip com o
+   `.aab`, guardado por 30 dias). Se o nome terminar em `-SEM-ASSINATURA`, faltam os segredos da seção 2.2 e a Play recusa. Envie em Play Console → **Testar e lançar → Teste interno → Criar nova versão**.
 4. **iOS:** o próprio workflow envia o build à Apple. Em 5 a 30 minutos ele aparece em App Store Connect → seu app →
    **TestFlight**. Adicione-se como testador interno e instale pelo app **TestFlight** no iPhone. Quando estiver bom,
    na aba **Distribuição** escolha esse build e envie para revisão.
@@ -208,26 +208,49 @@ não for aprovada.
 - [ ] Ficha: ícone 512, gráfico de destaque 1024×500, pelo menos 2 capturas, descrição curta (80 caracteres) e completa (4000).
 - [ ] **Conteúdo do app**: política de privacidade (URL acima), acesso ao app (informe o login de demonstração),
       anúncios (não), classificação de conteúdo (questionário — tende a "Livre"), público-alvo (18+, uso profissional),
-      **Segurança dos dados** (coleta e-mail e nome do funcionário para login; identificador de notificação; dados
-      criptografados em trânsito; sem compartilhamento com terceiros).
+      **Exclusão de dados**: URL `https://garfeed.com.br/excluir-conta/` (publique a landing antes).
+- [ ] **Segurança dos dados** — respostas (valem para o que o app do painel coleta; cadastro e cobrança não existem no app):
+      - Coleta ou compartilha dados? **Sim**. Criptografados em trânsito? **Sim** (só HTTPS).
+        Os usuários podem pedir a exclusão? **Sim** (no app: Configurações → Excluir conta; na web: URL acima).
+      - Compartilhamento com terceiros: **nenhum** em todos os tipos abaixo.
+      - **Informações pessoais → Nome**: coletado, obrigatório, finalidades *Funcionalidade do app* e *Gerenciamento de conta*.
+      - **Informações pessoais → Endereço de e-mail**: idem.
+      - **Informações pessoais → IDs do usuário**: idem (id da conta no Garfeed).
+      - **Fotos e vídeos → Fotos** e **Vídeos**: coletados, opcionais, *Funcionalidade do app* (fotos/vídeos do cardápio e logo).
+      - **IDs do dispositivo ou outros IDs**: coletado, obrigatório para notificações, *Funcionalidade do app* (inscrição Web
+        Push do aparelho).
+      - Não coletados: localização, financeiras, saúde, mensagens, áudio, arquivos, agenda, contatos, atividade no app,
+        navegação na web, informações e desempenho do app (não há SDK de análise nem de falhas).
+      - Os pedidos dos clientes (itens, nome opcional) são coletados pelo **cardápio no navegador**, não pelo app, e não
+        identificam o usuário do app.
 - [ ] Categoria: **Negócios**.
 - [ ] `assetlinks.json` com os dois SHA-256 (seção 2.3) — teste instalando pelo teste interno: tem de abrir sem barra de endereço.
 - [ ] Conta pessoal nova: teste fechado com 12 testadores por 14 dias antes de pedir produção.
 
 ### App Store
-- [ ] **Privacidade do app** (App Store Connect → Privacidade): Informações de contato (nome, e-mail) e Identificadores
-      (ID do dispositivo, por causa do token de push) — vinculados ao usuário, para funcionalidade do app, **sem rastreamento**.
+- [ ] **Privacidade do app** (App Store Connect → Privacidade) — tem de bater com `ios/App/App/PrivacyInfo.xcprivacy`:
+      "Você ou seus parceiros coletam dados deste app?" **Sim**. Em todos os tipos abaixo: **vinculado à identidade do usuário**,
+      **não usado para rastreamento**, finalidade **Funcionalidade do app**:
+      - Informações de contato → **Nome** e **Endereço de e-mail**;
+      - Conteúdo do usuário → **Fotos ou vídeos**;
+      - Identificadores → **ID do usuário** e **ID do dispositivo** (token APNs).
+      Nada mais (sem localização, compras, diagnóstico, uso do produto, dados financeiros).
+- [ ] **URL de exclusão de conta** não é campo da Apple, mas a revisão confere: o dono exclui em Configurações → Excluir conta.
 - [ ] Classificação etária (questionário → 4+), categoria **Negócios** (secundária: Comida e bebida), preço gratuito.
 - [ ] **Informações para a revisão**: login de demonstração e uma nota como esta:
       > App de uso profissional para a equipe de restaurantes clientes do Garfeed. As contas são criadas pelo dono do
       > restaurante; não há cadastro nem compra dentro do app. Recursos nativos: notificações push de novos pedidos e
       > chamados; leitura NFC e câmera (QR) em "Placas → Vincular placa", para associar a placa física da mesa.
-      > Sem a placa em mãos, o mesmo fluxo aceita o código digitado (ex.: GF0001).
+      > Sem a placa em mãos, o mesmo fluxo aceita o código digitado (ex.: GF0001). Sem internet o app mostra a tela
+      > "Sem conexão" com "Tentar de novo". Exclusão da conta: Configurações → Excluir conta (usuário dono).
+      Não exclua a conta de demonstração no teste: o revisor costuma testar o botão — tenha um segundo dono de reserva ou
+      recrie a conta depois da revisão.
       Se puder, anexe um vídeo curto do NFC lendo uma placa de verdade (o revisor não tem a placa).
 - [ ] Criptografia: já declarado no app (`ITSAppUsesNonExemptEncryption = false`, só HTTPS padrão).
 - [ ] Textos de permissão já estão no app (câmera: ler o QR da placa; NFC: ler a placa). O push pede permissão só
       quando o usuário toca em "Ativar notificações".
-- [ ] O app roda em iPad, então a Apple **exige** capturas de iPad 13".
+- [ ] O app roda em iPad (decisão: a cozinha usa tablet — `TARGETED_DEVICE_FAMILY = 1,2`), então a Apple **exige** capturas
+      de iPad 13". Se não for fazê-las, troque para `1` (só iPhone) nas duas configurações do alvo App em `project.pbxproj`.
 
 ---
 

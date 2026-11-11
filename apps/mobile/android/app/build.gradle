@@ -166,6 +166,7 @@ android {
     buildTypes {
         release {
             minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
             if (keystorePath) signingConfig signingConfigs.release
         }
     }
@@ -173,7 +174,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    lintOptions {
+    lint {
         checkReleaseBuilds false
     }
 }

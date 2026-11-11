@@ -44,11 +44,7 @@ public class LauncherActivity
 
     @Override
     protected Uri getLaunchingUrl() {
-        // Get the original launch Url.
-        Uri uri = super.getLaunchingUrl();
-
-        
-
-        return uri;
+        // Marca toda abertura pelo app da Play: o painel esconde cadastro/assinatura (apps/painel/src/lib/storeApp.ts).
+        return super.getLaunchingUrl().buildUpon().appendQueryParameter("gfapp", "android").build();
     }
 }
