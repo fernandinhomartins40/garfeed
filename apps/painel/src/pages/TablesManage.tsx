@@ -106,7 +106,7 @@ function BulkDialog({ open, onOpenChange, existing }: { open: boolean; onOpenCha
           ))}
         </div>
         {fresh < names.length && <p className="mt-2 text-sm text-amber-700">{names.length - fresh} nome(s) já existem e serão pulados.</p>}
-        <div className="mt-6 flex justify-end gap-3 border-t border-gf-border pt-5">
+        <div className="mt-6 flex flex-wrap justify-end gap-3 border-t border-gf-border pt-5">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
           <Button type="submit" loading={m.isPending} disabled={!fresh}>Criar {fresh} mesas</Button>
         </div>

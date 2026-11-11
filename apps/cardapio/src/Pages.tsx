@@ -63,17 +63,17 @@ export function ErrorScreen({ message, onRetry }: { message: string; onRetry: ()
 // ---------- M2 (e "mesa encerrada" após session:closed) ----------
 export function Welcome({ restaurant, table, closed, onContinue }: { restaurant: PublicRestaurant | null; table: TableRef | null; closed: boolean; onContinue: () => void }) {
   return (
-    <main className="media-fallback relative flex h-full flex-col items-center px-6 pb-[max(24px,env(safe-area-inset-bottom))] pt-[12dvh] text-center text-white">
-      {restaurant && <RestLogo r={restaurant} className="h-40 w-40 text-5xl" />}
-      <h1 className="mt-8 font-heading text-5xl font-black">{closed ? 'Até a próxima!' : 'Bem-vindo!'}</h1>
+    <main className="media-fallback relative flex min-h-full flex-col items-center px-6 pb-[max(24px,env(safe-area-inset-bottom))] pt-[max(24px,10dvh)] text-center text-white">
+      {restaurant && <RestLogo r={restaurant} className="h-[min(10rem,24dvh)] w-[min(10rem,24dvh)] text-5xl" />}
+      <h1 className="mt-[min(2rem,4dvh)] font-heading text-5xl font-black">{closed ? 'Até a próxima!' : 'Bem-vindo!'}</h1>
       <p className="mt-2 text-2xl">
         {closed ? 'Esta mesa foi encerrada.' : <>Você está na <b className="font-heading font-black">{table?.name ?? restaurant?.name}</b></>}
       </p>
       <button type="button" onClick={onContinue}
-        className="mt-8 flex h-16 w-full max-w-sm items-center justify-between rounded-pill bg-gf-orange px-8 font-heading text-2xl font-black text-white shadow-lg">
+        className="mt-[min(2rem,5dvh)] flex h-16 w-full max-w-sm items-center justify-between rounded-pill bg-gf-orange px-8 font-heading text-2xl font-black text-white shadow-lg">
         <Icon name="book" className="h-8 w-8" />{closed ? 'Abrir de novo' : 'Ver cardápio'}<Icon name="chevronRight" className="h-7 w-7" />
       </button>
-      <div className="mt-auto"><PoweredBy white /></div>
+      <div className="mt-auto pt-6"><PoweredBy white /></div>
     </main>
   );
 }
@@ -110,17 +110,17 @@ export function Cart({ restaurant, table, cart, byId, sending, onBack, onSend, o
           <ul className="mt-4 space-y-3">
             {cart.map((l) => (
               <li key={l.key} className="flex gap-3 rounded-2xl border border-gf-border p-3 shadow-sm">
-                <Thumb item={byId.get(l.itemId)} className="h-32 w-28 shrink-0 rounded-xl" />
+                <Thumb item={byId.get(l.itemId)} className="h-24 w-20 shrink-0 rounded-xl min-[360px]:h-32 min-[360px]:w-28" />
                 <div className="min-w-0 flex-1">
                   <div className="flex justify-between gap-2">
-                    <p className="font-heading text-lg font-black leading-tight">{l.name}</p>
+                    <p className="min-w-0 break-words font-heading text-lg font-black leading-tight">{l.name}</p>
                     <p className="shrink-0 font-heading text-lg font-black">{formatBRL(l.unitPriceCents * l.quantity)}</p>
                   </div>
                   <div className="mt-1 flex flex-wrap gap-1.5">
                     {l.optionLabels.map((o) => <span key={o} className="inline-flex items-center gap-1 rounded-pill bg-gf-bg px-2.5 py-1 text-sm text-gf-navy-80"><Icon name="plusCircle" className="h-4 w-4" />{o}</span>)}
                     {l.note && <span className="inline-flex items-center gap-1 rounded-pill bg-gf-orange-soft px-2.5 py-1 text-sm font-semibold text-orange-text"><Icon name="message" className="h-4 w-4" />{l.note}</span>}
                   </div>
-                  <div className="mt-2 flex items-center justify-between">
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
                     <Stepper value={l.quantity} min={1} onChange={(q) => onQty(l.key, q)} />
                     <IconBtn label={`Remover ${l.name}`} onClick={() => onRemove(l.key)} className="border border-gf-border bg-white"><Icon name="trash" /></IconBtn>
                   </div>
@@ -197,7 +197,7 @@ export function Track({ restaurant, table, order, byId, onBack, onCall }: Common
           {order.items.map((l) => (
             <li key={l.id} className="flex items-center gap-3 py-2">
               <Thumb item={byId.get(l.itemId)} className="h-14 w-16 shrink-0 rounded-lg" />
-              <span className="flex-1 font-heading font-extrabold">{l.quantity}× {l.name}{optText(l.options)}</span>
+              <span className="min-w-0 flex-1 break-words font-heading font-extrabold">{l.quantity}× {l.name}{optText(l.options)}</span>
               <span className="font-heading font-extrabold">{formatBRL(l.unitPriceCents * l.quantity)}</span>
             </li>
           ))}
@@ -230,7 +230,7 @@ export function Bill({ restaurant, table, orders, totalCents, byId, onBack, onCa
               {o.items.map((l) => (
                 <li key={l.id} className="flex items-center gap-3 py-3">
                   <Thumb item={byId.get(l.itemId)} className="h-20 w-24 shrink-0 rounded-xl" />
-                  <span className="flex-1 font-heading text-lg font-extrabold leading-tight">{l.quantity}× {l.name}{optText(l.options)}</span>
+                  <span className="min-w-0 flex-1 break-words font-heading text-lg font-extrabold leading-tight">{l.quantity}× {l.name}{optText(l.options)}</span>
                   <span className="font-heading text-lg font-black">{formatBRL(l.unitPriceCents * l.quantity)}</span>
                 </li>
               ))}
@@ -261,9 +261,9 @@ export function TableOrders({ restaurant, table, orders, byId, canOrder, onBack,
   return (
     <Page>
       <Top />
-      <div className="mt-2 flex items-center gap-3">
+      <div className="mt-2 flex flex-wrap items-center gap-3">
         <IconBtn label="Voltar" onClick={onBack}><Icon name="back" /></IconBtn>
-        <h1 className="flex-1 font-heading text-2xl font-black">Pedidos da mesa</h1>
+        <h1 className="min-w-0 flex-1 font-heading text-2xl font-black">Pedidos da mesa</h1>
         {table && <MesaChip name={table.name} soft />}
       </div>
       <div className="mt-4 flex items-center gap-3">
@@ -276,7 +276,7 @@ export function TableOrders({ restaurant, table, orders, byId, canOrder, onBack,
           <li key={o.id} className="rounded-2xl border border-gf-border p-4 shadow-sm">
             <button type="button" onClick={() => onOpen(o.id)} className="flex min-h-11 w-full items-center gap-3 text-left">
               <Icon name="bag" className="h-6 w-6 shrink-0" />
-              <span className="flex-1 font-heading text-lg font-black">Pedido nº {pad3(o.number)}{o.customerName ? ` · ${o.customerName}` : ''}</span>
+              <span className="min-w-0 flex-1 break-words font-heading text-lg font-black">Pedido nº {pad3(o.number)}{o.customerName ? ` · ${o.customerName}` : ''}</span>
               <span className={`inline-flex items-center gap-1 rounded-pill px-3 py-1 text-sm font-bold ${STATUS_STYLE[o.status]}`}>
                 {o.status === 'DELIVERED' && <Icon name="check" className="h-4 w-4" />}{o.status === 'PREPARING' && <Icon name="chef" className="h-4 w-4" />}
                 {STATUS_LABEL[o.status]}
@@ -302,7 +302,7 @@ export function TableOrders({ restaurant, table, orders, byId, canOrder, onBack,
           </li>
         ))}
       </ul>
-      <div className="fixed inset-x-0 bottom-0 bg-white/90 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-2 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-0 mx-auto max-w-md bg-white/90 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-2 backdrop-blur">
         <button type="button" onClick={onBack} className="mx-auto flex h-14 w-full max-w-md items-center justify-center gap-3 rounded-2xl border border-gf-orange bg-gf-orange-soft font-heading text-lg font-black text-orange-text">
           <Icon name="book" className="h-6 w-6" />Voltar ao cardápio
         </button>

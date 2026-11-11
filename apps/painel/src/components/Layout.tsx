@@ -21,18 +21,18 @@ type NavItem = { to: string; label: string; icon: LucideIcon; show: boolean; soo
 
 function Sidebar({ items, footer }: { items: NavItem[]; footer: ReactNode }) {
   return (
-    <div className="flex h-full flex-col bg-gf-navy px-3 py-6 text-white">
+    <div className="flex h-full flex-col overflow-y-auto bg-gf-navy px-3 py-6 text-white">
       <img src={logoNeg} alt="Garfeed" className="mb-8 ml-3 h-11 w-auto self-start" />
       <nav className="flex-1 space-y-1">
         {items.filter((i) => i.show).map(({ to, label, icon: Icon, soon, badge }) =>
           soon ? (
             <span key={to} aria-disabled className="flex h-12 items-center gap-3 rounded-card px-3 text-white/80">
-              <Icon className="h-6 w-6" /> <span className="text-lg">{label}</span>
-              <span className="rounded-pill bg-white/15 px-2 py-0.5 text-xs">em breve</span>
+              <Icon className="h-6 w-6 shrink-0" /> <span className="text-base xl:text-lg">{label}</span>
+              <span className="whitespace-nowrap rounded-pill bg-white/15 px-2 py-0.5 text-xs">em breve</span>
             </span>
           ) : (
             <NavLink key={to} to={to}
-              className={({ isActive }) => cn('flex h-12 items-center gap-3 rounded-card px-3 text-lg transition-colors',
+              className={({ isActive }) => cn('flex h-12 items-center gap-3 rounded-card px-3 text-base transition-colors xl:text-lg',
                 isActive ? 'bg-gf-orange font-semibold text-white shadow-lg shadow-black/20' : 'text-white/90 hover:bg-white/10')}>
               <Icon className="h-6 w-6" />
               <span className="flex-1">{label}</span>
@@ -62,7 +62,7 @@ function UserBox({ title, subtitle, icon: Icon }: { title: string; subtitle: str
       trigger={
         <button className="flex w-full items-center gap-3 border-t border-white/15 px-2 pt-4 text-left">
           <span className="grid h-11 w-11 place-items-center rounded-xl bg-white/10"><Icon className="h-6 w-6" /></span>
-          <span className="min-w-0 flex-1"><b className="block truncate font-heading text-lg">{title}</b><span className="text-sm text-white/80">{subtitle}</span></span>
+          <span className="min-w-0 flex-1"><b className="block break-words font-heading text-base leading-tight xl:text-lg">{title}</b><span className="block break-all text-sm text-white/80">{subtitle}</span></span>
           <ChevronDown className="h-5 w-5" />
         </button>
       } />
@@ -75,15 +75,15 @@ function Shell({ items, footer, banners }: { items: NavItem[]; footer: ReactNode
   useEffect(() => setOpen(false), [loc.pathname]);
   return (
     <div className="min-h-screen bg-gf-bg">
-      <aside className="fixed inset-y-0 left-0 hidden w-64 md:block"><Sidebar items={items} footer={footer} /></aside>
-      <header className="sticky top-0 z-30 flex h-14 items-center gap-3 bg-gf-navy px-4 md:hidden">
-        <button aria-label="Abrir menu" className="text-white" onClick={() => setOpen(true)}><Menu className="h-6 w-6" /></button>
+      <aside className="fixed inset-y-0 left-0 hidden w-56 md:block xl:w-64"><Sidebar items={items} footer={footer} /></aside>
+      <header className="sticky top-0 z-30 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center gap-2 bg-gf-navy px-2 pt-[env(safe-area-inset-top)] md:hidden">
+        <button aria-label="Abrir menu" className="grid h-11 w-11 place-items-center text-white" onClick={() => setOpen(true)}><Menu className="h-6 w-6" /></button>
         <img src={logoNeg} alt="Garfeed" className="h-7" />
       </header>
       <Sheet open={open} onOpenChange={setOpen} title="Menu" side="left" className="max-w-[17rem] bg-gf-navy [&>button]:text-white">
         <Sidebar items={items} footer={footer} />
       </Sheet>
-      <main className="md:pl-64">{banners && <Banners />}<Suspense fallback={<Spinner />}><Outlet /></Suspense></main>
+      <main className="md:pl-56 xl:pl-64">{banners && <Banners />}<Suspense fallback={<Spinner />}><Outlet /></Suspense></main>
     </div>
   );
 }
@@ -126,7 +126,7 @@ function Banners() {
     return () => clearTimeout(t);
   }, [connected, everConnected]);
   return (
-    <div className="sticky top-0 z-20 space-y-2 px-4 pt-3 empty:hidden md:px-8 [&:not(:empty)]:pb-1">
+    <div className="z-20 space-y-2 px-4 pt-3 md:sticky md:top-0 md:bg-gf-bg empty:hidden md:px-8 [&:not(:empty)]:pb-1">
       {owner && <TrialBanner />}
       {offline && (
         <div role="status" className="flex items-center gap-3 rounded-card border border-amber-200 bg-amber-100 px-4 py-3 font-semibold text-gf-navy">
@@ -136,7 +136,7 @@ function Banners() {
       {sound && locked && (
         <button onClick={() => { unlockAudio(); setLocked(false); }}
           className="flex w-full items-center gap-3 rounded-card border border-gf-peach bg-gf-orange-soft px-4 py-3 text-left font-semibold text-gf-navy">
-          <Volume2 className="h-6 w-6 text-gf-orange" /> Toque aqui para ativar o som dos alertas
+          <Volume2 className="h-6 w-6 shrink-0 text-gf-orange" /> Toque aqui para ativar o som dos alertas
         </button>
       )}
     </div>

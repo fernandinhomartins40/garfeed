@@ -10,7 +10,22 @@
 @tailwind utilities;
 
 @layer base {
-  body { @apply bg-gf-bg font-sans text-gf-navy antialiased; }
+  /* viewport-fit=cover: no app da loja (iPhone deitado) o conteúdo não fica sob o notch */
+  body { @apply bg-gf-bg font-sans text-gf-navy antialiased; padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+}
+
+/* Tabela vira lista de cartões no celular: cada <tr> é um cartão; células sem data-label (alça, nome, ações) ficam
+   na 1ª linha, as com data-label descem com o rótulo em cima. data-primary = célula que estica. */
+@media (max-width: 767px) {
+  .table-stack, .table-stack tbody { display: block; }
+  .table-stack thead { display: none; }
+  .table-stack tr { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.25rem; padding: 1rem; }
+  .table-stack td { display: block; padding: 0; text-align: left; }
+  .table-stack td[data-primary] { flex: 1 1 0%; min-width: 0; }
+  .table-stack tr::after { content: ""; order: 1; flex-basis: 100%; margin-top: -.75rem; } /* quebra de linha antes das células com rótulo */
+  .table-stack td[data-label] { order: 2; }
+  .table-stack td[colspan] { flex-basis: 100%; }
+  .table-stack td[data-label]::before { content: attr(data-label); display: block; margin-bottom: .125rem; font-size: .8125rem; font-weight: 600; color: var(--gf-muted); }
 }
 
 @keyframes gf-pulse-ring { 0%, 100% { box-shadow: 0 0 0 0 rgb(220 38 38 / .35); } 50% { box-shadow: 0 0 0 8px rgb(220 38 38 / 0); } }

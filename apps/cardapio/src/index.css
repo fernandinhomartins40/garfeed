@@ -6,6 +6,11 @@
 :root { --accent: var(--gf-orange); --on-accent: #fff; }
 html, body, #root { height: 100%; }
 body { @apply bg-white font-sans text-gf-navy antialiased; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
+/* Tablet/desktop: o cardápio fica numa coluna de celular centralizada (as barras e sheets fixos já usam max-w-md centralizado). */
+@media (min-width: 640px) {
+  body { background: var(--gf-navy); }
+  #root { max-width: 28rem; margin: 0 auto; background: #fff; box-shadow: 0 0 40px rgb(0 0 0 / .35); }
+}
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 /* Fundo elegante quando o item não tem mídia (ou ela ainda está processando). */

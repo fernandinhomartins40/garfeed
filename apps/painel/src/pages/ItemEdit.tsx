@@ -93,16 +93,16 @@ function Editor({ item }: { item: Item | null }) {
   const available = (groups.data ?? []).filter((g) => !v.optionGroupIds.includes(g.id));
 
   return (
-    <form onSubmit={onSubmit} className="px-4 pb-28 pt-6 md:px-8">
-      <h1 className="mb-5 font-heading text-3xl font-black"><Link to="/cardapio" className="text-gf-muted hover:text-gf-navy">Cardápio</Link> / {item ? 'Editar item' : 'Novo item'}</h1>
-      <div className="grid gap-6 xl:grid-cols-[1fr_minmax(0,36rem)]">
-        <Card className="space-y-5 p-5">
+    <form onSubmit={onSubmit} className="px-4 pb-40 pt-6 sm:pb-28 md:px-8">
+      <h1 className="mb-5 font-heading text-2xl font-black sm:text-3xl"><Link to="/cardapio" className="text-gf-muted hover:text-gf-navy">Cardápio</Link> / {item ? 'Editar item' : 'Novo item'}</h1>
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] xl:grid-cols-[minmax(0,1fr)_minmax(0,32rem)]">
+        <Card className="min-w-0 space-y-5 p-4 sm:p-5">
           <Field label="Nome" error={errors.name?.message}><Input className="h-12 font-heading text-xl font-extrabold" maxLength={80} {...register('name', { required: 'Informe o nome' })} /></Field>
           <Field label="Descrição" error={errors.description?.message}>
             <div className="relative"><Textarea maxLength={DESC_MAX} rows={3} {...register('description')} />
               <span className="absolute bottom-2 right-3 text-sm text-gf-muted">{v.description.length} / {DESC_MAX}</span></div>
           </Field>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid items-end gap-4 sm:grid-cols-2">
             <Field label="Preço (R$)" error={errors.price?.message}><Input inputMode="decimal" placeholder="0,00" className="h-12 font-heading text-xl font-extrabold" {...register('price')} /></Field>
             <Field label="Preço promocional (R$)" error={errors.promo?.message}><Input inputMode="decimal" placeholder="Opcional" className="h-12 font-heading text-xl font-extrabold" {...register('promo')} /></Field>
           </div>
@@ -136,9 +136,9 @@ function Editor({ item }: { item: Item | null }) {
                     <Sortable key={g.id} id={g.id}>{({ ref, style, handle }) => (
                       <div ref={ref} style={style} className="flex items-center gap-3 rounded-card border border-gf-border bg-white px-3 py-2.5">
                         <Handle {...handle} /><Layers className="h-5 w-5" />
-                        <span className="flex-1"><b>{g.name}</b> <span className="text-sm text-gf-muted">· {g.min > 0 ? 'Obrigatório' : 'Opcional'} · {g.min}/{g.max}</span></span>
-                        <button type="button" aria-label={`Remover ${g.name}`} className="rounded p-1 text-gf-muted hover:text-danger" onClick={() => field.onChange(field.value.filter((x) => x !== g.id))}><X className="h-5 w-5" /></button>
-                        <Link to="/cardapio/opcionais" aria-label="Ver grupos"><ChevronRight className="h-5 w-5" /></Link>
+                        <span className="min-w-0 flex-1"><b>{g.name}</b> <span className="text-sm text-gf-muted">· {g.min > 0 ? 'Obrigatório' : 'Opcional'} · {g.min}/{g.max}</span></span>
+                        <button type="button" aria-label={`Remover ${g.name}`} className="grid h-11 w-11 shrink-0 place-items-center rounded text-gf-muted hover:text-danger" onClick={() => field.onChange(field.value.filter((x) => x !== g.id))}><X className="h-5 w-5" /></button>
+                        <Link to="/cardapio/opcionais" aria-label="Ver grupos" className="grid h-11 w-8 shrink-0 place-items-center"><ChevronRight className="h-5 w-5" /></Link>
                       </div>
                     )}</Sortable>
                   ))}
@@ -151,10 +151,10 @@ function Editor({ item }: { item: Item | null }) {
           </div>
         </Card>
 
-        <Card className="space-y-3 p-5">
+        <Card className="min-w-0 space-y-3 self-start p-4 sm:p-5 lg:sticky lg:top-4">
           <MediaBox up={up} hasMedia={!!mediaId} onPick={(f) => { setMediaTouched(true); void up.start(f); }}
             onRemove={() => { up.cancel(); setMediaId(null); setMediaTouched(true); }} />
-          <p className="flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-2 text-sm text-gf-navy-80"><Info className="h-4 w-4 text-info" />Vídeo vertical (9:16), até 30 s e 100 MB · ou foto até 15 MB</p>
+          <p className="flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-2 text-sm text-gf-navy-80"><Info className="h-4 w-4 shrink-0 text-info" />Vídeo vertical (9:16), até 30 s e 100 MB · ou foto até 15 MB</p>
           <div className="pt-2">
             <PhonePreview name={v.name} description={v.description} priceCents={parseCents(v.price)} promoPriceCents={v.promo ? parseCents(v.promo) : null}
               badges={v.badges} categories={catNames} activeCategory={cats.data?.find((c) => c.id === v.categoryId)?.name}
@@ -163,11 +163,11 @@ function Editor({ item }: { item: Item | null }) {
         </Card>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-gf-border bg-white/95 px-4 py-3 backdrop-blur md:left-64 md:px-8">
-        <div className="flex items-center justify-end gap-3">
-          {up.busy && <span className="mr-auto text-sm text-gf-navy-80">Você pode continuar <b>editando os dados</b>. Salve quando a mídia ficar pronta.</span>}
-          <Button variant="outline" size="lg" className="min-w-36" onClick={() => nav('/cardapio')}>Cancelar</Button>
-          <Button type="submit" size="lg" className="min-w-44" loading={save.isPending} disabled={up.busy}>Salvar item</Button>
+      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-gf-border bg-white/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur md:left-56 md:px-8 xl:left-64">
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          {up.busy && <span className="mr-auto basis-full text-sm text-gf-navy-80 sm:basis-auto">Você pode continuar <b>editando os dados</b>. Salve quando a mídia ficar pronta.</span>}
+          <Button variant="outline" size="lg" className="flex-1 whitespace-nowrap px-4 sm:min-w-36 sm:flex-none sm:px-6" onClick={() => nav('/cardapio')}>Cancelar</Button>
+          <Button type="submit" size="lg" className="flex-1 whitespace-nowrap px-4 sm:min-w-44 sm:flex-none sm:px-6" loading={save.isPending} disabled={up.busy}>Salvar item</Button>
         </div>
       </div>
       <Confirm open={blocker.state === 'blocked'} onOpenChange={() => blocker.reset?.()} title="Sair sem salvar?" confirmLabel="Sair sem salvar" danger
@@ -184,7 +184,7 @@ function MediaBox({ up, hasMedia, onPick, onRemove }: { up: ReturnType<typeof us
     <>
       <label onDragOver={(e) => { e.preventDefault(); setOver(true); }} onDragLeave={() => setOver(false)}
         onDrop={(e) => { e.preventDefault(); setOver(false); const f = e.dataTransfer.files[0]; if (f) onPick(f); }}
-        className={cn('flex cursor-pointer items-center justify-center gap-3 rounded-card border-2 border-dashed px-4 py-5 font-semibold', over ? 'border-gf-orange bg-gf-orange-soft' : 'border-gf-border hover:bg-gf-bg')}>
+        className={cn('flex cursor-pointer flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-card border-2 border-dashed px-4 py-5 text-center font-semibold', over ? 'border-gf-orange bg-gf-orange-soft' : 'border-gf-border hover:bg-gf-bg')}>
         <CloudUpload className="h-6 w-6" />Arraste seu vídeo ou foto <span className="font-normal text-gf-muted">ou clique</span>
         <input type="file" className="sr-only" accept="video/mp4,video/quicktime,image/jpeg,image/png,image/webp,image/heic,image/heif"
           onChange={(e) => { const f = e.target.files?.[0]; if (f) onPick(f); e.target.value = ''; }} />
@@ -204,7 +204,7 @@ function MediaBox({ up, hasMedia, onPick, onRemove }: { up: ReturnType<typeof us
               </p>
             </div>
             {up.phase === 'failed' && up.file && <Button size="sm" variant="outline" onClick={up.retry}><RotateCcw className="h-4 w-4" />Tentar de novo</Button>}
-            <button type="button" aria-label={up.busy ? 'Cancelar envio' : 'Remover mídia'} onClick={onRemove} className="grid h-10 w-10 place-items-center rounded-lg border border-gf-border hover:text-danger">
+            <button type="button" aria-label={up.busy ? 'Cancelar envio' : 'Remover mídia'} onClick={onRemove} className="grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-gf-border hover:text-danger">
               {up.busy ? <X className="h-5 w-5" /> : <Trash2 className="h-5 w-5" />}
             </button>
           </div>

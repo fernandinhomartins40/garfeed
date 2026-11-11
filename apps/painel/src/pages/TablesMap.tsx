@@ -107,7 +107,7 @@ function TableDrawer({ table, onClose }: { table: Table | null; onClose: () => v
     <Sheet open={!!table} onOpenChange={(o) => !o && onClose()} title={table?.name ?? 'Mesa'}>
       {table && (
         <div className="p-6">
-          <h2 className="font-heading text-4xl font-black">{table.name}</h2>
+          <h2 className="break-words pr-10 font-heading text-4xl font-black">{table.name}</h2>
           <p className="text-gf-navy-80">{table.area ?? 'Sem área'}{table.tag && ` · Placa ${table.tag.code}`}</p>
           {table.session ? <>
             <span className="mt-3 inline-flex items-center gap-2 rounded-pill bg-gf-bg px-3 py-1.5"><Clock className="h-4 w-4" />Aberta {ago(table.session.openedAt, now)}</span>

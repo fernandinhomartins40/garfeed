@@ -115,12 +115,12 @@ function GroupDialog({ group, onClose }: { group: OptionGroupWithUsage | null; o
             <SortableList ids={fields.map((f) => f.key)} onReorder={(_, from, to) => move(from, to)}>
               {fields.map((f, i) => (
                 <Sortable key={f.key} id={f.key}>{({ ref, style, handle }) => (
-                  <div ref={ref} style={style} className="flex items-center gap-2 rounded-card border border-gf-border bg-white px-2 py-1.5">
+                  <div ref={ref} style={style} className="flex flex-wrap items-center gap-2 rounded-card border border-gf-border bg-white px-2 py-1.5">
                     <Handle {...handle} />
-                    <Input aria-label="Nome da opção" placeholder="Nome da opção" className="h-10 flex-1 border-0 font-semibold focus:ring-0" {...register(`options.${i}.name`)} />
+                    <Input aria-label="Nome da opção" placeholder="Nome da opção" className="h-11 min-w-0 flex-1 basis-40 border-0 font-semibold focus:ring-0" {...register(`options.${i}.name`)} />
                     <span className="text-gf-muted">R$</span>
-                    <Input aria-label="Preço adicional" inputMode="decimal" placeholder="0,00" className="h-10 w-24 text-right font-heading font-black" {...register(`options.${i}.price`)} />
-                    <button type="button" aria-label="Remover opção" disabled={fields.length === 1} onClick={() => remove(i)} className="p-2 text-gf-navy-80 hover:text-danger disabled:opacity-30"><Trash2 className="h-5 w-5" /></button>
+                    <Input aria-label="Preço adicional" inputMode="decimal" placeholder="0,00" className="h-11 w-24 text-right font-heading font-black" {...register(`options.${i}.price`)} />
+                    <button type="button" aria-label="Remover opção" disabled={fields.length === 1} onClick={() => remove(i)} className="ml-auto grid h-11 w-11 place-items-center text-gf-navy-80 hover:text-danger disabled:opacity-30"><Trash2 className="h-5 w-5" /></button>
                   </div>
                 )}</Sortable>
               ))}

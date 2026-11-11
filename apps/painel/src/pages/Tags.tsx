@@ -58,19 +58,19 @@ export function TagsPage() {
           <Button onClick={() => nav('/placas/vincular')}>Vincular primeira placa</Button></Empty></Card>
       ) : (
         <Card className="overflow-x-auto">
-          <table className="w-full min-w-[720px] text-left text-lg">
+          <table className="table-stack w-full text-left text-lg md:min-w-[720px]">
             <thead><tr className="border-b border-gf-border text-gf-navy-80">
               <th className="px-6 py-4 font-semibold">Código</th><th className="font-semibold">Mesa vinculada</th><th className="font-semibold">Status</th><th className="font-semibold">Última leitura</th><th className="pr-6 text-right font-semibold">Ações</th>
             </tr></thead>
             <tbody>
               {list.map((t) => (
                 <tr key={t.code} className="border-b border-gf-border last:border-0 hover:bg-gf-bg/60">
-                  <td className="px-6 py-4 font-heading text-xl font-black">{t.code}</td>
-                  <td className={t.table ? '' : 'text-gf-muted'}>{t.table?.name ?? 'Não vinculada'}</td>
-                  <td><Badge tone={ST[t.status].tone} className="text-base"><span className={`h-2.5 w-2.5 rounded-full ${ST[t.status].dot}`} />{ST[t.status].label}</Badge></td>
-                  <td>{t.lastReadAt ? ago(t.lastReadAt, now) : '—'}</td>
+                  <td data-primary className="px-6 py-4 font-heading text-xl font-black">{t.code}</td>
+                  <td data-label="Mesa vinculada" className={t.table ? '' : 'text-gf-muted'}>{t.table?.name ?? 'Não vinculada'}</td>
+                  <td data-label="Status"><Badge tone={ST[t.status].tone} className="text-base"><span className={`h-2.5 w-2.5 rounded-full ${ST[t.status].dot}`} />{ST[t.status].label}</Badge></td>
+                  <td data-label="Última leitura">{t.lastReadAt ? ago(t.lastReadAt, now) : '—'}</td>
                   <td className="pr-6 text-right">
-                    <Dropdown trigger={<button className="h-10 w-10 rounded-lg border border-gf-border font-bold data-[state=open]:border-gf-orange">⋮</button>} items={[
+                    <Dropdown trigger={<button aria-label="Ações" className="h-11 w-11 rounded-lg border border-gf-border font-bold data-[state=open]:border-gf-orange">⋮</button>} items={[
                       { label: t.table ? 'Trocar mesa' : 'Vincular a mesa', icon: t.table ? ArrowLeftRight : Link2, hidden: t.status === 'BLOCKED', onSelect: () => nav(`/placas/vincular?code=${t.code}`) },
                       { label: 'Desvincular', icon: Link2Off, hidden: t.status !== 'ACTIVE', onSelect: () => setAct({ tag: t, kind: 'unlink' }) },
                       { label: 'Bloquear', icon: Lock, danger: true, hidden: t.status === 'BLOCKED', onSelect: () => setAct({ tag: t, kind: 'block' }) },

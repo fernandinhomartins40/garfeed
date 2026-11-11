@@ -12,11 +12,13 @@ import { call, errMsg, logout } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/misc';
+import { useThemeColor } from '@/lib/utils';
 
 function Shell({ title, children }: { title: string; children: ReactNode }) {
+  useThemeColor('#F6F7F9'); // bg-gf-bg
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gf-bg px-4 py-10">
-      <div className="w-full max-w-md rounded-2xl border border-gf-border bg-white p-8 shadow-sm">
+    <div className="flex min-h-dvh items-center justify-center bg-gf-bg px-4 py-10">
+      <div className="w-full max-w-md rounded-2xl border border-gf-border bg-white p-6 shadow-sm sm:p-8">
         <img src={logo} alt="Garfeed" className="mx-auto mb-8 h-14 w-auto" />
         <h1 className="mb-4 font-heading text-3xl font-black text-gf-navy">{title}</h1>
         {children}
@@ -24,7 +26,7 @@ function Shell({ title, children }: { title: string; children: ReactNode }) {
     </div>
   );
 }
-const BackToLogin = () => <p className="mt-6 text-center"><Link to="/login" className="font-semibold text-info hover:underline">Voltar para o login</Link></p>;
+const BackToLogin = () => <p className="mt-6 text-center"><Link to="/login" className="inline-flex min-h-11 items-center font-semibold text-info hover:underline">Voltar para o login</Link></p>;
 const ErrorMsg = ({ children }: { children: ReactNode }) => <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm font-medium text-danger">{children}</p>;
 
 export function ForgotPasswordPage() {

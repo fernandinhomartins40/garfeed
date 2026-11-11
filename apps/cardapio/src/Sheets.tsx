@@ -56,8 +56,8 @@ export function OptionsSheet({ item, optionIds = [], note: note0 = '', canOrder,
         <h2 className="flex-1 pr-12 text-center font-heading text-2xl font-black">Personalizar pedido</h2>
       </div>
       <div className="mt-4 flex items-center gap-4">
-        <Thumb item={item} className="h-24 w-32 shrink-0 rounded-xl" />
-        <div>
+        <Thumb item={item} className="h-20 w-24 shrink-0 rounded-xl min-[360px]:h-24 min-[360px]:w-32" />
+        <div className="min-w-0">
           <p className="font-heading text-2xl font-black leading-tight">{item.name}</p>
           <p className="font-heading text-2xl font-black text-orange-text">{formatBRL(itemPrice(item))}</p>
         </div>
@@ -134,9 +134,9 @@ export function Hub({ restaurant: r, table, hasSession, onClose, onCall, onBill,
   );
   return (
     <Sheet label="Menu da mesa" onClose={onClose}>
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <RestLogo r={r} className="h-16 w-16 text-xl" />
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 basis-36">
           <h2 className="font-heading text-xl font-black leading-tight">{r.name}</h2>
           <p className={`flex items-center gap-2 ${r.isOpen ? 'text-success' : 'text-gf-muted'}`}>
             <span className={`h-2.5 w-2.5 rounded-full ${r.isOpen ? 'bg-success' : 'bg-gf-muted'}`} />
@@ -181,8 +181,8 @@ export function CallDialog({ dialog, table, onClose, onAgain }: { dialog: Dialog
   const left = Math.max(0, Math.ceil((dialog.until - now) / 1000));
   const where = table ? ` da ${table.name}` : '';
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-[#142433]/45 p-6">
-      <div role="alertdialog" aria-modal="true" aria-labelledby="call-t" className="w-full max-w-sm rounded-3xl bg-white p-6 text-center shadow-xl">
+    <div className="fixed inset-0 z-50 grid place-items-center bg-[#142433]/45 p-4">
+      <div role="alertdialog" aria-modal="true" aria-labelledby="call-t" className="max-h-[calc(100dvh-2rem)] w-full max-w-sm overflow-y-auto rounded-3xl bg-white p-6 text-center shadow-xl">
         <span className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-gf-orange-soft text-gf-orange">
           <Icon name={dialog.type === 'BILL' ? 'receipt' : 'bell'} className="h-10 w-10" />
         </span>

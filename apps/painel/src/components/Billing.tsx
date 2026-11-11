@@ -182,7 +182,7 @@ export function PlanCard({ plan }: { plan: Plan }) {
     <Card className='p-5'>
       <div className='flex flex-wrap items-center gap-4'>
         <Crown className='h-7 w-7' />
-        <div className='flex-1'><h2 className='font-heading text-2xl font-black'>Plano atual</h2><p className='text-gf-navy-80'>{store ? 'Seu plano e a situação da conta.' : 'Seu plano e opções de assinatura.'}</p></div>
+        <div className='min-w-0 flex-1 basis-48'><h2 className='font-heading text-2xl font-black'>Plano atual</h2><p className='text-gf-navy-80'>{store ? 'Seu plano e a situação da conta.' : 'Seu plano e opções de assinatura.'}</p></div>
         <span className='rounded-pill bg-blue-50 px-4 py-1.5 text-lg font-bold text-info'>{PLAN_LABEL[current]}</span>
         {b && !store && (current === 'NETWORK'
           ? <a href='mailto:contato@garfeed.com.br?subject=Plano%20Rede' className='inline-flex h-11 items-center rounded-lg bg-gf-bg px-4 font-semibold hover:bg-gf-border'>Falar com a gente</a>

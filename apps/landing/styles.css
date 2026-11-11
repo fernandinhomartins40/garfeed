@@ -84,7 +84,7 @@ section { scroll-margin-top: 72px; }
 .hero__txt { display: grid; gap: 18px; justify-items: center; text-align: center; }
 .hero__acoes { display: grid; gap: 14px; justify-items: center; width: 100%; }
 .hero__acoes .btn { width: 100%; max-width: 420px; }
-.link-play { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; text-decoration: none; padding: 6px 4px; }
+.link-play { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-weight: 600; text-decoration: none; padding: 6px 4px; }
 .link-play:hover { text-decoration: underline; }
 .hero__img img { width: 100%; }
 @media (max-width: 767px) { .hero__img img { border-radius: var(--r-media); } }
@@ -93,6 +93,11 @@ section { scroll-margin-top: 72px; }
   .hero__acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 28px; width: auto; }
   .hero__acoes .btn { width: auto; }
   .hero__img { max-width: 820px; margin-left: auto; }
+}
+/* Notebook/tablet (768–1199): a imagem não passa da altura da tela */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .hero__img { max-width: min(640px, 100%); }
+  .exp__img { width: 100%; max-width: 760px; margin: 0 auto; }
 }
 @media (min-width: 1200px) {
   .hero { padding: 16px 0 32px; }
@@ -218,7 +223,7 @@ section { scroll-margin-top: 72px; }
 .cta__txt::before { content: ""; width: 48px; height: 5px; border-radius: 3px; background: var(--orange); }
 .cta__txt p { color: #D5DAE0; font-size: 1.05rem; }
 .cta__acoes { display: grid; gap: 14px; justify-items: center; margin-top: 8px; }
-.cta__wpp { font-weight: 600; padding: 6px; }
+.cta__wpp { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; padding: 6px; }
 .cta__img img { width: min(420px, 80vw); }
 @media (min-width: 768px) {
   .cta__in { grid-template-columns: 1fr auto; align-items: center; text-align: left; justify-items: start; }
@@ -244,7 +249,7 @@ section { scroll-margin-top: 72px; }
   border-top: 1px solid rgba(255, 255, 255, .15); padding-top: 24px; font-size: .95rem;
 }
 .rodape nav { display: flex; gap: 20px; }
-.rodape nav a { text-decoration: none; padding: 4px; }
+.rodape nav a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; padding: 4px; }
 .rodape nav a:hover { text-decoration: underline; }
 @media (min-width: 768px) {
   .rodape__in { flex-direction: row; gap: 32px; }

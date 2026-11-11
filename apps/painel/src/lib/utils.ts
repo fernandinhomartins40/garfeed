@@ -1,8 +1,20 @@
+import { useEffect } from 'react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { TagCode } from '@garfeed/shared';
 
 export const cn = (...v: ClassValue[]) => twMerge(clsx(v));
+
+/** Telas claras de tela cheia: o app iOS pinta a barra de status pelo theme-color; volta ao marinho ao sair. */
+export function useThemeColor(color: string) {
+  useEffect(() => {
+    const m = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    if (!m) return;
+    const prev = m.content;
+    m.content = color;
+    return () => { m.content = prev; };
+  }, [color]);
+}
 
 export const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3000').replace(/\/$/, '');
 export const TAG_BASE_URL = import.meta.env.VITE_TAG_BASE_URL || 'https://g.garfeed.com.br';

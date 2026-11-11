@@ -64,7 +64,7 @@ export function SignupPage() {
   return (
     <AuthSplit>
       <form onSubmit={onSubmit} noValidate className="w-full max-w-md">
-        <h1 className="font-heading text-4xl font-black text-gf-navy md:text-5xl">Criar conta grátis</h1>
+        <h1 className="font-heading text-4xl font-black text-gf-navy xl:text-5xl">Criar conta grátis</h1>
         <p className="mb-6 mt-2 text-lg text-gf-navy-80">{TRIAL_DAYS} dias grátis, sem cartão.</p>
         {FIELDS.map(([name, label, Icon, type, auto, ph]) => (
           <div key={name} className="mb-4">

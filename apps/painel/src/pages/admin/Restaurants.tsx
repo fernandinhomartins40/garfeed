@@ -100,7 +100,7 @@ function CreateDialog({ onClose }: { onClose: () => void }) {
       <form onSubmit={handleSubmit((b) => m.mutate(b))} className="space-y-4">
         <Field label="Nome" error={errors.name?.message}><Input {...register('name', { onChange: (e: React.ChangeEvent<HTMLInputElement>) => setValue('slug', slugify(e.target.value)) })} /></Field>
         <Field label="Endereço (slug)" error={errors.slug?.message}><Input {...register('slug')} /></Field>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Plano"><Select {...register('plan')}>{Plan.options.map((p) => <option key={p} value={p}>{PLAN_LABEL[p]}</option>)}</Select></Field>
           <Field label="Status"><Select {...register('status')}>{RestStatus.options.map((p) => <option key={p} value={p}>{STATUS_LABEL[p]}</option>)}</Select></Field>
         </div>

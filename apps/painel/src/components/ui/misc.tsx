@@ -17,13 +17,13 @@ export const Badge = ({ tone = 'gray', className, ...p }: HTMLAttributes<HTMLSpa
 
 export const PageTitle = ({ children, actions }: { children: ReactNode; actions?: ReactNode }) => (
   <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-    <h1 className="font-heading text-4xl font-black text-gf-navy md:text-5xl">{children}</h1>
+    <h1 className="font-heading text-4xl font-black text-gf-navy xl:text-5xl">{children}</h1>
     {actions && <div className="flex flex-wrap gap-3">{actions}</div>}
   </div>
 );
 
 export const MoreButton = forwardRef<HTMLButtonElement, HTMLAttributes<HTMLButtonElement>>((p, ref) => (
-  <button ref={ref} type="button" className="grid h-10 w-10 place-items-center rounded-lg border border-gf-border bg-white text-gf-navy hover:bg-gf-bg data-[state=open]:border-gf-orange" {...p}>
+  <button ref={ref} type="button" className="grid h-11 w-11 place-items-center rounded-lg border border-gf-border bg-white text-gf-navy hover:bg-gf-bg data-[state=open]:border-gf-orange" {...p}>
     <MoreHorizontal className="h-5 w-5" />
   </button>
 ));

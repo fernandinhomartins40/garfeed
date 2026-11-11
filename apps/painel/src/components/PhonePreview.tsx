@@ -10,7 +10,7 @@ export function PhonePreview({ name, description, priceCents, promoPriceCents, b
 }) {
   const price = promoPriceCents ?? priceCents;
   return (
-    <div className="mx-auto w-[280px] rounded-[44px] border-[10px] border-gf-navy bg-gf-navy shadow-2xl" aria-label="Prévia no celular">
+    <div className="mx-auto w-full max-w-[280px] rounded-[44px] border-[10px] border-gf-navy bg-gf-navy shadow-2xl" aria-label="Prévia no celular">
       <div className="relative aspect-[9/19] overflow-hidden rounded-[34px] bg-neutral-900 text-white">
         {media?.type === 'VIDEO' ? <video src={media.url} poster={media.poster ?? undefined} autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-cover" />
           : media ? <img src={media.url} alt="" className="absolute inset-0 h-full w-full object-cover" />

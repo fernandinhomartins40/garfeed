@@ -7,7 +7,7 @@ import { api, type Table, type Tag, type TableRef } from '@garfeed/shared';
 import logo from '@/assets/logo-horizontal-cor.svg';
 import { ApiError, call, errMsg } from '@/lib/api';
 import { qk } from '@/lib/live';
-import { cn, extractTagCode } from '@/lib/utils';
+import { cn, extractTagCode, useThemeColor } from '@/lib/utils';
 import { isNative, scanNfcNative } from '@/lib/native';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,6 +18,7 @@ const STEP_N: Record<Step, number> = { choose: 1, scan: 2, nfc: 2, type: 2, tabl
 const hasNfc = () => 'NDEFReader' in window || isNative();
 
 export function LinkTagPage() {
+  useThemeColor('#FFFFFF');
   const nav = useNavigate();
   const qc = useQueryClient();
   const [params] = useSearchParams();
@@ -54,15 +55,15 @@ export function LinkTagPage() {
   const reset = () => { setTag(null); setLinked(null); setLookupErr(''); setStep('choose'); void qc.invalidateQueries({ queryKey: ['tags'] }); };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="mx-auto flex min-h-screen max-w-md flex-col">
-        <header className="flex items-center gap-3 border-b border-gf-border px-5 py-4">
+    <div className="min-h-dvh bg-white">
+      <div className="mx-auto flex min-h-dvh max-w-md flex-col">
+        <header className="flex items-center gap-3 border-b border-gf-border px-5 pb-4 pt-[max(1rem,env(safe-area-inset-top))]">
           <button onClick={back} aria-label="Voltar" className="grid h-11 w-11 place-items-center rounded-xl bg-gf-bg"><ArrowLeft className="h-6 w-6" /></button>
           <img src={logo} alt="Garfeed" className="mx-auto h-9 pr-11" />
         </header>
         <div className="flex-1 px-5 pb-6 pt-6">
           {step !== 'done' && <>
-            <h1 className="font-heading text-4xl font-black">{step === 'scan' ? 'Escanear placa' : step === 'nfc' ? 'Aproximar placa' : step === 'type' ? 'Digitar código' : 'Vincular placa'}</h1>
+            <h1 className="font-heading text-3xl font-black sm:text-4xl">{step === 'scan' ? 'Escanear placa' : step === 'nfc' ? 'Aproximar placa' : step === 'type' ? 'Digitar código' : 'Vincular placa'}</h1>
             <p className="mt-3 text-lg text-gf-navy-80">Passo {STEP_N[step]} de 4</p>
             <div className="mt-2 h-2.5 rounded-full bg-gf-border"><div className="h-full rounded-full bg-gf-orange transition-all" style={{ width: `${STEP_N[step] * 25}%` }} /></div>
           </>}
@@ -266,7 +267,7 @@ function PickTable({ tag, preset, onDone }: { tag: Tag; preset: string | null; o
         ))}
         {tables.data && !list.length && <li className="py-6 text-center text-gf-muted">Nenhuma mesa encontrada. <Link className="text-gf-orange underline" to="/mesas/gerenciar">Criar mesas</Link></li>}
       </ul>
-      <div className="fixed inset-x-0 bottom-0 bg-white/95 p-4 backdrop-blur"><div className="mx-auto max-w-md">
+      <div className="fixed inset-x-0 bottom-0 bg-white/95 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 backdrop-blur"><div className="mx-auto max-w-md">
         <Button size="lg" className="h-16 w-full rounded-2xl font-heading text-2xl font-black" disabled={!table} loading={link.isPending} onClick={submit}>
           {table ? `Vincular à ${table.name}` : 'Escolha uma mesa'} <ArrowRight className="h-6 w-6" />
         </Button>

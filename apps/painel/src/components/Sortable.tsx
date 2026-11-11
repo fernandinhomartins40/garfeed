@@ -36,7 +36,7 @@ export function Sortable({ id, children }: { id: string; children: Render }) {
 }
 
 export const Handle = ({ className, ...p }: HTMLAttributes<HTMLElement>) => (
-  <span aria-label="Arrastar para reordenar" className={cn('cursor-grab touch-none rounded p-1 text-gf-muted hover:text-gf-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gf-orange active:cursor-grabbing', className)} {...p}>
+  <span aria-label="Arrastar para reordenar" className={cn('grid h-11 w-11 shrink-0 cursor-grab touch-none place-items-center rounded text-gf-muted hover:text-gf-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gf-orange active:cursor-grabbing', className)} {...p}>
     <GripVertical className="h-5 w-5" />
   </span>
 );

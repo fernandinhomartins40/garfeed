@@ -109,9 +109,9 @@ export function MenuPage() {
               <Sortable key={c.id} id={c.id}>{({ ref, style, handle, dragging }) => (
                 <div ref={ref} style={style} className={cn('flex h-14 items-center gap-1 rounded-card border bg-white pl-2 pr-5 shadow-card', c.id === catId ? 'border-gf-orange bg-gf-orange-soft' : 'border-gf-border', dragging && 'shadow-xl')}>
                   <Handle {...handle} />
-                  <button className={cn('flex-1 px-2 text-lg font-semibold', c.id === catId ? 'text-gf-orange' : 'text-gf-navy', !c.visible && 'line-through opacity-60')}
+                  <button className={cn('min-h-11 flex-1 px-2 text-lg font-semibold', c.id === catId ? 'text-gf-orange' : 'text-gf-navy', !c.visible && 'line-through opacity-60')}
                     onClick={() => setParams({ categoria: c.id }, { replace: true })}>{c.name}</button>
-                  {c.id === catId && <button aria-label="Editar categoria" onClick={() => setCatDialog(c)} className="rounded p-1 text-gf-orange hover:bg-white"><Pencil className="h-4 w-4" /></button>}
+                  {c.id === catId && <button aria-label="Editar categoria" onClick={() => setCatDialog(c)} className="-mr-3 grid h-11 w-11 place-items-center rounded text-gf-orange hover:bg-white"><Pencil className="h-4 w-4" /></button>}
                 </div>
               )}</Sortable>
             ))}
@@ -119,7 +119,7 @@ export function MenuPage() {
           <Link to="/cardapio/opcionais" className="ml-auto"><Button variant="ghost"><Layers className="h-5 w-5" />Grupos de opcionais</Button></Link>
         </div>
         <Card className="overflow-x-auto">
-          <table className="w-full min-w-[900px] text-left">
+          <table className="table-stack w-full text-left md:min-w-[900px]">
             <thead><tr className="border-b border-gf-border text-gf-navy-80">
               <th className="w-8" /><th className="py-4 pl-2 font-semibold">Item</th><th className="font-semibold">Preço</th><th className="font-semibold">Selos</th>
               <th className="font-semibold">Mídia</th><th className="font-semibold">Esgotado hoje</th><th className="font-semibold">Visível</th><th />
@@ -134,20 +134,20 @@ export function MenuPage() {
                     <Sortable key={i.id} id={i.id}>{({ ref, style, handle }) => (
                       <tr ref={ref} style={style} className="border-b border-gf-border bg-white last:border-0">
                         <td className="pl-2"><Handle {...handle} /></td>
-                        <td className="py-3 pl-2">
+                        <td data-primary className="py-3 pl-2">
                           <Link to={`/cardapio/itens/${i.id}`} className="flex items-center gap-4">
-                            {thumbOf(i.media) ? <img src={thumbOf(i.media)!} alt="" className="h-24 w-[54px] rounded-lg object-cover sm:h-24 sm:w-24" />
-                              : <span className="grid h-24 w-24 place-items-center rounded-lg bg-gf-bg text-gf-muted"><ImageOff className="h-6 w-6" /></span>}
-                            <span className="font-heading text-xl font-extrabold leading-tight">{i.name}</span>
+                            {thumbOf(i.media) ? <img src={thumbOf(i.media)!} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover sm:h-24 sm:w-24" />
+                              : <span className="grid h-16 w-16 shrink-0 place-items-center rounded-lg bg-gf-bg text-gf-muted sm:h-24 sm:w-24"><ImageOff className="h-6 w-6" /></span>}
+                            <span className="min-w-0 break-words font-heading text-xl font-extrabold leading-tight">{i.name}</span>
                           </Link>
                         </td>
-                        <td className="whitespace-nowrap font-heading text-xl font-black">
+                        <td data-label="Preço" className="whitespace-nowrap font-heading text-xl font-black">
                           {i.promoPriceCents != null ? <><s className="block text-sm font-semibold text-gf-muted">{formatBRL(i.priceCents)}</s>{formatBRL(i.promoPriceCents)}</> : formatBRL(i.priceCents)}
                         </td>
-                        <td><div className="flex flex-wrap gap-1">{i.badges.map((b) => { const S = BADGE_STYLE[b]; return <Badge key={b} tone={S.tone}><S.icon className="h-4 w-4" />{BADGE_LABEL[b]}</Badge>; })}</div></td>
-                        <td><MediaStatus m={i.media} /></td>
-                        <td><Switch tone="danger" checked={i.soldOut} aria-label={`Esgotado hoje: ${i.name}`} onCheckedChange={(v) => patchItem.mutate({ id: i.id, soldOut: v })} /></td>
-                        <td><Switch checked={i.visible} aria-label={`Visível: ${i.name}`} onCheckedChange={(v) => patchItem.mutate({ id: i.id, visible: v })} /></td>
+                        <td data-label={i.badges.length ? 'Selos' : undefined}><div className="flex flex-wrap gap-1">{i.badges.map((b) => { const S = BADGE_STYLE[b]; return <Badge key={b} tone={S.tone}><S.icon className="h-4 w-4" />{BADGE_LABEL[b]}</Badge>; })}</div></td>
+                        <td data-label="Mídia"><MediaStatus m={i.media} /></td>
+                        <td data-label="Esgotado hoje"><Switch tone="danger" checked={i.soldOut} aria-label={`Esgotado hoje: ${i.name}`} onCheckedChange={(v) => patchItem.mutate({ id: i.id, soldOut: v })} /></td>
+                        <td data-label="Visível"><Switch checked={i.visible} aria-label={`Visível: ${i.name}`} onCheckedChange={(v) => patchItem.mutate({ id: i.id, visible: v })} /></td>
                         <td className="pr-4 text-right">
                           <Dropdown trigger={<MoreButton />} items={[
                             { label: 'Editar', icon: Pencil, onSelect: () => nav(`/cardapio/itens/${i.id}`) },

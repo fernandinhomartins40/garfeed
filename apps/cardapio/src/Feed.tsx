@@ -150,7 +150,7 @@ const Slide = memo(function Slide({ it, i, active, near, ahead, canOrder, fav, h
       </div>
       <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent via-35% to-black/90" />
 
-      <div className="absolute right-3 top-[56%] z-[1] flex -translate-y-1/2 flex-col items-center gap-4">
+      <div className="absolute right-3 top-[56%] z-[1] flex -translate-y-1/2 flex-col items-center gap-4 [@media(max-height:500px)]:top-[62%] [@media(max-height:500px)]:gap-2">
         <button type="button" aria-pressed={fav} aria-label={fav ? 'Remover dos favoritos' : 'Favoritar'} onClick={() => onFav(it)}
           className={`grid h-14 w-14 place-items-center rounded-full bg-black/45 backdrop-blur ${fav ? 'text-accent' : 'text-white'}`}>
           <Icon name="heart" className="h-8 w-8" fill={fav} />
@@ -166,7 +166,7 @@ const Slide = memo(function Slide({ it, i, active, near, ahead, canOrder, fav, h
         </button>
       </div>
 
-      <div className={`absolute inset-x-0 bottom-0 px-5 text-white ${bottomGap ? 'pb-24' : 'pb-8'}`}>
+      <div className={`absolute inset-x-0 bottom-0 px-5 text-white ${bottomGap ? 'pb-24 [@media(max-height:500px)]:pb-20' : 'pb-8 [@media(max-height:500px)]:pb-4'}`}>
         <div className="mr-16">
           <div className="mb-2 flex flex-wrap gap-2">
             {it.soldOut && (
@@ -178,7 +178,7 @@ const Slide = memo(function Slide({ it, i, active, near, ahead, canOrder, fav, h
               <span key={b} className="rounded-pill bg-gf-orange-soft px-3 py-1 text-sm font-bold text-orange-text">{BADGE_EMOJI[b]} {BADGES[b]}</span>
             ))}
           </div>
-          <h2 className="font-heading text-4xl font-black leading-[1.05] drop-shadow">{it.name}</h2>
+          <h2 className="break-words font-heading text-4xl font-black leading-[1.05] drop-shadow [@media(max-height:500px)]:text-2xl">{it.name}</h2>
           {it.description && (
             <>
               <p className={`mt-2 text-base leading-snug text-white/95 ${more ? '' : 'line-clamp-2'}`}>{it.description}</p>
@@ -189,7 +189,7 @@ const Slide = memo(function Slide({ it, i, active, near, ahead, canOrder, fav, h
               )}
             </>
           )}
-          <p className="mt-1 font-heading text-4xl font-black">
+          <p className="mt-1 font-heading text-4xl font-black [@media(max-height:500px)]:text-2xl">
             {formatBRL(price)}
             {it.promoPriceCents != null && <s className="ml-2 align-middle text-lg font-bold text-white/70">{formatBRL(it.priceCents)}</s>}
           </p>

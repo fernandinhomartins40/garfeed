@@ -44,7 +44,7 @@ export function LivePage() {
   return (
     <div className="px-4 pb-8 pt-4 md:px-8">
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="font-heading text-4xl font-black md:text-5xl">Ao vivo</h1>
+        <h1 className="font-heading text-4xl font-black xl:text-5xl">Ao vivo</h1>
         <span className={cn('inline-flex items-center gap-2 rounded-pill px-3 py-1.5 font-semibold', connected ? 'bg-green-50 text-success' : 'bg-amber-50 text-amber-700')}>
           <span className={cn('h-2.5 w-2.5 rounded-full', connected ? 'bg-success' : 'bg-warning')} />{connected ? 'Conectado' : 'Reconectando…'}
         </span>
@@ -54,10 +54,10 @@ export function LivePage() {
           <Counter icon={CircleCheck} tone="bg-green-50 text-success" label={`${cols.prontos.length} ${cols.prontos.length === 1 ? 'pronto' : 'prontos'}`} />
         </div>
         {user.role !== 'KITCHEN' && (
-          <div role="group" aria-label="Filtrar por setor" className="ml-auto flex rounded-xl border border-gf-border bg-white p-1 shadow-card">
+          <div role="group" aria-label="Filtrar por setor" className="flex max-w-full rounded-xl border border-gf-border bg-white p-1 shadow-card sm:ml-auto">
             {([[null, 'Todos', null], ['KITCHEN', 'Cozinha', ChefHat], ['BAR', 'Bar', Beer]] as const).map(([v, l, Icon]) => (
               <button key={l} onClick={() => setSector(v)} aria-pressed={sector === v}
-                className={cn('flex h-10 items-center gap-2 rounded-lg px-4 font-medium', sector === v ? 'bg-gf-orange text-white' : 'text-gf-navy hover:bg-gf-bg')}>
+                className={cn('flex h-11 min-w-0 items-center gap-2 rounded-lg px-3 font-medium sm:px-4', sector === v ? 'bg-gf-orange text-white' : 'text-gf-navy hover:bg-gf-bg')}>
                 {Icon && <Icon className="h-5 w-5" />}{l}
               </button>
             ))}
@@ -78,7 +78,7 @@ export function LivePage() {
         : empty ? (
           <Card className="mt-6"><Empty icon={<Coffee className="h-12 w-12 text-gf-orange" />} title="Tudo tranquilo por aqui ☕" text="Os pedidos aparecem aqui com som" /></Card>
         ) : (
-          <div className="mt-5 grid gap-4 lg:grid-cols-3">
+          <div className="mt-5 grid gap-4 lg:snap-x lg:auto-cols-[minmax(19rem,1fr)] lg:grid-flow-col lg:overflow-x-auto lg:pb-2 xl:grid-flow-row xl:grid-cols-3 xl:overflow-visible xl:pb-0">
             <Column icon={Inbox} title="Novos" count={cols.novos.length} tone="text-info">
               {cols.novos.map((o) => <OrderCard key={o.id} o={o} now={now} sector={sector} onReject={() => setRejecting(o)} />)}
             </Column>
@@ -101,9 +101,9 @@ function Counter({ icon: Icon, tone, label }: { icon: typeof Inbox; tone: string
 
 function Column({ icon: Icon, title, count, tone, children }: { icon: typeof Inbox; title: string; count: number; tone: string; children: React.ReactNode }) {
   return (
-    <section className="flex min-h-40 flex-col rounded-card border border-gf-border bg-white/70 shadow-card lg:max-h-[calc(100vh-15rem)]">
-      <h2 className="flex items-center gap-3 border-b border-gf-border px-4 py-3 font-heading text-2xl font-black uppercase">
-        <Icon className={cn('h-7 w-7', tone)} />{title} <span className="font-sans text-xl font-semibold text-gf-muted">({count})</span>
+    <section className="flex min-h-40 min-w-0 snap-start flex-col rounded-card border border-gf-border bg-white/70 shadow-card lg:max-h-[calc(100dvh-12rem)] lg:min-h-[24rem]">
+      <h2 className="flex flex-wrap items-center gap-x-3 border-b border-gf-border px-4 py-3 font-heading text-2xl font-black uppercase">
+        <Icon className={cn('h-7 w-7 shrink-0', tone)} />{title} <span className="font-sans text-xl font-semibold text-gf-muted">({count})</span>
       </h2>
       <div className="flex-1 space-y-3 overflow-y-auto p-3">{children}</div>
     </section>
@@ -136,7 +136,7 @@ function OrderCard({ o, now, sector, onReject }: { o: PanelOrder; now: number; s
           {late && <span className="inline-flex items-center gap-1 rounded-pill bg-red-100 px-2.5 py-1 text-sm font-semibold text-danger"><AlertCircle className="h-4 w-4" />Atrasado · {ago(o.createdAt, now)}</span>}
         </div>
         <p className="mt-1 flex justify-between gap-2 text-gf-navy-80">
-          <span className="truncate">Pedido nº{num(o.number)}{o.customerName && ` · ${o.customerName}`}</span>
+          <span className="min-w-0 break-words">Pedido nº{num(o.number)}{o.customerName && ` · ${o.customerName}`}</span>
           {!late && <span className="whitespace-nowrap font-semibold text-gf-orange">{o.status === 'PREPARING' ? 'Em preparo · ' : ''}{ago(o.createdAt, now)}</span>}
         </p>
       </header>
@@ -145,7 +145,7 @@ function OrderCard({ o, now, sector, onReject }: { o: PanelOrder; now: number; s
           <li key={i.id} className="flex items-start gap-3 py-2">
             <Thumb src={i.thumbUrl} />
             <div className="min-w-0 flex-1">
-              <p className="font-heading text-lg font-extrabold leading-tight">{i.quantity}× {i.name}</p>
+              <p className="break-words font-heading text-lg font-extrabold leading-tight">{i.quantity}× {i.name}</p>
               {i.options.length > 0 && <p className="text-sm text-gf-muted">{i.options.map((x) => x.option).join(', ')}</p>}
             </div>
             <span className="whitespace-nowrap font-heading text-lg font-extrabold">{formatBRL(i.unitPriceCents * i.quantity)}</span>
@@ -162,7 +162,7 @@ function OrderCard({ o, now, sector, onReject }: { o: PanelOrder; now: number; s
         <span className="font-heading text-xl font-black">Total</span>
         <span className="font-heading text-2xl font-black text-gf-orange">{formatBRL(o.totalCents)}</span>
       </div>
-      <div className="mt-3 flex gap-3">
+      <div className="mt-3 flex flex-wrap gap-3">
         {o.status === 'PENDING' && <>
           <Button className="h-12 min-w-0 flex-1 rounded-xl px-3 text-lg" loading={m.isPending} onClick={() => m.mutate({ status: 'CONFIRMED' })}><Check className="h-5 w-5" />Aceitar</Button>
           <Button variant="outline" className="h-12 min-w-0 flex-1 rounded-xl border-0 bg-gf-bg px-3 text-lg" disabled={m.isPending} onClick={onReject}><X className="h-5 w-5" />Recusar</Button>
@@ -187,11 +187,11 @@ function RejectDialog({ order, onClose }: { order: PanelOrder | null; onClose: (
       description={order && `${order.table.name} · Pedido nº${num(order.number)}. O cliente verá o motivo.`}>
       <div className="flex flex-wrap gap-2">
         {REASONS.map((r) => (
-          <button key={r} onClick={() => setReason(r)} className={cn('rounded-pill border px-3 py-1.5 text-sm font-medium', reason === r ? 'border-gf-orange bg-gf-orange-soft text-gf-orange' : 'border-gf-border')}>{r}</button>
+          <button key={r} onClick={() => setReason(r)} className={cn('min-h-11 rounded-pill border px-3 py-1.5 text-sm font-medium', reason === r ? 'border-gf-orange bg-gf-orange-soft text-gf-orange' : 'border-gf-border')}>{r}</button>
         ))}
       </div>
       <Input className="mt-3" maxLength={140} placeholder="Motivo da recusa" value={reason} onChange={(e) => setReason(e.target.value)} aria-label="Motivo da recusa" />
-      <div className="mt-6 flex justify-end gap-3">
+      <div className="mt-6 flex flex-wrap justify-end gap-3">
         <Button variant="outline" onClick={onClose}>Cancelar</Button>
         <Button variant="danger" disabled={!reason.trim()} loading={m.isPending}
           onClick={() => m.mutate({ status: 'REJECTED', reason: reason.trim() }, { onSuccess: () => { onClose(); setReason(''); } })}>Recusar pedido</Button>
@@ -210,9 +210,9 @@ function CallCard({ c, now }: { c: PanelCall; now: number }) {
     onError: (e) => toast.error(errMsg(e)),
   });
   return (
-    <div className={cn('flex items-center gap-3 rounded-card border px-4 py-3', bill ? 'animate-ring border-red-200 bg-red-50' : 'animate-ring-green border-green-200 bg-green-50')}>
+    <div className={cn('flex flex-wrap items-center gap-3 rounded-card border px-4 py-3', bill ? 'animate-ring border-red-200 bg-red-50' : 'animate-ring-green border-green-200 bg-green-50')}>
       {bill ? <ReceiptText className="h-7 w-7 shrink-0 text-danger" /> : <Bell className="h-7 w-7 shrink-0 text-success" />}
-      <p className="flex-1 text-lg">
+      <p className="min-w-0 flex-1 basis-40 text-lg">
         <b className={cn('font-heading font-black', bill && 'text-danger')}>{c.table.name}</b>
         <span className={bill ? 'text-danger' : ''}> · {bill ? 'Pediu a conta' : 'Chamou o garçom'} · {ago(c.createdAt, now)}</span>
       </p>

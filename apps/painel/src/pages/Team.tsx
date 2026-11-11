@@ -46,20 +46,20 @@ export function TeamPage() {
         <Card><Empty icon={<Users className="h-12 w-12 text-gf-orange" />} title="Só você por aqui" text="Convide garçons, cozinha e gerentes." /></Card>
       ) : (
         <Card className="overflow-x-auto">
-          <table className="w-full min-w-[760px] text-left">
+          <table className="table-stack w-full text-left md:min-w-[760px]">
             <thead><tr className="border-b border-gf-border text-gf-navy-80">
               <th className="px-6 py-4 font-semibold">Nome</th><th className="font-semibold">Papel</th><th className="font-semibold">E-mail</th><th className="font-semibold">Último acesso</th><th className="font-semibold">Status</th><th />
             </tr></thead>
             <tbody>
               {users.data.map((u) => (
                 <tr key={u.id} className={cn('border-b border-gf-border last:border-0', !u.active && 'opacity-60')}>
-                  <td className="px-6 py-4"><span className="flex items-center gap-3">
+                  <td data-primary className="px-6 py-4"><span className="flex items-center gap-3">
                     <span className="grid h-11 w-11 place-items-center rounded-xl bg-gf-orange-soft font-heading text-lg font-black text-gf-orange">{initials(u.name)}</span>
-                    <b className="font-heading text-lg">{u.name}</b></span></td>
-                  <td><span className="rounded-lg bg-gf-bg px-3 py-1.5">{ROLE_LABEL[u.role]}{u.sector && ` · ${u.sector === 'BAR' ? 'Bar' : 'Cozinha'}`}</span></td>
-                  <td className="text-gf-navy-80">{u.email}</td>
-                  <td className="text-gf-navy-80">{u.lastLoginAt ? ago(u.lastLoginAt) : 'Nunca entrou'}</td>
-                  <td><StatusCell u={u} /></td>
+                    <b className="min-w-0 break-words font-heading text-lg">{u.name}</b></span></td>
+                  <td data-label="Papel"><span className="inline-block rounded-lg bg-gf-bg px-3 py-1.5">{ROLE_LABEL[u.role]}{u.sector && ` · ${u.sector === 'BAR' ? 'Bar' : 'Cozinha'}`}</span></td>
+                  <td data-label="E-mail" className="break-all text-gf-navy-80">{u.email}</td>
+                  <td data-label="Último acesso" className="text-gf-navy-80">{u.lastLoginAt ? ago(u.lastLoginAt) : 'Nunca entrou'}</td>
+                  <td data-label="Status"><StatusCell u={u} /></td>
                   <td className="pr-4 text-right">
                     <Dropdown trigger={<MoreButton />} items={[
                       { label: 'Editar', icon: Pencil, onSelect: () => setEdit(u) },

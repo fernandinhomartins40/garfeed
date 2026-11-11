@@ -24,7 +24,7 @@ export function AdminPlansPage() {
         {Plan.options.map((p) => (
           <Card key={p} className="p-5">
             <p className="font-medium text-gf-navy-80">{PLAN_LABEL[p]}</p>
-            <p className="font-heading text-3xl font-black">{PLAN_PRICE_CENTS[p] == null ? 'Sob consulta' : <>{formatBRL(PLAN_PRICE_CENTS[p])}<span className="text-base font-semibold text-gf-muted"> /mês</span></>}</p>
+            <p className="font-heading text-2xl font-black lg:text-3xl">{PLAN_PRICE_CENTS[p] == null ? 'Sob consulta' : <>{formatBRL(PLAN_PRICE_CENTS[p])}<span className="text-base font-semibold text-gf-muted"> /mês</span></>}</p>
             <p className="text-sm text-gf-muted">{PLAN_PRICE_CENTS[p] == null ? 'Valor definido por restaurante' : `Anual: ${formatBRL(planValueCents(p, 'YEARLY')!)} (pague 10, leve 12)`}</p>
           </Card>
         ))}
