@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Check, Clock, Crown, Eye, EyeOff, ExternalLink, Instagram, Layers, Link2, Play, Store, Upload, UtensilsCrossed, Volume2, Wifi } from 'lucide-react';
+import { Check, Clock, Eye, EyeOff, ExternalLink, Instagram, Layers, Link2, Play, Store, Upload, UtensilsCrossed, Volume2, Wifi } from 'lucide-react';
 import { api, UpdateSettingsBody, type Settings } from '@garfeed/shared';
 import { call, errMsg } from '@/lib/api';
 import { usePrefs } from '@/lib/auth';
@@ -13,12 +13,12 @@ import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Card, ErrorBox, PageTitle, Spinner } from '@/components/ui/misc';
+import { PlanCard } from '@/components/Billing';
 
 const DAYS = [['mon', 'Seg'], ['tue', 'Ter'], ['wed', 'Qua'], ['thu', 'Qui'], ['fri', 'Sex'], ['sat', 'Sáb'], ['sun', 'Dom']] as const;
 type Day = (typeof DAYS)[number][0];
 type Hours = NonNullable<Settings['openingHours']>;
 type Form = Omit<Settings, 'id' | 'slug' | 'plan' | 'status' | 'timezone'>;
-const PLAN = { ESSENTIAL: 'Essencial', PRO: 'Pro', NETWORK: 'Rede' } as const;
 
 export function SettingsPage() {
   const s = useQuery({ queryKey: ['settings'], queryFn: () => call(api.settings.get) });
@@ -174,12 +174,7 @@ function SettingsForm({ s }: { s: Settings }) {
             </div>
           </Section>
 
-          <Card className="flex flex-wrap items-center gap-4 p-5">
-            <Crown className="h-7 w-7" />
-            <div className="flex-1"><h2 className="font-heading text-2xl font-black">Plano atual</h2><p className="text-gf-navy-80">Seu plano e opções de assinatura.</p></div>
-            <span className="rounded-pill bg-blue-50 px-4 py-1.5 text-lg font-bold text-info">{PLAN[s.plan]}</span>
-            <a href="mailto:contato@garfeed.com.br?subject=Plano" className="inline-flex h-11 items-center rounded-lg bg-gf-bg px-4 font-semibold hover:bg-gf-border">Gerenciar plano</a>
-          </Card>
+          <PlanCard plan={s.plan} />
         </div>
       </div>
       <div className="fixed bottom-5 right-5 z-20">

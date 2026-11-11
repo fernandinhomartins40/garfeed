@@ -111,3 +111,41 @@ workflow manual `.github/workflows/apps-nativos.yml` (sem Mac). Guia: `docs/apps
 - **Limites conhecidos:** o token APNs continua ligado ao último usuário que abriu o app naquele aparelho mesmo depois do
   logout (mesmo comportamento do Web Push atual); tocar na notificação abre o app, sem navegar para o pedido; a opção
   "Aproximar (NFC)" aparece também no iPad, que não tem NFC (mostra erro e oferece digitar o código).
+
+## 2026-11-11 — E-mail transacional pelo Velomail
+- **Provedor**: o envio usa o **Velomail**, servidor de e-mail **próprio do dono do projeto** (self-hosted, fora deste compose).
+  Não é SaaS de terceiros, então respeita a regra "tudo self-hosted"; e não é obrigatório: sem `VELOMAIL_API_KEY` a aplicação
+  funciona e só não envia (em dev o link sai no log). Integração por HTTP (`fetch`), sem SDK nem dependência nova.
+- **Domínio**: `garfeed.com.br` autenticado no Velomail — DKIM em `default._domainkey`, DMARC `p=none` (relatórios para o
+  Velomail) e return-path em `uz-mail.garfeed.com.br` (MX + SPF). Nada em `@`: o domínio ainda **não tem MX principal**,
+  então `contato@garfeed.com.br` (Reply-To) só recebe quando houver caixa de entrada configurada.
+- **Remetente** `nao-responda@garfeed.com.br`: a API do Velomail valida `from` como endereço puro (sem nome de exibição).
+- **Envio assíncrono simples** (`lib/mailer.ts`): *fire-and-forget* com 3 tentativas e log, em vez de fila BullMQ — a API não
+  tem worker próprio e os e-mails são reemitíveis pelo usuário ("esqueci minha senha", "reenviar convite").
+- **Convite = usuário sem senha** (`User.passwordHash` passou a ser opcional) + `UserToken` (tipo `INVITE`, 7 dias).
+  O mesmo token/tela serve para recuperação (`PASSWORD_RESET`, 1 h) e para as boas-vindas do dono criado pelo superadmin.
+  `POST /users` e `POST /admin/restaurants` continuam aceitando `password` (compatibilidade); sem ela, vai convite por e-mail.
+  O painel não pede mais senha inicial nessas telas.
+- **Cancelar convite** apaga o usuário (nunca entrou, não há histórico). **Convite pendente** não usa "Esqueci minha senha":
+  o dono reenvia. Lista completa de e-mails, gatilhos e limites em `docs/EMAILS.md`.
+
+## 2026-11-11 — Cobrança da assinatura pelo Asaas
+- **Exceção à regra "sem serviços externos"**, autorizada pelo dono do projeto: o Asaas (plataforma de pagamento dele) cobra a
+  **assinatura dos restaurantes**. É opcional em tempo de execução: sem `ASAAS_API_KEY` a cobrança fica desligada e nada mais muda.
+  Todo o resto continua self-hosted. Detalhes, variáveis e passo a passo em `docs/COBRANCA.md`.
+- **Interpretação de "integrar o Asaas"**: assinatura mensal/anual dos restaurantes (Essencial R$ 129, Pro R$ 199, Rede sob
+  consulta com valor manual; anual = pague 10, leve 12, uma cobrança por ano). O pagamento do cliente final na mesa continua
+  fora do Garfeed (PRD: Pix na mesa é V3).
+- **Modelo**: `Billing` (1:1 com o restaurante: CPF/CNPJ, contato, ids do Asaas, ciclo, valor em centavos, próximo vencimento,
+  situação), `BillingPayment` (espelho das cobranças, alimentado pelos webhooks) e `BillingEvent` (idempotência do webhook).
+- **Forma de pagamento**: `billingType: UNDEFINED` — o pagador escolhe Pix, boleto ou cartão na fatura do Asaas.
+- **Inadimplência**: vencida → situação "Vencido"; após `BILLING_GRACE_DAYS` (padrão 7) → `SUSPENDED`; pagamento reativa.
+  Estorno, chargeback e assinatura cancelada **não suspendem**: só registram (o admin decide).
+- **Fim do teste de 30 dias**: o restaurante `TRIAL` sem assinatura **continua funcionando**. Nada é suspenso automaticamente:
+  a tela Planos marca quem passou de 30 dias (`TRIAL_DAYS`) e o admin decide — ativar a assinatura (o 1º pagamento leva a
+  `ACTIVE`) ou suspender manualmente em Restaurantes. Automatizar só quando o dono definir a regra.
+- **Conta compartilhada**: a conta do Asaas atende outros negócios. O webhook ignora (200) clientes que não são do Garfeed e
+  cobranças avulsas; nunca listamos/alteramos clientes de terceiros.
+- **Limites por plano** (15 mesas, nº de usuários) não são aplicados pelo sistema; plano é informação comercial.
+- **Rotas além do PRD**: `GET /settings/billing`, `GET|PUT|POST|PATCH|DELETE /admin/billing…`, `POST /webhooks/asaas`
+  (`api.billing` no contrato). Erros novos: `BILLING_DISABLED` (503), `BILLING_PROVIDER` (502).

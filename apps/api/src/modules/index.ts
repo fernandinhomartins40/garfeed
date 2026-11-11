@@ -7,6 +7,7 @@ import { env } from '../lib/env';
 import { rateLimit } from '../lib/rateLimit';
 import * as admin from './admin/router';
 import * as auth from './auth/router';
+import * as billing from './billing/router';
 import * as calls from './calls/router';
 import * as events from './events/router';
 import * as media from './media/router';
@@ -38,3 +39,7 @@ routes.use('/users', staff(ROLES.OWNER), users.router);
 routes.use('/settings', staff(ROLES.OWNER), restaurants.router);
 routes.use('/push', staff(ROLES.STAFF), push.router);
 routes.use('/admin', staff(ROLES.ADMIN), admin.router);
+// Cobrança (Asaas). O webhook é público (fora do rate limit de /public): autentica pelo token do Asaas.
+routes.use('/settings/billing', staff(ROLES.OWNER), billing.ownerRouter);
+routes.use('/admin/billing', staff(ROLES.ADMIN), billing.adminRouter);
+routes.use('/webhooks/asaas', billing.webhookRouter);

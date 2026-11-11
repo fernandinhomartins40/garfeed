@@ -11,6 +11,9 @@ name: Build e deploy (GHCR -> VPS)
     paths-ignore:
       - 'docs/**'
       - '**.md'
+      # app nativo: compilado pelo workflow manual apps-nativos.yml
+      - 'apps/mobile/**'
+      - '.github/workflows/apps-nativos.yml'
   workflow_dispatch:
 
 permissions:

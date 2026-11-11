@@ -31,8 +31,23 @@ const Env = z.object({
   APNS_BUNDLE_ID: z.string().optional().transform((s) => s || undefined),
   /** true = api.push.apple.com (TestFlight e App Store); false = sandbox (build de desenvolvimento pelo Xcode). */
   APNS_PRODUCTION: z.stringbool().default(true),
+
+  // E-mail transacional pelo Velomail (docs/EMAILS.md). Sem VELOMAIL_API_KEY = não envia; em dev o e-mail (com o link) vai para o log.
+  VELOMAIL_API_URL: z.string().default('https://www.velomail.com.br/api/emails/send'),
+  VELOMAIL_API_KEY: z.string().optional().transform((s) => s || undefined),
+  MAIL_FROM: z.string().default('nao-responda@garfeed.com.br'),
+  MAIL_REPLY_TO: z.string().default('contato@garfeed.com.br'),
+  /** Base dos links dos e-mails (definir senha, login). */
+  PAINEL_URL: z.string().default('http://localhost:5173').transform((s) => s.replace(/\/+$/, '')),
   /** Requisições por minuto por IP nas rotas /public (o Wi-Fi do restaurante soma todos os celulares). */
   PUBLIC_RATE_LIMIT_PER_MIN: z.coerce.number().int().positive().default(600),
+  // Cobrança da assinatura (Asaas): sem ASAAS_API_KEY = cobrança desligada. URL vazia = sandbox fora de produção.
+  ASAAS_API_URL: z.string().optional().transform((s) => s?.replace(/\/+$/, '') || undefined),
+  ASAAS_API_KEY: z.string().optional().transform((s) => s || undefined),
+  /** Token que o Asaas envia no header asaas-access-token (32 a 255 caracteres, exigência do Asaas). */
+  ASAAS_WEBHOOK_TOKEN: z.string().optional().transform((s) => s || undefined).pipe(z.string().min(32).max(255).optional()),
+  /** Dias de tolerância depois do vencimento antes de suspender o restaurante. */
+  BILLING_GRACE_DAYS: z.coerce.number().int().min(0).default(7),
 });
 
 export const env = Env.parse(process.env);

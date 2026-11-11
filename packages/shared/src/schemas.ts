@@ -34,6 +34,8 @@ export const ErrorCode = z.enum([
   // domínio
   'TAG_NOT_ACTIVE', 'TAG_BLOCKED', 'SESSION_CLOSED', 'RESTAURANT_UNAVAILABLE', 'ITEM_SOLD_OUT',
   'ITEM_UNAVAILABLE', 'INVALID_OPTIONS', 'ORDER_LIMIT', 'CALL_COOLDOWN', 'INVALID_TRANSITION',
+  // cobrança (Asaas): desligada (sem chave) · erro devolvido pelo Asaas
+  'BILLING_DISABLED', 'BILLING_PROVIDER',
 ]);
 export type ErrorCode = z.infer<typeof ErrorCode>;
 /** Toda resposta de erro (4xx/5xx). `message` em pt-BR, pronta para exibir. */
@@ -266,6 +268,21 @@ export const AuthResponse = z.object({
 });
 export type AuthResponse = z.infer<typeof AuthResponse>;
 
+const NewPassword = z.string().min(8, 'Mínimo de 8 caracteres').max(200);
+/** POST /auth/forgot-password — a resposta é sempre 204, exista o e-mail ou não. */
+export const ForgotPasswordBody = LoginBody.pick({ email: true });
+export type ForgotPasswordBody = z.infer<typeof ForgotPasswordBody>;
+/** Token do link do e-mail (recuperação de senha ou convite). */
+export const PasswordTokenBody = z.object({ token: z.string().min(20).max(200) });
+export type PasswordTokenBody = z.infer<typeof PasswordTokenBody>;
+export const ResetPasswordBody = PasswordTokenBody.extend({ password: NewPassword });
+export type ResetPasswordBody = z.infer<typeof ResetPasswordBody>;
+/** O que a tela "Definir senha" mostra antes de enviar (RESET = recuperação · INVITE = convite/boas-vindas). */
+export const PasswordTokenInfo = z.object({
+  purpose: z.enum(['RESET', 'INVITE']), name: z.string(), email: z.string(), restaurantName: z.string().nullable(),
+});
+export type PasswordTokenInfo = z.infer<typeof PasswordTokenInfo>;
+
 /** Payload do JWT de acesso. */
 export const AccessTokenPayload = z.object({
   sub: Id, role: Role, restaurantId: Id.nullable(), sector: Sector.nullable(),
@@ -455,6 +472,8 @@ export type ListCallsQuery = z.infer<typeof ListCallsQuery>;
 export const StaffUser = z.object({
   id: Id, name: z.string(), email: z.string(), role: Role, sector: Sector.nullable(),
   active: z.boolean(), lastLoginAt: IsoDate.nullable(),
+  /** Convite ainda não aceito (usuário sem senha): pendente ou expirado. null = já tem senha. */
+  invite: z.enum(['PENDING', 'EXPIRED']).nullable(),
 });
 export type StaffUser = z.infer<typeof StaffUser>;
 export const CreateUserBody = z.object({
@@ -463,8 +482,8 @@ export const CreateUserBody = z.object({
   role: StaffRole,
   /** Setor da cozinha/bar (só KITCHEN). */
   sector: Sector.nullish(),
-  /** Senha inicial (sem envio de e-mail no MVP). */
-  password: z.string().min(8, 'Mínimo de 8 caracteres').max(200),
+  /** Sem senha = convite por e-mail (a pessoa define a senha pelo link, válido por 7 dias). */
+  password: NewPassword.optional(),
 });
 export type CreateUserBody = z.infer<typeof CreateUserBody>;
 export const UpdateUserBody = CreateUserBody.omit({ email: true }).partial().extend({ active: z.boolean().optional() });
@@ -558,3 +577,108 @@ export type BatchParams = z.infer<typeof BatchParams>;
 
 export const AdminStats = z.object({ activeRestaurants: z.number().int(), ordersToday: z.number().int(), activeTags: z.number().int() });
 export type AdminStats = z.infer<typeof AdminStats>;
+
+// =====================================================================
+// COBRANÇA DA ASSINATURA DO RESTAURANTE (Asaas) — docs/COBRANCA.md
+// =====================================================================
+import { BillingCycle, BillingStatus } from './enums'; // import no bloco: mantém a seção contígua
+/** Data sem hora, AAAA-MM-DD. */
+export const DateOnly = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data inválida (AAAA-MM-DD)');
+/** CPF (11 dígitos) ou CNPJ (14; alfanumérico desde 2026), sem pontuação. */
+export const CpfCnpj = z.string().transform((v) => v.replace(/[\s./-]/g, '').toUpperCase())
+  .pipe(z.string().regex(/^(\d{11}|[0-9A-Z]{12}\d{2})$/, 'CPF ou CNPJ inválido'));
+export const BillingCustomerBody = z.object({
+  cpfCnpj: CpfCnpj,
+  email: z.email('E-mail inválido').trim().toLowerCase().max(254).nullish(),
+  /** DDD + número, só dígitos. */
+  phone: z.string().transform((v) => v.replace(/\D/g, '')).pipe(z.string().regex(/^\d{10,11}$/, 'Telefone inválido (DDD + número)')).nullish(),
+});
+export type BillingCustomerBody = z.infer<typeof BillingCustomerBody>;
+/** Trocar plano/ciclo/valor. `valueCents` = valor de CADA cobrança do ciclo; omitido = tabela (planValueCents); obrigatório no plano Rede. */
+export const BillingSubscriptionBody = z.object({
+  plan: Plan,
+  cycle: BillingCycle,
+  valueCents: z.number().int().min(500, 'Valor mínimo: R$ 5,00').max(10_000_000).optional(),
+});
+export type BillingSubscriptionBody = z.infer<typeof BillingSubscriptionBody>;
+/** Ativar assinatura. `nextDueDate` = 1º vencimento (padrão: hoje + 3 dias). */
+export const ActivateSubscriptionBody = BillingSubscriptionBody.extend({ nextDueDate: DateOnly.optional() });
+export type ActivateSubscriptionBody = z.infer<typeof ActivateSubscriptionBody>;
+
+export const BillingInfo = z.object({
+  cpfCnpj: z.string(),
+  email: z.string().nullable(),
+  phone: z.string().nullable(),
+  /** Tem assinatura ativa no Asaas. */
+  subscribed: z.boolean(),
+  cycle: BillingCycle,
+  valueCents: z.number().int().nullable(),
+  /** Vencimento da fatura em aberto mais antiga; sem fatura em aberto = próxima cobrança da assinatura. */
+  nextDueDate: DateOnly.nullable(),
+  status: BillingStatus,
+});
+export type BillingInfo = z.infer<typeof BillingInfo>;
+export const BillingPayment = z.object({
+  id: Id,
+  valueCents: z.number().int(),
+  dueDate: DateOnly,
+  /** Status da cobrança no Asaas (PENDING, CONFIRMED, RECEIVED, OVERDUE, REFUNDED...) ou DELETED. */
+  status: z.string(),
+  invoiceUrl: z.string().nullable(),
+  paidAt: DateOnly.nullable(),
+});
+export type BillingPayment = z.infer<typeof BillingPayment>;
+export const AdminBilling = z.object({
+  restaurantId: Id, name: z.string(), slug: z.string(), plan: Plan, status: RestStatus, createdAt: IsoDate,
+  /** TRIAL há mais de TRIAL_DAYS dias (só sinaliza; quem decide suspender é o admin). */
+  trialExpired: z.boolean(),
+  billing: BillingInfo.nullable(),
+});
+export type AdminBilling = z.infer<typeof AdminBilling>;
+export const AdminBillingDetail = AdminBilling.extend({ payments: z.array(BillingPayment) });
+export type AdminBillingDetail = z.infer<typeof AdminBillingDetail>;
+/** `enabled: false` = ASAAS_API_KEY não configurada (cobrança desligada). */
+export const AdminBillingList = z.object({ enabled: z.boolean(), restaurants: z.array(AdminBilling) });
+export type AdminBillingList = z.infer<typeof AdminBillingList>;
+/** GET /settings/billing — card "Plano atual" do dono. */
+export const OwnerBilling = z.object({
+  plan: Plan,
+  status: RestStatus,
+  billingStatus: BillingStatus,
+  cycle: BillingCycle.nullable(),
+  valueCents: z.number().int().nullable(),
+  nextDueDate: DateOnly.nullable(),
+  /** Fatura em aberto mais antiga (página de pagamento do Asaas: Pix, boleto ou cartão). */
+  openInvoiceUrl: z.string().nullable(),
+  payments: z.array(BillingPayment),
+});
+export type OwnerBilling = z.infer<typeof OwnerBilling>;
+
+/** Datas do Asaas chegam como AAAA-MM-DD (cobrança) ou DD/MM/AAAA (assinatura). */
+const AsaasDate = z.string().transform((v) => v.replace(/^(\d{2})\/(\d{2})\/(\d{4})$/, '$3-$2-$1').slice(0, 10)).pipe(DateOnly);
+/** POST /webhooks/asaas — só os campos usados; o Asaas pode acrescentar outros. Valores em reais (decimal). */
+export const AsaasWebhookBody = z.object({
+  id: z.string().min(1).max(200),
+  event: z.string().min(1).max(100),
+  payment: z.object({
+    id: z.string().min(1).max(100),
+    customer: z.string().min(1).max(100),
+    subscription: z.string().max(100).nullish(),
+    value: z.number().min(0).max(100_000),
+    dueDate: AsaasDate,
+    status: z.string().min(1).max(50),
+    invoiceUrl: z.string().max(500).nullish(),
+    confirmedDate: AsaasDate.nullish(),
+    paymentDate: AsaasDate.nullish(),
+    clientPaymentDate: AsaasDate.nullish(),
+    deleted: z.boolean().nullish(),
+  }).optional(),
+  subscription: z.object({
+    id: z.string().min(1).max(100),
+    customer: z.string().min(1).max(100),
+    nextDueDate: AsaasDate.nullish(),
+  }).optional(),
+});
+export type AsaasWebhookBody = z.infer<typeof AsaasWebhookBody>;
+export const AsaasWebhookResponse = z.object({ received: z.literal(true), ignored: z.boolean().optional(), duplicate: z.boolean().optional() });
+export type AsaasWebhookResponse = z.infer<typeof AsaasWebhookResponse>;

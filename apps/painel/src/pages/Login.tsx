@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import { api, LoginBody } from '@garfeed/shared';
 import logo from '@/assets/logo-horizontal-cor.svg';
@@ -17,7 +17,6 @@ export function LoginPage() {
   const from = (useLocation().state as { from?: string } | null)?.from;
   const [show, setShow] = useState(false);
   const [error, setError] = useState('');
-  const [forgot, setForgot] = useState(false);
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({ resolver: zodResolver(LoginBody) });
 
   if (user) return <Navigate to={user.role === 'SUPERADMIN' ? '/admin/restaurantes' : '/ao-vivo'} replace />;
@@ -60,9 +59,8 @@ export function LoginPage() {
           </div>
           {errors.password && <p className="mt-1 text-sm text-danger">{errors.password.message}</p>}
           <div className="mt-3 text-right">
-            <button type="button" className="font-semibold text-info hover:underline" onClick={() => setForgot(!forgot)}>Esqueci minha senha</button>
+            <Link to="/esqueci-senha" className="font-semibold text-info hover:underline">Esqueci minha senha</Link>
           </div>
-          {forgot && <p className="mt-2 rounded-lg bg-blue-50 p-3 text-sm text-gf-navy-80">Peça ao dono do restaurante para redefinir sua senha em <b>Equipe</b>. Se você é o dono, fale com o suporte Garfeed.</p>}
           {error && <p role="alert" className="mt-4 rounded-lg bg-red-50 p-3 text-sm font-medium text-danger">{error}</p>}
           <Button type="submit" loading={isSubmitting} className="mt-8 h-16 w-full rounded-2xl text-2xl">Entrar</Button>
         </form>

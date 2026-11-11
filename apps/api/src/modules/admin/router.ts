@@ -8,6 +8,11 @@ import {
 import { prisma } from '../../lib/prisma';
 import { env } from '../../lib/env';
 import { AppError, notFound } from '../../lib/errors';
+import { ownerWelcomeEmail, restaurantStatusEmail, testEmail } from '../../lib/emails';
+import { logger } from '../../lib/logger';
+import { mailConfigured, sendMail, transport } from '../../lib/mailer';
+import { issuePasswordLink } from '../../lib/passwordTokens';
+import { rateLimit } from '../../lib/rateLimit';
 import { localDay } from '../../lib/restaurant';
 import { menuChanged } from '../../lib/menuCache';
 import { validate } from '../../middleware/validate';
@@ -46,18 +51,42 @@ router.post('/restaurants', validate({ body: CreateRestaurantBody }), async (req
   if (await prisma.restaurant.count({ where: { slug: b.slug } })) throw new AppError('CONFLICT', 'Este endereço (slug) já está em uso');
   if (await prisma.user.count({ where: { email: owner.email } })) throw new AppError('CONFLICT', 'Este e-mail já está cadastrado');
   const r = await prisma.restaurant.create({
-    data: { ...b, users: { create: { name: owner.name, email: owner.email, role: 'OWNER', passwordHash: await argon2.hash(owner.password) } } },
-    include: restaurantSelect(),
+    data: { ...b, users: { create: { name: owner.name, email: owner.email, role: 'OWNER', passwordHash: owner.password ? await argon2.hash(owner.password) : null } } },
+    include: { ...restaurantSelect(), users: { select: { id: true } } },
   });
+  // boas-vindas: sem senha inicial, o dono define a dele pelo link (mesmo fluxo do convite, 7 dias)
+  const url = owner.password ? `${env.PAINEL_URL}/login` : await issuePasswordLink(r.users[0]!.id, 'INVITE');
+  sendMail({ to: owner.email, ...ownerWelcomeEmail({ name: owner.name, restaurantName: r.name, url, setPassword: !owner.password }) });
   res.status(201).json(toAdminRestaurant(r));
 });
 
 router.patch('/restaurants/:id', validate({ params: IdParams, body: UpdateRestaurantBody }), async (req, res) => {
   const { id } = req.params as IdParams;
-  if (!(await prisma.restaurant.count({ where: { id } }))) throw notFound('Restaurante');
+  const before = await prisma.restaurant.findUnique({ where: { id } });
+  if (!before) throw notFound('Restaurante');
   const r = await prisma.restaurant.update({ where: { id }, data: req.body as UpdateRestaurantBody, include: restaurantSelect() });
   await menuChanged(id); // status SUSPENDED muda canOrder no cardápio público
+  // suspenso ↔ reativado: avisa os donos
+  if ((before.status === 'SUSPENDED') !== (r.status === 'SUSPENDED')) {
+    const owners = await prisma.user.findMany({ where: { restaurantId: id, role: 'OWNER', active: true } });
+    for (const o of owners) {
+      sendMail({ to: o.email, ...restaurantStatusEmail({ name: o.name, restaurantName: r.name, suspended: r.status === 'SUSPENDED', loginUrl: `${env.PAINEL_URL}/login` }) });
+    }
+  }
   res.json(toAdminRestaurant(r));
+});
+
+/** E-mail de teste para o próprio superadmin. Aqui o envio é aguardado: o objetivo é ver se funcionou. */
+router.post('/test-email', rateLimit('test-email', 5, 3600), async (req, res) => {
+  if (!mailConfigured()) throw new AppError('VALIDATION', 'Envio de e-mail não configurado (VELOMAIL_API_KEY)');
+  const me = await prisma.user.findUniqueOrThrow({ where: { id: req.auth!.sub } });
+  try {
+    await transport.deliver({ to: me.email, ...testEmail({ name: me.name }) });
+  } catch (err) {
+    logger.error({ err }, 'e-mail de teste falhou');
+    throw new AppError('INTERNAL', 'O Velomail recusou o envio. Veja o log da API.');
+  }
+  res.status(204).end();
 });
 
 // ---------- Lotes de placas ----------

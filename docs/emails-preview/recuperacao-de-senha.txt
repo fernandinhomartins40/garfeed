@@ -1,0 +1,17 @@
+Assunto: Redefinir sua senha do Garfeed
+
+Vamos criar uma nova senha
+
+Olá, Carlos!
+
+Recebemos um pedido para redefinir a senha do seu acesso ao painel do Garfeed. Toque no botão para escolher uma nova.
+
+Definir nova senha: https://painel.garfeed.com.br/redefinir-senha?token=EXEMPLO-nao-e-um-token-real
+
+O link vale por 60 minutos e só pode ser usado uma vez. Se você não pediu, ignore este e-mail: sua senha continua a mesma.
+
+--
+Garfeed — cardápio em feed com pedido pela mesa
+https://garfeed.com.br
+Privacidade: https://garfeed.com.br/privacidade/
+Dúvidas: contato@garfeed.com.br

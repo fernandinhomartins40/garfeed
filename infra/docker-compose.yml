@@ -76,6 +76,20 @@ services:
       VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
       VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:contato@garfeed.com.br}
       TAG_BASE_URL: ${TAG_BASE_URL:-https://g.garfeed.com.br}
+      VELOMAIL_API_URL: ${VELOMAIL_API_URL:-}
+      VELOMAIL_API_KEY: ${VELOMAIL_API_KEY:-}
+      MAIL_FROM: ${MAIL_FROM:-}
+      MAIL_REPLY_TO: ${MAIL_REPLY_TO:-}
+      PAINEL_URL: ${PAINEL_URL:-https://painel.garfeed.com.br}
+      ASAAS_API_KEY: ${ASAAS_API_KEY:-}
+      ASAAS_API_URL: ${ASAAS_API_URL:-}
+      ASAAS_WEBHOOK_TOKEN: ${ASAAS_WEBHOOK_TOKEN:-}
+      BILLING_GRACE_DAYS: ${BILLING_GRACE_DAYS:-7}
+      APNS_KEY_ID: ${APNS_KEY_ID:-}
+      APNS_TEAM_ID: ${APNS_TEAM_ID:-}
+      APNS_KEY_P8: ${APNS_KEY_P8:-}
+      APNS_BUNDLE_ID: ${APNS_BUNDLE_ID:-br.com.garfeed.painel}
+      APNS_PRODUCTION: ${APNS_PRODUCTION:-true}
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }

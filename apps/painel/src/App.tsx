@@ -12,6 +12,8 @@ import { Spinner } from './components/ui/misc';
 const page = <K extends string>(load: () => Promise<Record<K, ComponentType>>, name: K) =>
   lazy(() => load().then((m) => ({ default: m[name] })));
 const LoginPage = page(() => import('./pages/Login'), 'LoginPage');
+const ForgotPasswordPage = page(() => import('./pages/Password'), 'ForgotPasswordPage');
+const SetPasswordPage = page(() => import('./pages/Password'), 'SetPasswordPage');
 const LivePage = page(() => import('./pages/Live'), 'LivePage');
 const TablesMapPage = page(() => import('./pages/TablesMap'), 'TablesMapPage');
 const TablesManagePage = page(() => import('./pages/TablesManage'), 'TablesManagePage');
@@ -24,6 +26,7 @@ const TeamPage = page(() => import('./pages/Team'), 'TeamPage');
 const SettingsPage = page(() => import('./pages/Settings'), 'SettingsPage');
 const AdminRestaurantsPage = page(() => import('./pages/admin/Restaurants'), 'AdminRestaurantsPage');
 const AdminTagBatchesPage = page(() => import('./pages/admin/TagBatches'), 'AdminTagBatchesPage');
+const AdminPlansPage = page(() => import('./pages/admin/Plans'), 'AdminPlansPage');
 
 const home = (role?: Role) => (role === 'SUPERADMIN' ? '/admin/restaurantes' : '/ao-vivo');
 
@@ -39,6 +42,10 @@ function Guard({ group, children }: { group?: keyof typeof ROLES; children: Reac
 
 const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
+  { path: '/esqueci-senha', element: <ForgotPasswordPage /> },
+  // links dos e-mails (?token=): recuperação de senha e convite/boas-vindas
+  { path: '/redefinir-senha', element: <SetPasswordPage /> },
+  { path: '/aceitar-convite', element: <SetPasswordPage /> },
   { path: '/placas/vincular', element: <Guard group="MANAGE"><LinkTagPage /></Guard> },
   {
     element: <Guard><RestaurantLayout /></Guard>,
@@ -59,6 +66,7 @@ const router = createBrowserRouter([
     children: [
       { path: '/admin/restaurantes', element: <AdminRestaurantsPage /> },
       { path: '/admin/placas', element: <AdminTagBatchesPage /> },
+      { path: '/admin/planos', element: <AdminPlansPage /> },
     ],
   },
   { path: '*', element: <HomeRedirect /> },

@@ -6,6 +6,7 @@ import { logger } from './logger';
 const STATUS: Partial<Record<ErrorCode, number>> = {
   VALIDATION: 400, UNAUTHORIZED: 401, FORBIDDEN: 403, NOT_FOUND: 404, CONFLICT: 409,
   RATE_LIMITED: 429, CALL_COOLDOWN: 429, ORDER_LIMIT: 429, INTERNAL: 500,
+  BILLING_DISABLED: 503, BILLING_PROVIDER: 502,
 };
 
 /** Erro de negócio com mensagem pt-BR pronta para o usuário. Códigos sem status mapeado → 422. */

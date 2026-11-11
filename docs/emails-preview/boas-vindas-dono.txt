@@ -1,0 +1,19 @@
+Assunto: Bem-vindo ao Garfeed, Carlos!
+
+O Brasa & Pão já está no Garfeed
+
+Olá, Carlos!
+
+Criamos o painel do Brasa & Pão. É por ele que você monta o cardápio em feed, vincula as placas das mesas e acompanha os pedidos em tempo real.
+
+Para o primeiro acesso, defina a sua senha:
+
+Definir minha senha: https://painel.garfeed.com.br/aceitar-convite?token=EXEMPLO-nao-e-um-token-real
+
+O link vale por 7 dias. Depois disso, use "Esqueci minha senha" na tela de login ou fale com a gente em contato@garfeed.com.br.
+
+--
+Garfeed — cardápio em feed com pedido pela mesa
+https://garfeed.com.br
+Privacidade: https://garfeed.com.br/privacidade/
+Dúvidas: contato@garfeed.com.br
