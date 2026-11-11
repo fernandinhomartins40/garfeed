@@ -536,6 +536,9 @@ export const UpdateSettingsBody = z.object({
   googleReviewUrl: z.url().nullable(),
 }).partial();
 export type UpdateSettingsBody = z.infer<typeof UpdateSettingsBody>;
+/** POST /settings/delete-account — o dono confirma com a própria senha. Resposta 204. */
+export const DeleteAccountBody = z.object({ password: LoginBody.shape.password });
+export type DeleteAccountBody = z.infer<typeof DeleteAccountBody>;
 
 /** POST /push/subscribe — PushSubscription.toJSON() do navegador. Resposta 204. */
 export const PushSubscribeBody = z.object({

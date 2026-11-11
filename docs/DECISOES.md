@@ -176,3 +176,15 @@ workflow manual `.github/workflows/apps-nativos.yml` (sem Mac). Guia: `docs/apps
   (`apps/painel/src/lib/storeApp.ts`) esconde "Criar conta", redireciona `/cadastro` → `/login`, e o card "Plano atual" e o
   aviso de teste mostram só a situação — sem assinar/trocar/cancelar/pagar, sem link de fatura, sem histórico e sem nenhum texto
   mandando assinar em outro lugar. No navegador comum tudo continua completo.
+
+## 2026-11-11 — Exclusão de conta e revisão dos apps das lojas
+- **Exclusão da conta pelo dono** (exigência App Store 5.1.1(v) e Google Play): Configurações → "Excluir conta", com a senha
+  do dono (`POST /settings/delete-account`, só OWNER, restaurante do token, 5 tentativas/h por IP). Apaga na hora o restaurante
+  e tudo dele (equipe, cardápio, mídia no MinIO, mesas, pedidos, eventos, cobrança espelhada), cancela a assinatura no Asaas
+  **antes** (se o Asaas falhar, nada é apagado), derruba os tokens da equipe e devolve as placas ao estoque (`UNASSIGNED`, sem
+  restaurante). Equipe (não dono) não se autoexclui: pede ao dono ou por e-mail. Página pública para o campo da Play Console:
+  `https://garfeed.com.br/excluir-conta/` (`apps/landing/excluir-conta/`).
+- **iPad suportado** no app iOS (cozinha usa tablet). Consequência: a Apple exige capturas de iPad 13".
+- **Detecção do app Android** (`isStoreApp`): além do referrer `android-app://`, a `LauncherActivity` acrescenta `?gfapp=android`
+  a toda abertura — o referrer não chega em todos os caminhos (ex.: fallback em Custom Tab).
+- **Barra de status no iOS**: segue a luminância do `<meta name="theme-color">` da página (marinho → texto branco).

@@ -2,14 +2,15 @@ import { useEffect, useState } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Check, Clock, Eye, EyeOff, ExternalLink, Instagram, Layers, Link2, Play, Store, Upload, UtensilsCrossed, Volume2, Wifi } from 'lucide-react';
+import { Check, Clock, Eye, EyeOff, ExternalLink, Instagram, Layers, Link2, Play, Store, Trash2, Upload, UtensilsCrossed, Volume2, Wifi } from 'lucide-react';
 import { api, UpdateSettingsBody, type Settings } from '@garfeed/shared';
-import { call, errMsg } from '@/lib/api';
+import { call, errMsg, logout } from '@/lib/api';
 import { usePrefs } from '@/lib/auth';
 import { playAlert, unlockAudio } from '@/lib/alerts';
 import { useMediaUpload } from '@/lib/upload';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Dialog } from '@/components/ui/dialog';
 import { Field, Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Card, ErrorBox, PageTitle, Spinner } from '@/components/ui/misc';
@@ -31,9 +32,42 @@ function Section({ icon: Icon, title, text, children, className }: { icon: typeo
   return (
     <Card className={cn('p-5', className)}>
       <div className="mb-4 flex gap-3"><Icon className="mt-1 h-7 w-7 shrink-0" />
-        <div><h2 className="font-heading text-2xl font-black">{title}</h2><p className="text-gf-navy-80">{text}</p></div></div>
+        <div className="min-w-0"><h2 className="font-heading text-2xl font-black">{title}</h2><p className="text-gf-navy-80">{text}</p></div></div>
       {children}
     </Card>
+  );
+}
+
+/**
+ * Exclusão da conta (exigência das lojas; também no app da loja). Fica dentro do <form> de Configurações:
+ * só botões type="button" e nenhum <form> no diálogo (o submit atravessaria o portal e salvaria as configurações).
+ */
+function DeleteAccount({ name }: { name: string }) {
+  const [open, setOpen] = useState(false);
+  const [pw, setPw] = useState('');
+  const del = useMutation({
+    mutationFn: () => call(api.settings.deleteAccount, { body: { password: pw } }),
+    onSuccess: async () => { toast.success('Conta excluída. Seus dados foram apagados.'); await logout(); },
+  });
+  const close = (o: boolean) => { if (!del.isPending) { setOpen(o); setPw(''); del.reset(); } };
+  return (
+    <Section icon={Trash2} title="Excluir conta" text="Apaga o restaurante e todos os dados dele de forma definitiva.">
+      <Button variant="outline" className="border-danger text-danger" onClick={() => setOpen(true)}><Trash2 className="h-5 w-5" />Excluir conta</Button>
+      <Dialog open={open} onOpenChange={close} title="Excluir conta?" className="max-w-md">
+        <div className="space-y-3 text-gf-navy-80">
+          <p>Isto apaga <b className="text-gf-navy">{name}</b> e tudo dele: cardápio, fotos e vídeos, mesas, pedidos e os acessos de toda a equipe. A assinatura é cancelada e as placas deixam de abrir o cardápio.</p>
+          <p className="font-semibold text-danger">Não dá para desfazer.</p>
+          <Field label="Digite sua senha para confirmar" error={del.error ? errMsg(del.error) : undefined}>
+            <Input type="password" autoComplete="current-password" value={pw} onChange={(e) => setPw(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (pw) del.mutate(); } }} />
+          </Field>
+        </div>
+        <div className="mt-6 flex flex-wrap justify-end gap-3">
+          <Button variant="outline" disabled={del.isPending} onClick={() => close(false)}>Cancelar</Button>
+          <Button variant="danger" loading={del.isPending} disabled={!pw} onClick={() => del.mutate()}>Excluir definitivamente</Button>
+        </div>
+      </Dialog>
+    </Section>
   );
 }
 
@@ -68,18 +102,18 @@ function SettingsForm({ s }: { s: Settings }) {
     <form onSubmit={onSubmit} className="px-4 pb-28 pt-6 md:px-8">
       <PageTitle>Configurações</PageTitle>
       <div className="grid gap-5 xl:grid-cols-2">
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           <Section icon={Store} title="Dados do restaurante" text="Informações principais que aparecem no seu cardápio.">
             <Field label="Nome do restaurante"><Input className="h-12 font-heading text-lg font-extrabold" {...register('name', { required: true })} /></Field>
-            <div className="mt-5 grid gap-5 sm:grid-cols-[1fr_auto]">
-              <div>
+            <div className="mt-5 flex flex-wrap gap-x-8 gap-y-5">
+              <div className="min-w-0">
                 <p className="mb-2 text-sm font-semibold">Logo do restaurante</p>
-                <div className="flex items-center gap-4">
-                  <span className="grid h-36 w-36 place-items-center overflow-hidden rounded-2xl bg-gf-navy">
+                <div className="flex flex-wrap items-center gap-4">
+                  <span className="grid h-28 w-28 shrink-0 place-items-center sm:h-36 sm:w-36 overflow-hidden rounded-2xl bg-gf-navy">
                     {logoUrl ? <img src={logoUrl} alt="Logo" className="h-full w-full object-cover" /> : <Store className="h-12 w-12 text-white/60" />}
                   </span>
                   <div>
-                    <label className={cn('inline-flex h-10 cursor-pointer items-center gap-2 whitespace-nowrap rounded-lg border border-gf-border bg-gf-bg px-4 font-medium', logo.busy && 'opacity-60')}>
+                    <label className={cn('inline-flex h-11 cursor-pointer items-center gap-2 whitespace-nowrap rounded-lg border border-gf-border bg-gf-bg px-4 font-medium', logo.busy && 'opacity-60')}>
                       <Upload className="h-4 w-4" />{logo.busy ? (logo.phase === 'uploading' ? `Enviando ${logo.progress}%` : 'Processando…') : 'Trocar logo'}
                       <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" disabled={logo.busy} onChange={(e) => { const f = e.target.files?.[0]; if (f) void logo.start(f); e.target.value = ''; }} />
                     </label>
@@ -87,7 +121,7 @@ function SettingsForm({ s }: { s: Settings }) {
                   </div>
                 </div>
               </div>
-              <div className="sm:border-l sm:border-gf-border sm:pl-5">
+              <div className="min-w-0">
                 <p className="mb-2 text-sm font-semibold">Cor do tema</p>
                 <div className="flex gap-2">
                   <input type="color" aria-label="Escolher cor" value={accent ?? '#FE581D'} onChange={(e) => setValue('accentColor', e.target.value.toUpperCase(), { shouldDirty: true })} className="h-11 w-12 cursor-pointer rounded-lg border border-gf-border" />
@@ -119,7 +153,7 @@ function SettingsForm({ s }: { s: Settings }) {
               <span className="text-gf-navy-80">Ajuste o volume do som dos novos pedidos (neste aparelho).</span>
               <div className="mt-3 flex flex-wrap items-center gap-4">
                 <Volume2 className="h-6 w-6" />
-                <input type="range" min={0.1} max={1} step={0.05} value={prefs.volume} aria-label="Volume" onChange={(e) => prefs.set({ volume: Number(e.target.value) })} className="flex-1 accent-gf-orange" />
+                <input type="range" min={0.1} max={1} step={0.05} value={prefs.volume} aria-label="Volume" onChange={(e) => prefs.set({ volume: Number(e.target.value) })} className="h-11 min-w-0 flex-1 basis-32 accent-gf-orange" />
                 <b className="w-12">{Math.round(prefs.volume * 100)}%</b>
                 <Button variant="outline" onClick={() => { unlockAudio(); setTimeout(() => playAlert(prefs.volume), 50); }}><Play className="h-4 w-4" />Testar som</Button>
               </div>
@@ -127,7 +161,7 @@ function SettingsForm({ s }: { s: Settings }) {
           </Section>
         </div>
 
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           <Section icon={Clock} title="Horário de funcionamento" text="Defina os dias e horários de atendimento.">
             <div className="space-y-2">
               {DAYS.map(([d, label]) => {
@@ -136,16 +170,16 @@ function SettingsForm({ s }: { s: Settings }) {
                 // shortcut: edita só o 1º turno do dia; turnos extras vindos da API são mantidos. Upgrade: lista de turnos por dia.
                 const upd = (i: 0 | 1, v: string) => setDay(d, [[i === 0 ? v : from, i === 1 ? v : to], ...(ranges?.slice(1) ?? [])]);
                 return (
-                  <div key={d} className="grid grid-cols-[3rem_1fr_auto] items-center gap-3">
+                  <div key={d} className="grid grid-cols-[3rem_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 border-b border-gf-border pb-2 last:border-0 sm:border-0 sm:pb-0">
                     <b>{label}</b>
-                    <div className={cn('flex items-center gap-2 rounded-lg border border-gf-border px-3 py-1.5', !ranges && 'opacity-40')}>
+                    <div className={cn('order-last col-span-3 flex min-w-0 items-center gap-2 rounded-lg border border-gf-border px-3 py-1.5 sm:order-none sm:col-span-1', !ranges && 'opacity-40')}>
                       <Clock className="h-4 w-4" />
-                      <input type="time" aria-label={`${label} abre`} value={from} disabled={!ranges} onChange={(e) => upd(0, e.target.value)} className="bg-transparent font-semibold" />
+                      <input type="time" aria-label={`${label} abre`} value={from} disabled={!ranges} onChange={(e) => upd(0, e.target.value)} className="min-h-11 min-w-0 flex-1 bg-transparent font-semibold sm:flex-none" />
                       –
-                      <input type="time" aria-label={`${label} fecha`} value={to} disabled={!ranges} onChange={(e) => upd(1, e.target.value)} className="bg-transparent font-semibold" />
+                      <input type="time" aria-label={`${label} fecha`} value={to} disabled={!ranges} onChange={(e) => upd(1, e.target.value)} className="min-h-11 min-w-0 flex-1 bg-transparent font-semibold sm:flex-none" />
                       {ranges && ranges.length > 1 && <span className="text-xs text-gf-muted">+{ranges.length - 1} turno</span>}
                     </div>
-                    <Switch aria-label={`Aberto ${label}`} checked={!!ranges} onCheckedChange={(on) => setDay(d, on ? [[from, to]] : null)} />
+                    <Switch className="justify-self-end" aria-label={`Aberto ${label}`} checked={!!ranges} onCheckedChange={(on) => setDay(d, on ? [[from, to]] : null)} />
                   </div>
                 );
               })}
@@ -157,7 +191,7 @@ function SettingsForm({ s }: { s: Settings }) {
               <Field label="Nome da rede (SSID)"><Input {...register('wifiName')} /></Field>
               <Field label="Senha">
                 <div className="relative"><Input type={showPw ? 'text' : 'password'} className="pr-11" {...register('wifiPassword')} />
-                  <button type="button" onClick={() => setShowPw(!showPw)} aria-label={showPw ? 'Ocultar senha' : 'Mostrar senha'} className="absolute right-3 top-1/2 -translate-y-1/2">
+                  <button type="button" onClick={() => setShowPw(!showPw)} aria-label={showPw ? 'Ocultar senha' : 'Mostrar senha'} className="absolute right-0 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center">
                     {showPw ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}</button></div>
               </Field>
             </div>
@@ -166,7 +200,7 @@ function SettingsForm({ s }: { s: Settings }) {
           <Section icon={Link2} title="Links" text="Conecte suas redes para aparecer no cardápio.">
             <div className="space-y-3">
               {([['instagram', 'Instagram', Instagram, '@brasaepao'], ['googleReviewUrl', 'Google', ExternalLink, 'https://g.page/r/…/review']] as const).map(([name, label, Icon, ph]) => (
-                <label key={name} className="grid grid-cols-[7rem_1fr] items-center gap-3">
+                <label key={name} className="grid items-center gap-1.5 sm:grid-cols-[7rem_minmax(0,1fr)] sm:gap-3">
                   <span className="flex items-center gap-2 font-semibold"><Icon className="h-5 w-5" />{label}</span>
                   <Input placeholder={ph} {...register(name)} />
                 </label>
@@ -175,9 +209,10 @@ function SettingsForm({ s }: { s: Settings }) {
           </Section>
 
           <PlanCard plan={s.plan} />
+          <DeleteAccount name={s.name} />
         </div>
       </div>
-      <div className="fixed bottom-5 right-5 z-20">
+      <div className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-[max(1.25rem,env(safe-area-inset-right))] z-20">
         <Button type="submit" size="lg" className="h-14 rounded-2xl px-8 text-xl shadow-xl" loading={save.isPending} disabled={!isDirty || logo.busy}><Check className="h-6 w-6" />Salvar alterações</Button>
       </div>
     </form>

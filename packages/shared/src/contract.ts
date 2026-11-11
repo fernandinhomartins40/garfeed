@@ -116,6 +116,11 @@ export const api = {
   settings: {
     get: r({ method: 'GET', path: '/settings', auth: 'jwt', roles: ROLES.OWNER, response: s.Settings }),
     update: r({ method: 'PATCH', path: '/settings', auth: 'jwt', roles: ROLES.OWNER, body: s.UpdateSettingsBody, response: s.Settings }),
+    /**
+     * Exclusão da conta (exigência App Store / Google Play): apaga o restaurante e TUDO dele (equipe, cardápio, mídia,
+     * mesas, pedidos), cancela a assinatura no Asaas e devolve as placas ao estoque. Irreversível.
+     */
+    deleteAccount: r({ method: 'POST', path: '/settings/delete-account', auth: 'jwt', roles: ROLES.OWNER, body: s.DeleteAccountBody, response: null }),
   },
   push: {
     subscribe: r({ method: 'POST', path: '/push/subscribe', auth: 'jwt', roles: ROLES.STAFF, body: s.PushSubscribeBody, response: null }),
