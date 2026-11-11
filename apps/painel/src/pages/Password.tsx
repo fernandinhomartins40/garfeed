@@ -99,7 +99,7 @@ export function SetPasswordPage() {
         </p>
         {/* ajuda o gerenciador de senhas a salvar com o e-mail certo */}
         <input type="email" autoComplete="username" value={info.data.email} readOnly hidden />
-        <Field label="Nova senha" error={errors.password?.message} hint="Mínimo de 8 caracteres."><Input type="password" autoComplete="new-password" autoFocus className="h-12" {...register('password')} /></Field>
+        <Field label="Nova senha" error={errors.password?.message} hint="Mínimo de 8 caracteres, com letra maiúscula, número e caractere especial."><Input type="password" autoComplete="new-password" autoFocus className="h-12" {...register('password')} /></Field>
         <Field label="Repita a senha" error={errors.confirm?.message}><Input type="password" autoComplete="new-password" className="h-12" {...register('confirm')} /></Field>
         {error && <ErrorMsg>{error}</ErrorMsg>}
         <Button type="submit" size="lg" loading={isSubmitting} className="w-full">{invite ? 'Criar senha' : 'Salvar nova senha'}</Button>

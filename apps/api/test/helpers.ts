@@ -7,7 +7,7 @@ import { createApp } from '../src/app';
 import { prisma } from '../src/lib/prisma';
 
 export const app = createApp();
-export const password = 'senha-teste-123';
+export const password = 'Senha-teste-123';
 const hash = argon2.hash(password);
 let seq = 0;
 

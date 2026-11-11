@@ -268,7 +268,14 @@ export const AuthResponse = z.object({
 });
 export type AuthResponse = z.infer<typeof AuthResponse>;
 
-const NewPassword = z.string().min(8, 'Mínimo de 8 caracteres').max(200);
+/** Regras de senha forte: fonte única da validação da API e do medidor de força das telas. */
+export const PASSWORD_RULES = [
+  { label: 'Mínimo de 8 caracteres', test: (p: string) => p.length >= 8 },
+  { label: 'Uma letra maiúscula', test: (p: string) => /\p{Lu}/u.test(p) },
+  { label: 'Um número', test: (p: string) => /\d/.test(p) },
+  { label: 'Um caractere especial (ex.: ! @ # $ -)', test: (p: string) => /[^\p{L}\d\s]/u.test(p) },
+] as const;
+const NewPassword = PASSWORD_RULES.reduce((s, r) => s.refine(r.test, r.label), z.string().max(200));
 /** POST /auth/signup — o restaurante se cadastra sozinho: nasce em TRIAL (30 dias grátis) e já devolve a sessão (AuthResponse). */
 export const SignupBody = z.object({
   restaurantName: z.string().trim().min(2, 'Informe o nome do restaurante').max(80),

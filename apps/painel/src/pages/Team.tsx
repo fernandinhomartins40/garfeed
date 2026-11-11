@@ -126,7 +126,7 @@ function UserDialog({ user, onClose }: { user: StaffUser | null; onClose: () => 
           <Field label="Setor"><Select {...register('sector')}><option value="KITCHEN">Cozinha</option><option value="BAR">Bar</option></Select></Field>
         )}
         {user ? (
-          <Field label="Nova senha (opcional)" error={errors.password?.message} hint="Mínimo de 8 caracteres. A pessoa é avisada por e-mail e precisa entrar de novo.">
+          <Field label="Nova senha (opcional)" error={errors.password?.message} hint="Mínimo de 8 caracteres, com letra maiúscula, número e caractere especial. A pessoa é avisada por e-mail e precisa entrar de novo.">
             <Input type="password" autoComplete="new-password" {...register('password', { setValueAs: (v: string) => v || undefined })} />
           </Field>
         ) : <p className="rounded-lg bg-gf-bg p-3 text-sm text-gf-navy-80">A pessoa recebe um e-mail com um link para criar a própria senha. O convite vale por 7 dias e pode ser reenviado.</p>}

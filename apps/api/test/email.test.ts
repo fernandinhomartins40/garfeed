@@ -16,7 +16,7 @@ const tokenOf = (m: Mail) => new URL(/https?:\/\/\S+token=\S+/.exec(m.text)![0])
 const to = (email: string) => outbox.filter((m) => m.to === email);
 const loginStatus = async (email: string, pwd: string) => (await request(app).post('/auth/login').send({ email, password: pwd })).status;
 const expire = (token: string) => prisma.userToken.update({ where: { tokenHash: hashToken(token) }, data: { expiresAt: new Date(Date.now() - 1000) } });
-const NEW = 'nova-senha-456';
+const NEW = 'Nova-senha-456';
 
 let a: Fixture, b: Fixture;
 let ownerA: string, ownerB: string;
@@ -69,7 +69,7 @@ describe('recuperação de senha', () => {
     expect((await request(app).get('/orders').set(bearer(oldAccess))).status).toBe(401); // access token antigo revogado
     expect(to(email).map((m) => m.subject)).toContain('Sua senha do Garfeed foi alterada');
 
-    const again = await request(app).post('/auth/reset-password').send({ token, password: 'outra-senha-789' });
+    const again = await request(app).post('/auth/reset-password').send({ token, password: 'Outra-senha-789' });
     expect(again.status).toBe(400);
     expect(again.body.error.message).toMatch(/inválido ou expirou/);
     expect((await request(app).post('/auth/password-token').send({ token })).status).toBe(400);

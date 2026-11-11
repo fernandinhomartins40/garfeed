@@ -23,7 +23,7 @@ vi.spyOn(transport, 'deliver').mockImplementation(async (m) => { outbox.push(m);
 const uid = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 const NAME = `Cantina Açaí & Pão ${uid}`;
 const mail = (n: string) => `dono-${n}-${uid}@teste.dev`;
-const body = (n: string, extra: object = {}) => ({ restaurantName: NAME, name: 'Maria Dona', email: mail(n), password: 'senha-forte-123', acceptTerms: true, ...extra });
+const body = (n: string, extra: object = {}) => ({ restaurantName: NAME, name: 'Maria Dona', email: mail(n), password: 'Senha-forte-123', acceptTerms: true, ...extra });
 const signup = (b: object) => request(app).post('/auth/signup').send(b);
 const iso = (plusDays: number) => new Date(Date.now() + plusDays * 86_400_000).toISOString().slice(0, 10);
 
@@ -62,8 +62,8 @@ describe('cadastro do restaurante (POST /auth/signup)', () => {
     const settings = await request(app).get('/settings').set(bearer(auth.accessToken));
     expect(settings.body).toMatchObject({ id: auth.restaurant!.id, timezone: 'America/Sao_Paulo', status: 'TRIAL' });
     expect((await request(app).post('/auth/refresh').set('Cookie', cookie.split(';')[0]!)).status).toBe(200);
-    expect((await request(app).post('/auth/login').send({ email: mail('1'), password: 'senha-forte-123' })).status).toBe(200);
-    expect((await prisma.user.findUniqueOrThrow({ where: { email: mail('1') } })).passwordHash).not.toContain('senha-forte-123');
+    expect((await request(app).post('/auth/login').send({ email: mail('1'), password: 'Senha-forte-123' })).status).toBe(200);
+    expect((await prisma.user.findUniqueOrThrow({ where: { email: mail('1') } })).passwordHash).not.toContain('Senha-forte-123');
 
     const bill = OwnerBilling.parse((await request(app).get('/settings/billing').set(bearer(auth.accessToken))).body);
     expect(bill).toMatchObject({ status: 'TRIAL', billingStatus: 'NONE', subscribed: false, customer: null });

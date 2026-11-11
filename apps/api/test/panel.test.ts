@@ -121,7 +121,7 @@ describe('mídia', () => {
 
 describe('equipe, configurações e push', () => {
   it('OWNER cria usuário (papel explícito), não remove o próprio acesso; e-mail duplicado → 409', async () => {
-    const body = { name: 'Novo', email: `novo-${Date.now()}@teste.dev`, role: 'WAITER', password: 'senha-forte-1' };
+    const body = { name: 'Novo', email: `novo-${Date.now()}@teste.dev`, role: 'WAITER', password: 'Senha-forte-1' };
     const u = StaffUser.parse((await request(app).post('/users').set(bearer(owner)).send(body)).body);
     expect(u).toMatchObject({ role: 'WAITER', sector: null, active: true });
     expect((await request(app).post('/users').set(bearer(owner)).send(body)).status).toBe(409);
@@ -158,18 +158,18 @@ describe('admin Garfeed', () => {
       // banco sem seed: cria um superadmin de teste
       const { default: argon2 } = await import('argon2');
       const email = `admin-${Date.now()}@teste.dev`;
-      await prisma.user.create({ data: { email, name: 'Admin', role: 'SUPERADMIN', passwordHash: await argon2.hash('senha-teste-123') } });
+      await prisma.user.create({ data: { email, name: 'Admin', role: 'SUPERADMIN', passwordHash: await argon2.hash('Senha-teste-123') } });
       return login(email);
     });
     expect((await request(app).get('/admin/stats').set(bearer(owner))).status).toBe(403);
     AdminStats.parse((await request(app).get('/admin/stats').set(bearer(admin))).body);
 
     const slug = `adm-${Date.now().toString(36)}`;
-    const r = await request(app).post('/admin/restaurants').set(bearer(admin)).send({ name: 'Novo', slug, owner: { name: 'Dono', email: `${slug}@teste.dev`, password: 'senha-forte-1' } });
+    const r = await request(app).post('/admin/restaurants').set(bearer(admin)).send({ name: 'Novo', slug, owner: { name: 'Dono', email: `${slug}@teste.dev`, password: 'Senha-forte-1' } });
     expect(r.status).toBe(201);
     created.push(r.body.id);
     expect(r.body).toMatchObject({ slug, status: 'TRIAL', tableCount: 0 });
-    expect((await request(app).post('/admin/restaurants').set(bearer(admin)).send({ name: 'X', slug, owner: { name: 'D', email: `b-${slug}@teste.dev`, password: 'senha-forte-1' } })).status).toBe(409);
+    expect((await request(app).post('/admin/restaurants').set(bearer(admin)).send({ name: 'X', slug, owner: { name: 'D', email: `b-${slug}@teste.dev`, password: 'Senha-forte-1' } })).status).toBe(409);
     expect((await request(app).patch(`/admin/restaurants/${r.body.id}`).set(bearer(admin)).send({ status: 'SUSPENDED' })).body.status).toBe('SUSPENDED');
 
     const batch = await request(app).post('/admin/tag-batches').set(bearer(admin)).send({ quantity: 25, restaurantId: r.body.id });
