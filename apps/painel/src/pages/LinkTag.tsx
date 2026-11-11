@@ -8,13 +8,14 @@ import logo from '@/assets/logo-horizontal-cor.svg';
 import { ApiError, call, errMsg } from '@/lib/api';
 import { qk } from '@/lib/live';
 import { cn, extractTagCode } from '@/lib/utils';
+import { isNative, scanNfcNative } from '@/lib/native';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Confirm } from '@/components/ui/dialog';
 
 type Step = 'choose' | 'scan' | 'nfc' | 'type' | 'table' | 'done';
 const STEP_N: Record<Step, number> = { choose: 1, scan: 2, nfc: 2, type: 2, table: 3, done: 4 };
-const hasNfc = () => 'NDEFReader' in window;
+const hasNfc = () => 'NDEFReader' in window || isNative();
 
 export function LinkTagPage() {
   const nav = useNavigate();
@@ -182,6 +183,7 @@ function NfcReader({ onCode, onType }: { onCode: (s: string) => void; onType: ()
   const cb = useRef(onCode);
   cb.current = onCode;
   useEffect(() => {
+    if (isNative()) return scanNfcNative((t) => cb.current(t), setErr); // app iOS: plugin nativo no lugar do Web NFC
     const ctl = new AbortController();
     const reader = new NDEFReader();
     reader.onreading = (e) => {
