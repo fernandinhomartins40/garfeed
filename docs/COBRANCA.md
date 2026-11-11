@@ -20,6 +20,10 @@ restaurante (desconto, Rede). No nosso banco o dinheiro é sempre **centavos (In
 
 ## Fluxo
 
+0. **Autoatendimento (dono)**: em **Configurações → Plano atual → Assinar agora** o próprio dono informa CPF/CNPJ e contato,
+   escolhe Essencial ou Pro (mensal/anual, preço da tabela) e assina (`POST /settings/billing/subscription`); depois pode
+   **trocar de plano** (`PATCH`) e **cancelar** (`DELETE`). Quem assina durante o teste grátis só paga no fim dos 30 dias.
+   Dentro dos apps das lojas esse fluxo não aparece (só a situação). O admin continua podendo fazer tudo abaixo.
 1. **Admin → Planos → Gerenciar** (`/admin/planos`): informa CPF/CNPJ, e-mail e telefone de cobrança do restaurante.
 2. **Ativar assinatura**: a API cria o cliente (`POST /customers`, `externalReference` = id do restaurante) e a assinatura
    (`POST /subscriptions`, `billingType: UNDEFINED` → o pagador escolhe **Pix, boleto ou cartão** na fatura). O Asaas gera a
@@ -41,7 +45,7 @@ restaurante (desconto, Rede). No nosso banco o dinheiro é sempre **centavos (In
 | Estorno / chargeback (`PAYMENT_REFUNDED`, `PAYMENT_CHARGEBACK_*`…) | **Só registra** (status da cobrança + log `warn`). Não suspende |
 | Assinatura removida/inativada no Asaas (`SUBSCRIPTION_DELETED`, `SUBSCRIPTION_INACTIVATED`) | Situação "Cancelada". **Não suspende** — o admin decide em Restaurantes |
 | Cancelar pela tela do admin | Idem: situação "Cancelada", status do restaurante intacto |
-| `TRIAL` sem assinatura | Continua funcionando. Passou de 30 dias → selo "teste > 30 dias" em Planos; nada é suspenso sozinho |
+| `TRIAL` sem assinatura | Continua funcionando. O dono vê "Teste grátis: faltam N dias" e, após 30 dias, "Seu teste terminou"; selo "teste > 30 dias" em Planos; nada é suspenso sozinho |
 
 Status do restaurante alterado manualmente pelo admin (Restaurantes) continua valendo; um pagamento posterior reativa.
 
@@ -145,10 +149,12 @@ roteiro (b) no sandbox e confirme:
   gravado — nesse caso, cancele e ative de novo com o valor certo.
 - Formato real das datas e campos dos eventos (`payment.dueDate`, `subscription.nextDueDate`).
 - Quando a primeira cobrança da assinatura é gerada (aparece no histórico ao chegar o `PAYMENT_CREATED`).
+- **`GET /subscriptions/{id}/payments`** (usado em melhor esforço logo após criar a assinatura, para mostrar a fatura na hora):
+  formato da resposta (`data[].id/value/dueDate/status/invoiceUrl`). Se vier diferente, só se perde o atalho — o webhook cobre.
 
 ## Fora do escopo (por enquanto)
 
 - E-mails do Garfeed sobre cobrança (há `TODO(e-mail)` em `jobs/billing.ts` e no webhook); o Asaas já notifica o pagador.
-- O dono trocar de plano sozinho (hoje "Gerenciar plano" abre um e-mail para o Garfeed).
+- Suspensão automática ao fim do teste grátis (hoje o painel só avisa — `docs/DECISOES.md`).
 - Taxa de ativação, venda de placas e pacotes de vídeo (cobranças avulsas — faça direto no Asaas; o webhook as ignora).
 - Limites por plano (mesas/usuários) — o plano é só comercial.

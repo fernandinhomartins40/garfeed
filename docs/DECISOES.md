@@ -149,3 +149,30 @@ workflow manual `.github/workflows/apps-nativos.yml` (sem Mac). Guia: `docs/apps
 - **Limites por plano** (15 mesas, nº de usuários) não são aplicados pelo sistema; plano é informação comercial.
 - **Rotas além do PRD**: `GET /settings/billing`, `GET|PUT|POST|PATCH|DELETE /admin/billing…`, `POST /webhooks/asaas`
   (`api.billing` no contrato). Erros novos: `BILLING_DISABLED` (503), `BILLING_PROVIDER` (502).
+
+## 2026-11-11 — Autoatendimento: cadastro do restaurante e assinatura pelo dono
+- **Pedido do dono do projeto**: a landing deixa de oferecer "Agendar demonstração". O restaurante **se cadastra sozinho**
+  (`https://painel.garfeed.com.br/cadastro` → `POST /auth/signup`) e começa a usar na hora. O superadmin continua podendo criar
+  restaurantes pelo admin.
+- **"Plano gratuito" = teste grátis de 30 dias, sem cartão** (`TRIAL_DAYS`). Não existe plano gratuito permanente. O cadastro
+  nasce `TRIAL`, plano Essencial, fuso `America/Sao_Paulo`, slug gerado do nome (sufixo `-2`, `-3`… se colidir).
+- **Fim do teste: por ora nada suspende sozinho.** O painel só avisa o dono: "Teste grátis: faltam N dias" + "Assinar agora"
+  e, depois dos 30 dias, o aviso persistente "Seu teste terminou". Suspender continua sendo decisão manual do admin
+  (Restaurantes) até o dono do projeto definir a regra automática.
+- **Assinatura pelo próprio dono** (`POST|PATCH|DELETE /settings/billing/subscription`, só OWNER, restaurante do token):
+  Essencial ou Pro, mensal ou anual, **sempre pelo preço da tabela** (o corpo nem aceita valor). Rede segue "sob consulta" →
+  só o admin. Mesma lógica, trava Redis e `503 BILLING_DISABLED` do admin (funções compartilhadas em `modules/billing`).
+- **Quem assina durante o teste só paga no fim dele**: o 1º vencimento é o fim dos 30 dias (nunca antes de hoje + 3 dias).
+  O restaurante vira `ACTIVE` no 1º pagamento, como antes.
+- **Fatura na hora**: depois de criar a assinatura a API busca as cobranças dela no Asaas (`GET /subscriptions/{id}/payments`,
+  melhor esforço, não verificado contra o Asaas real) para o painel já mostrar "Abrir fatura"; se falhar, a fatura aparece
+  quando chegar o webhook `PAYMENT_CREATED` (o painel consulta de novo por ~2 min).
+- **Cancelar pelo dono** segue a regra existente: situação "Cancelada", status do restaurante intacto.
+- **Cadastro revela e-mail existente** (409 "já tem cadastro"): aceitável em cadastro; o limite de **5 cadastros por IP por
+  hora** (Redis) segura a enumeração em massa. Sem confirmação de e-mail por enquanto (o e-mail de boas-vindas não é verificação).
+- **Primeiro acesso**: depois de criar a conta o painel cai no **Cardápio** vazio ("Cadastrar primeiro item" / "Importar
+  planilha"), sem checklist novo.
+- **Apps das lojas** (iOS/Capacitor e Android TWA): por regra das lojas o app serve só para **acessar**. `isStoreApp()`
+  (`apps/painel/src/lib/storeApp.ts`) esconde "Criar conta", redireciona `/cadastro` → `/login`, e o card "Plano atual" e o
+  aviso de teste mostram só a situação — sem assinar/trocar/cancelar/pagar, sem link de fatura, sem histórico e sem nenhum texto
+  mandando assinar em outro lugar. No navegador comum tudo continua completo.
