@@ -4,8 +4,10 @@ import { env } from './lib/env';
 import { logger } from './lib/logger';
 import { initRealtime } from './realtime/io';
 import { startSessionExpiry } from './jobs/sessions';
+import { startBillingJob } from './jobs/billing';
 
 const server = createServer(createApp());
 initRealtime(server);
 startSessionExpiry();
+startBillingJob();
 server.listen(env.API_PORT, () => logger.info(`API em http://localhost:${env.API_PORT}`));

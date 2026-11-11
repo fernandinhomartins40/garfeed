@@ -131,6 +131,21 @@ export const api = {
     testEmail: r({ method: 'POST', path: '/admin/test-email', auth: 'jwt', roles: ROLES.ADMIN, response: null }),
     tagBatchCsv: r({ method: 'GET', path: '/admin/tag-batches/:batch/csv', auth: 'jwt', roles: ROLES.ADMIN, params: s.BatchParams, response: z.string() }),
   },
+  /** Cobrança da assinatura do restaurante pelo Asaas (docs/COBRANCA.md). */
+  billing: {
+    /** Card "Plano atual" do dono: restaurantId sempre do token. */
+    mine: r({ method: 'GET', path: '/settings/billing', auth: 'jwt', roles: ROLES.OWNER, response: s.OwnerBilling }),
+    adminList: r({ method: 'GET', path: '/admin/billing', auth: 'jwt', roles: ROLES.ADMIN, response: s.AdminBillingList }),
+    adminGet: r({ method: 'GET', path: '/admin/billing/:id', auth: 'jwt', roles: ROLES.ADMIN, params: s.IdParams, response: s.AdminBillingDetail }),
+    /** CPF/CNPJ e contato de cobrança (também atualiza o cliente no Asaas, se já existir). */
+    setCustomer: r({ method: 'PUT', path: '/admin/billing/:id/customer', auth: 'jwt', roles: ROLES.ADMIN, params: s.IdParams, body: s.BillingCustomerBody, response: s.AdminBillingDetail }),
+    /** Cria cliente + assinatura no Asaas (o pagador escolhe Pix, boleto ou cartão). */
+    activate: r({ method: 'POST', path: '/admin/billing/:id/subscription', auth: 'jwt', roles: ROLES.ADMIN, params: s.IdParams, body: s.ActivateSubscriptionBody, response: s.AdminBillingDetail }),
+    change: r({ method: 'PATCH', path: '/admin/billing/:id/subscription', auth: 'jwt', roles: ROLES.ADMIN, params: s.IdParams, body: s.BillingSubscriptionBody, response: s.AdminBillingDetail }),
+    cancel: r({ method: 'DELETE', path: '/admin/billing/:id/subscription', auth: 'jwt', roles: ROLES.ADMIN, params: s.IdParams, response: s.AdminBillingDetail }),
+    /** Chamado pelo Asaas. Autenticado pelo header asaas-access-token (ASAAS_WEBHOOK_TOKEN). */
+    webhook: r({ method: 'POST', path: '/webhooks/asaas', auth: 'none', body: s.AsaasWebhookBody, response: s.AsaasWebhookResponse }),
+  },
 } as const;
 
 /** "/menu/items/:id" + { id: "x" } → "/menu/items/x" */

@@ -148,7 +148,7 @@ export function AdminLayout() {
   const items: NavItem[] = [
     { to: '/admin/restaurantes', label: 'Restaurantes', icon: Store, show: true },
     { to: '/admin/placas', label: 'Placas', icon: QrCode, show: true },
-    { to: '/admin/planos', label: 'Planos', icon: Layers, show: true, soon: true },
+    { to: '/admin/planos', label: 'Planos', icon: Layers, show: true },
   ];
   return <Shell items={items} footer={<UserBox icon={User} title="Admin Garfeed" subtitle={useAuth.getState().user?.email ?? ''} />} />;
 }

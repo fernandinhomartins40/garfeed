@@ -14,11 +14,13 @@ enum Plan {
   PRO
   NETWORK
 }
+
 enum RestStatus {
   TRIAL
   ACTIVE
   SUSPENDED
 }
+
 enum Role {
   SUPERADMIN
   OWNER
@@ -26,16 +28,19 @@ enum Role {
   WAITER
   KITCHEN
 }
+
 enum TagStatus {
   UNASSIGNED
   ACTIVE
   BLOCKED
 }
+
 enum SessionStatus {
   OPEN
   CLOSED
   EXPIRED
 }
+
 enum OrderStatus {
   PENDING
   CONFIRMED
@@ -45,27 +50,46 @@ enum OrderStatus {
   REJECTED
   CANCELED
 }
+
 enum CallType {
   WAITER
   BILL
 }
+
 enum CallStatus {
   OPEN
   DONE
 }
+
 enum MediaType {
   VIDEO
   IMAGE
 }
+
 enum MediaStatus {
   UPLOADING
   PROCESSING
   READY
   FAILED
 }
+
 enum Sector {
   KITCHEN
   BAR
+}
+
+// Cobrança da assinatura (Asaas) — docs/COBRANCA.md
+enum BillingCycle {
+  MONTHLY
+  YEARLY
+}
+
+enum BillingStatus {
+  NONE
+  OK
+  PENDING
+  OVERDUE
+  CANCELED
 }
 
 model Restaurant {
@@ -98,6 +122,8 @@ model Restaurant {
   orderCounters OrderCounter[]
   calls         ServiceCall[]
   events        Event[]
+  billing       Billing?
+  invoices      BillingPayment[]
 }
 
 model User {
@@ -409,4 +435,48 @@ model PushSubscription {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+// ---------- Cobrança da assinatura do restaurante (Asaas) — docs/COBRANCA.md ----------
+// Dados de cobrança + assinatura (1:1 com o restaurante; a PK já indexa restaurantId).
+model Billing {
+  restaurantId        String        @id
+  cpfCnpj             String // só dígitos (CPF 11 / CNPJ 14); obrigatório no Asaas
+  email               String?
+  phone               String? // só dígitos, com DDD
+  asaasCustomerId     String?       @unique
+  asaasSubscriptionId String?       @unique
+  cycle               BillingCycle  @default(MONTHLY)
+  valueCents          Int?
+  nextDueDate         DateTime?     @db.Date
+  status              BillingStatus @default(NONE)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+// Espelho das cobranças do Asaas, mantido pelos webhooks (POST /webhooks/asaas).
+model BillingPayment {
+  id           String    @id @default(cuid())
+  restaurantId String
+  asaasId      String    @unique // pay_...
+  valueCents   Int
+  dueDate      DateTime  @db.Date
+  status       String // status do Asaas (PENDING, RECEIVED, OVERDUE...) ou DELETED
+  invoiceUrl   String?
+  paidAt       DateTime? @db.Date
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@index([restaurantId, dueDate])
+}
+
+// Idempotência do webhook: id do evento do Asaas (evt_...) já processado.
+model BillingEvent {
+  id        String   @id
+  event     String
+  createdAt DateTime @default(now())
 }

@@ -67,3 +67,24 @@ export const ROLE_LABEL: Record<Role, string> = {
 export const BADGE_LABEL: Record<Badge, string> = {
   MOST_ORDERED: 'Mais pedido', NEW: 'Novo', VEGAN: 'Vegano', SPICY: 'Picante',
 };
+
+// ---------- Cobrança da assinatura (Asaas) ----------
+export const BillingCycle = e(['MONTHLY', 'YEARLY']);
+/** NONE = sem assinatura · OK = em dia · PENDING = fatura em aberto · OVERDUE = fatura vencida · CANCELED = assinatura cancelada. */
+export const BillingStatus = e(['NONE', 'OK', 'PENDING', 'OVERDUE', 'CANCELED']);
+export type BillingCycle = z.infer<typeof BillingCycle>;
+export type BillingStatus = z.infer<typeof BillingStatus>;
+export const PLAN_LABEL: Record<Plan, string> = { ESSENTIAL: 'Essencial', PRO: 'Pro', NETWORK: 'Rede' };
+export const BILLING_CYCLE_LABEL: Record<BillingCycle, string> = { MONTHLY: 'Mensal', YEARLY: 'Anual' };
+export const BILLING_STATUS_LABEL: Record<BillingStatus, string> = {
+  NONE: 'Sem assinatura', OK: 'Em dia', PENDING: 'Pendente', OVERDUE: 'Vencido', CANCELED: 'Cancelada',
+};
+/** Preço mensal em centavos (docs/01-MODELO-DE-NEGOCIO.md §8). null = sob consulta (valor informado pelo admin). */
+export const PLAN_PRICE_CENTS: Record<Plan, number | null> = { ESSENTIAL: 12_900, PRO: 19_900, NETWORK: null };
+/** Valor de cada cobrança do ciclo. Anual = pague 10, leve 12. */
+export const planValueCents = (plan: Plan, cycle: BillingCycle): number | null => {
+  const monthly = PLAN_PRICE_CENTS[plan];
+  return monthly == null ? null : cycle === 'YEARLY' ? monthly * 10 : monthly;
+};
+/** Dias de teste grátis (o fim do teste não suspende sozinho — docs/DECISOES.md). */
+export const TRIAL_DAYS = 30;
