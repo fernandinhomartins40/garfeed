@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Plus, QrCode, Store, UtensilsCrossed } from 'lucide-react';
+import { MailCheck, Plus, QrCode, Store, UtensilsCrossed } from 'lucide-react';
 import { api, CreateRestaurantBody, Plan, RestStatus, type AdminRestaurant } from '@garfeed/shared';
 import { call, errMsg } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -43,9 +43,17 @@ export function AdminRestaurantsPage() {
     onSuccess: () => { toast.success('Restaurante atualizado'); void qc.invalidateQueries({ queryKey: ['admin'] }); },
     onError: (e) => toast.error(errMsg(e)),
   });
+  const testMail = useMutation({
+    mutationFn: () => call(api.admin.testEmail),
+    onSuccess: () => toast.success('E-mail de teste enviado para o seu endereço'),
+    onError: (e) => toast.error(errMsg(e)),
+  });
   return (
     <div className="px-4 py-6 md:px-8">
-      <PageTitle actions={<Button size="lg" onClick={() => setCreate(true)}><Plus className="h-5 w-5" />Novo restaurante</Button>}>Restaurantes</PageTitle>
+      <PageTitle actions={<>
+        <Button size="lg" variant="outline" loading={testMail.isPending} onClick={() => testMail.mutate()}><MailCheck className="h-5 w-5" />E-mail de teste</Button>
+        <Button size="lg" onClick={() => setCreate(true)}><Plus className="h-5 w-5" />Novo restaurante</Button>
+      </>}>Restaurantes</PageTitle>
       <StatsCards />
       {list.isLoading ? <Spinner /> : list.error ? <ErrorBox error={list.error} /> : !list.data?.length ? (
         <Card><Empty icon={<Store className="h-12 w-12 text-gf-orange" />} title="Nenhum restaurante" /></Card>
@@ -79,7 +87,7 @@ export function AdminRestaurantsPage() {
 function CreateDialog({ onClose }: { onClose: () => void }) {
   const qc = useQueryClient();
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({
-    resolver: zodResolver(CreateRestaurantBody), defaultValues: { name: '', slug: '', plan: 'ESSENTIAL' as const, status: 'TRIAL' as const, owner: { name: '', email: '', password: '' } },
+    resolver: zodResolver(CreateRestaurantBody), defaultValues: { name: '', slug: '', plan: 'ESSENTIAL' as const, status: 'TRIAL' as const, owner: { name: '', email: '' } },
   });
   const m = useMutation({
     mutationFn: (b: CreateRestaurantBody) => call(api.admin.createRestaurant, { body: b }),
@@ -99,7 +107,7 @@ function CreateDialog({ onClose }: { onClose: () => void }) {
         <p className="border-t border-gf-border pt-4 font-heading text-lg font-black">Dono (primeiro acesso)</p>
         <Field label="Nome" error={errors.owner?.name?.message}><Input {...register('owner.name')} /></Field>
         <Field label="E-mail" error={errors.owner?.email?.message}><Input type="email" {...register('owner.email')} /></Field>
-        <Field label="Senha inicial" error={errors.owner?.password?.message}><Input type="password" autoComplete="new-password" {...register('owner.password')} /></Field>
+        <p className="rounded-lg bg-gf-bg p-3 text-sm text-gf-navy-80">O dono recebe um e-mail de boas-vindas com um link (válido por 7 dias) para definir a própria senha.</p>
         <div className="flex justify-end gap-3 pt-2"><Button variant="outline" onClick={onClose}>Cancelar</Button><Button type="submit" loading={m.isPending}>Criar restaurante</Button></div>
       </form>
     </Dialog>
