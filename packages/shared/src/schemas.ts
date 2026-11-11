@@ -266,6 +266,21 @@ export const AuthResponse = z.object({
 });
 export type AuthResponse = z.infer<typeof AuthResponse>;
 
+const NewPassword = z.string().min(8, 'Mínimo de 8 caracteres').max(200);
+/** POST /auth/forgot-password — a resposta é sempre 204, exista o e-mail ou não. */
+export const ForgotPasswordBody = LoginBody.pick({ email: true });
+export type ForgotPasswordBody = z.infer<typeof ForgotPasswordBody>;
+/** Token do link do e-mail (recuperação de senha ou convite). */
+export const PasswordTokenBody = z.object({ token: z.string().min(20).max(200) });
+export type PasswordTokenBody = z.infer<typeof PasswordTokenBody>;
+export const ResetPasswordBody = PasswordTokenBody.extend({ password: NewPassword });
+export type ResetPasswordBody = z.infer<typeof ResetPasswordBody>;
+/** O que a tela "Definir senha" mostra antes de enviar (RESET = recuperação · INVITE = convite/boas-vindas). */
+export const PasswordTokenInfo = z.object({
+  purpose: z.enum(['RESET', 'INVITE']), name: z.string(), email: z.string(), restaurantName: z.string().nullable(),
+});
+export type PasswordTokenInfo = z.infer<typeof PasswordTokenInfo>;
+
 /** Payload do JWT de acesso. */
 export const AccessTokenPayload = z.object({
   sub: Id, role: Role, restaurantId: Id.nullable(), sector: Sector.nullable(),
@@ -455,6 +470,8 @@ export type ListCallsQuery = z.infer<typeof ListCallsQuery>;
 export const StaffUser = z.object({
   id: Id, name: z.string(), email: z.string(), role: Role, sector: Sector.nullable(),
   active: z.boolean(), lastLoginAt: IsoDate.nullable(),
+  /** Convite ainda não aceito (usuário sem senha): pendente ou expirado. null = já tem senha. */
+  invite: z.enum(['PENDING', 'EXPIRED']).nullable(),
 });
 export type StaffUser = z.infer<typeof StaffUser>;
 export const CreateUserBody = z.object({
@@ -463,8 +480,8 @@ export const CreateUserBody = z.object({
   role: StaffRole,
   /** Setor da cozinha/bar (só KITCHEN). */
   sector: Sector.nullish(),
-  /** Senha inicial (sem envio de e-mail no MVP). */
-  password: z.string().min(8, 'Mínimo de 8 caracteres').max(200),
+  /** Sem senha = convite por e-mail (a pessoa define a senha pelo link, válido por 7 dias). */
+  password: NewPassword.optional(),
 });
 export type CreateUserBody = z.infer<typeof CreateUserBody>;
 export const UpdateUserBody = CreateUserBody.omit({ email: true }).partial().extend({ active: z.boolean().optional() });

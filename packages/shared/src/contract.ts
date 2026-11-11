@@ -44,6 +44,12 @@ export const api = {
     /** Usa o cookie httpOnly de refresh (rotacionado a cada chamada). */
     refresh: r({ method: 'POST', path: '/auth/refresh', auth: 'none', response: s.AuthResponse }),
     logout: r({ method: 'POST', path: '/auth/logout', auth: 'none', response: null }),
+    /** Sempre 204 (não revela se o e-mail existe). Envia o link de redefinição (1 h, uso único). */
+    forgotPassword: r({ method: 'POST', path: '/auth/forgot-password', auth: 'none', body: s.ForgotPasswordBody, response: null }),
+    /** Valida o token do link (POST para o token não ir para logs de URL). */
+    checkPasswordToken: r({ method: 'POST', path: '/auth/password-token', auth: 'none', body: s.PasswordTokenBody, response: s.PasswordTokenInfo }),
+    /** Define a senha com o token de recuperação ou de convite e derruba as sessões abertas. */
+    resetPassword: r({ method: 'POST', path: '/auth/reset-password', auth: 'none', body: s.ResetPasswordBody, response: null }),
   },
   menu: {
     listCategories: r({ method: 'GET', path: '/menu/categories', auth: 'jwt', roles: ROLES.MANAGE, response: z.array(s.Category) }),
@@ -100,6 +106,10 @@ export const api = {
     list: r({ method: 'GET', path: '/users', auth: 'jwt', roles: ROLES.OWNER, response: z.array(s.StaffUser) }),
     create: r({ method: 'POST', path: '/users', auth: 'jwt', roles: ROLES.OWNER, body: s.CreateUserBody, response: s.StaffUser }),
     update: r({ method: 'PATCH', path: '/users/:id', auth: 'jwt', roles: ROLES.OWNER, params: s.IdParams, body: s.UpdateUserBody, response: s.StaffUser }),
+    /** Reenvia o convite (novo link de 7 dias; o anterior deixa de valer). Só para quem ainda não definiu senha. */
+    resendInvite: r({ method: 'POST', path: '/users/:id/invite', auth: 'jwt', roles: ROLES.OWNER, params: s.IdParams, response: s.StaffUser }),
+    /** Cancela o convite: remove o usuário que ainda não definiu senha. */
+    cancelInvite: r({ method: 'DELETE', path: '/users/:id/invite', auth: 'jwt', roles: ROLES.OWNER, params: s.IdParams, response: null }),
   },
   settings: {
     get: r({ method: 'GET', path: '/settings', auth: 'jwt', roles: ROLES.OWNER, response: s.Settings }),
@@ -117,6 +127,8 @@ export const api = {
     listTagBatches: r({ method: 'GET', path: '/admin/tag-batches', auth: 'jwt', roles: ROLES.ADMIN, response: z.array(s.TagBatch) }),
     createTagBatch: r({ method: 'POST', path: '/admin/tag-batches', auth: 'jwt', roles: ROLES.ADMIN, body: s.CreateTagBatchBody, response: s.CreateTagBatchResponse }),
     /** text/csv com colunas codigo,url (para a gráfica). */
+    /** Envia o e-mail de teste para o próprio superadmin logado. */
+    testEmail: r({ method: 'POST', path: '/admin/test-email', auth: 'jwt', roles: ROLES.ADMIN, response: null }),
     tagBatchCsv: r({ method: 'GET', path: '/admin/tag-batches/:batch/csv', auth: 'jwt', roles: ROLES.ADMIN, params: s.BatchParams, response: z.string() }),
   },
 } as const;
@@ -135,5 +147,7 @@ export const LIMITS = {
   callCooldownSec: 60,
   ordersPerSessionPerHour: 10,
   accessTokenMinutes: 15,
+  passwordResetMinutes: 60,
+  inviteDays: 7,
   menuCacheSec: 60,
 } as const;
