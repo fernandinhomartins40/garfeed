@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { PushSubscribeBody, type VapidPublicKeyResponse } from '@garfeed/shared';
+import { ApnsDeviceBody, PushSubscribeBody, type VapidPublicKeyResponse } from '@garfeed/shared';
 import { prisma } from '../../lib/prisma';
 import { vapidPublicKey } from '../../lib/push';
 import { validate } from '../../middleware/validate';
@@ -20,5 +20,12 @@ router.post('/subscribe', validate({ body: PushSubscribeBody }), async (req, res
     create: { endpoint, keys, userId: req.auth!.sub },
     update: { keys, userId: req.auth!.sub },
   });
+  res.status(204).end();
+});
+
+/** App iOS: o aparelho passa a ser do usuário atual (mesma regra do /subscribe). */
+router.post('/apns-device', validate({ body: ApnsDeviceBody }), async (req, res) => {
+  const token = (req.body as ApnsDeviceBody).token.toLowerCase();
+  await prisma.apnsDevice.upsert({ where: { token }, create: { token, userId: req.auth!.sub }, update: { userId: req.auth!.sub } });
   res.status(204).end();
 });

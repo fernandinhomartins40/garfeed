@@ -115,6 +115,7 @@ model User {
   restaurant    Restaurant?        @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   refreshTokens RefreshToken[]
   pushSubs      PushSubscription[]
+  apnsDevices   ApnsDevice[]
   callsDone     ServiceCall[]
 
   @@index([restaurantId])
@@ -383,6 +384,18 @@ model PushSubscription {
   userId    String
   endpoint  String   @unique
   keys      Json // { p256dh, auth }
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// Aparelho iOS (app nativo do painel) para push por APNs.
+model ApnsDevice {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique // device token APNs em hex
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

@@ -2,6 +2,7 @@ import webpush from 'web-push';
 import { env } from './env';
 import { prisma } from './prisma';
 import { logger } from './logger';
+import { notifyApns } from './apns';
 
 const enabled = !!(env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY);
 if (enabled) webpush.setVapidDetails(env.VAPID_SUBJECT, env.VAPID_PUBLIC_KEY!, env.VAPID_PRIVATE_KEY!);
@@ -10,6 +11,7 @@ export const vapidPublicKey = () => env.VAPID_PUBLIC_KEY ?? null;
 
 /** Web Push para a equipe ativa do restaurante. Nunca lança: falha de push não pode derrubar pedido/chamado. */
 export function notifyRestaurant(restaurantId: string, payload: { title: string; body: string; tag?: string; url?: string }) {
+  void notifyApns(restaurantId, payload); // app iOS: mesmo gatilho, canal APNs
   if (!enabled) return;
   void (async () => {
     const subs = await prisma.pushSubscription.findMany({ where: { user: { restaurantId, active: true } } });

@@ -511,6 +511,9 @@ export type PushSubscribeBody = z.infer<typeof PushSubscribeBody>;
 /** GET /push/vapid-public-key — applicationServerKey para pushManager.subscribe (null = push desligado no servidor). */
 export const VapidPublicKeyResponse = z.object({ publicKey: z.string().nullable() });
 export type VapidPublicKeyResponse = z.infer<typeof VapidPublicKeyResponse>;
+/** POST /push/apns-device — token APNs (hex) do app iOS, para push nativo. Resposta 204. */
+export const ApnsDeviceBody = z.object({ token: z.string().regex(/^[0-9a-fA-F]{64,200}$/) });
+export type ApnsDeviceBody = z.infer<typeof ApnsDeviceBody>;
 
 // =====================================================================
 // ADMIN GARFEED (SUPERADMIN)
