@@ -1,10 +1,6 @@
 <!doctype html>
 <!--
-  RASCUNHO — PRECISA DE REVISÃO JURÍDICA ANTES DE PUBLICAR.
-  Este texto descreve o que o produto faz hoje, mas não foi revisado por advogado.
-  TODO: preencher razão social do controlador, CNPJ, endereço e encarregado (DPO) — marcados "[a preencher]".
-  TODO: trocar contato@garfeed.com.br pelo e-mail real (mesmo placeholder da landing).
-  TODO: confirmar prazos de retenção e a data de vigência.
+  Descreve o que o produto faz hoje (revisado em 12/11/2026). Não foi revisado por advogado.
 -->
 <html lang="pt-BR">
 <head>
@@ -57,16 +53,13 @@
 <main id="conteudo" class="legal">
   <div class="wrap wrap--estreito">
     <h1>Política de privacidade</h1>
-    <!-- TODO: confirmar data de vigência na publicação -->
-    <p class="nota">Última atualização: [a preencher]</p>
+    <p class="nota">Última atualização: 12 de novembro de 2026</p>
 
     <p>O Garfeed é um cardápio digital em vídeo: o cliente abre o cardápio pela placa NFC ou pelo QR Code da mesa, faz o pedido, e o restaurante acompanha tudo em um painel. Esta página explica, em linguagem direta, quais dados tratamos e por quê.</p>
 
     <h2>1. Quem é o responsável</h2>
-    <!-- TODO: razão social, CNPJ e endereço do controlador -->
-    <p>Controlador: [a preencher] — CNPJ [a preencher] — endereço [a preencher].</p>
-    <!-- TODO: nome/contato do encarregado pelo tratamento de dados (DPO) -->
-    <p>Encarregado pelo tratamento de dados: [a preencher].</p>
+    <p>Controlador: <strong>Fuse Agencia LTDA</strong> — CNPJ 42.761.086/0001-15 — Rua Antonio Gregorio Ferreira, 298, Conradinho, Guarapuava/PR, CEP 85055-270.</p>
+    <p>Encarregado pelo tratamento de dados: Luiz Fernando Martins Oliveira, pelo e-mail <a href="mailto:contato@garfeed.com.br?subject=Privacidade">contato@garfeed.com.br</a>.</p>
     <p>Os pedidos feitos em uma mesa pertencem à operação do restaurante. Nesses dados, o restaurante decide como usá-los e o Garfeed atua como operador, tratando-os em nome dele.</p>
 
     <h2>2. Se você é cliente de um restaurante</h2>
@@ -87,31 +80,39 @@
       <li><strong>Dados da conta:</strong> nome, e-mail e senha. A senha é armazenada apenas na forma de hash — não temos como lê-la.</li>
       <li><strong>Cookie de login:</strong> um cookie técnico <code>httpOnly</code> que mantém a sessão do painel aberta.</li>
       <li><strong>Dados do restaurante:</strong> nome do estabelecimento, cardápio, preços, fotos e vídeos enviados, mesas e histórico de pedidos.</li>
+      <li><strong>Dados de cobrança da assinatura</strong> (só o dono, ao assinar um plano no site): nome ou razão social, CPF ou CNPJ, e-mail e telefone de contato. O pagamento (Pix, boleto ou cartão) é feito na fatura do Asaas: o Garfeed não recebe nem guarda dados de cartão ou bancários.</li>
+      <li><strong>Notificações:</strong> se você ativar as notificações de novos pedidos, guardamos o identificador de envio do seu aparelho, que só serve para entregar esses avisos. Ele é apagado quando deixa de ser válido (por exemplo, ao desativar as notificações no aparelho) ou quando a conta é excluída.</li>
+      <li><strong>Câmera e NFC (app):</strong> usados apenas no momento de vincular uma placa à mesa, para ler o QR Code ou a etiqueta NFC. Nenhuma imagem da câmera é gravada ou enviada.</li>
       <li><strong>Contato comercial:</strong> o que você nos enviar por e-mail ou WhatsApp ao falar com a gente.</li>
     </ul>
 
     <h2>4. Para que usamos e com qual base legal</h2>
     <ul>
       <li>Entregar o serviço — exibir o cardápio, encaminhar pedidos à mesa certa e dar acesso ao painel: execução de contrato e legítimo interesse (LGPD, art. 7º, V e IX).</li>
+      <li>Cobrar a assinatura do restaurante e emitir as faturas: execução de contrato e cumprimento de obrigação legal (LGPD, art. 7º, II e V).</li>
       <li>Segurança, prevenção a abuso e diagnóstico de falhas: legítimo interesse.</li>
       <li>Obrigações legais, como a guarda de registros de acesso prevista no Marco Civil da Internet: cumprimento de obrigação legal.</li>
     </ul>
     <p>Não vendemos dados, não exibimos anúncios e não montamos perfis de clientes.</p>
 
     <h2>5. Onde os dados ficam e com quem são compartilhados</h2>
-    <p>O Garfeed roda em infraestrutura própria: banco de dados, arquivos de mídia e comunicação em tempo real ficam em servidores administrados por nós. <strong>Não repassamos dados a terceiros</strong> para análise, publicidade ou qualquer outro fim, e o cardápio e o painel não usam ferramentas de rastreamento de terceiros.</p>
-    <!-- TODO: informar o provedor de hospedagem e o país onde os servidores ficam -->
-    <p>Os servidores ficam hospedados em: [a preencher].</p>
+    <p>O Garfeed roda em infraestrutura própria: banco de dados, arquivos de mídia e comunicação em tempo real ficam em servidores administrados por nós, contratados da Hostinger e localizados em São Paulo, Brasil. <strong>Não vendemos nem repassamos dados</strong> para análise ou publicidade, e o cardápio e o painel não usam ferramentas de rastreamento de terceiros.</p>
+    <p>Compartilhamos dados apenas com quem é necessário para o serviço funcionar:</p>
+    <ul>
+      <li><strong>Asaas</strong> (Asaas Gestão Financeira Instituição de Pagamento S.A.): recebe os dados de cobrança do dono do restaurante para gerar as faturas da assinatura e processar o pagamento. Os clientes das mesas não têm dados enviados ao Asaas.</li>
+      <li><strong>Serviços de notificação do sistema</strong> (Apple, Google ou o fabricante do navegador): entregam as notificações de novos pedidos ao aparelho da equipe. Recebem apenas o identificador do aparelho e o texto do aviso.</li>
+    </ul>
     <p>Uma exceção, restrita a este site institucional (garfeed.com.br): as fontes tipográficas são carregadas do Google Fonts. Ao visitar o site, seu navegador se conecta aos servidores do Google, que recebem seu endereço IP e dados do navegador. O cardápio aberto na mesa não faz essa conexão.</p>
     <p>Dados só podem ser entregues a autoridades mediante ordem legal válida.</p>
 
     <h2>6. Por quanto tempo guardamos</h2>
-    <!-- TODO: confirmar prazos de retenção com o jurídico -->
     <ul>
       <li>Cookie de sessão da mesa: 6 horas.</li>
       <li>Carrinho e nome no aparelho: até você limpar os dados do navegador.</li>
-      <li>Pedidos, eventos de uso e registros técnicos: [a preencher].</li>
-      <li>Dados da conta do restaurante e da equipe: enquanto a conta estiver ativa e, depois, pelo prazo exigido em lei: [a preencher].</li>
+      <li>Pedidos e eventos de uso: enquanto a conta do restaurante estiver ativa. São apagados quando o dono exclui a conta.</li>
+      <li>Registros técnicos de acesso: 6 meses, como exige o Marco Civil da Internet (Lei nº 12.965/2014, art. 15).</li>
+      <li>Dados da conta do restaurante e da equipe: enquanto a conta estiver ativa. São apagados quando o dono exclui a conta.</li>
+      <li>Dados de cobrança: os registros fiscais e de pagamento são guardados pelo prazo exigido pela legislação tributária (5 anos), inclusive pelo Asaas.</li>
     </ul>
 
     <h2>7. Seus direitos</h2>
@@ -129,7 +130,6 @@
     <p>Como o cliente do restaurante é anônimo, na maioria dos casos não conseguimos ligar um pedido a uma pessoa. Se quiser exercer um direito, informe o restaurante, a mesa e a data e o horário aproximados para tentarmos localizar o registro.</p>
 
     <h2>8. Contato</h2>
-    <!-- TODO: trocar pelo e-mail real antes de publicar (mesmo placeholder da landing) -->
     <p>Dúvidas ou pedidos sobre privacidade: <a href="mailto:contato@garfeed.com.br?subject=Privacidade">contato@garfeed.com.br</a>.</p>
 
     <h2>9. Mudanças nesta política</h2>
