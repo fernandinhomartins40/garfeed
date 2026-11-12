@@ -188,3 +188,16 @@ workflow manual `.github/workflows/apps-nativos.yml` (sem Mac). Guia: `docs/apps
 - **Detecção do app Android** (`isStoreApp`): além do referrer `android-app://`, a `LauncherActivity` acrescenta `?gfapp=android`
   a toda abertura — o referrer não chega em todos os caminhos (ex.: fallback em Custom Tab).
 - **Barra de status no iOS**: segue a luminância do `<meta name="theme-color">` da página (marinho → texto branco).
+
+## 2026-11-12 — Editor de adesivos e plaquinhas (QR da mesa)
+- **Onde**: Placas → "Adesivos e plaquinhas" (`/placas/artes`, OWNER/MANAGER). Modelos prontos (adesivo quadrado 8 cm, redondo 7 cm,
+  display 10×15, cartão 9×5, em branco) e editor estilo Canva: arrastar, redimensionar, girar, camadas, desfazer/refazer, atalhos,
+  centro magnético, textos com `{mesa}`/`{restaurante}`, QR, imagem, logo Garfeed, retângulo e círculo. Medidas do documento em mm.
+- **Mesa sem placa** (decisão do dono): ao imprimir, `POST /tags/ensure-codes` cria um código "só QR" para a mesa (placa comum:
+  `ACTIVE`, do restaurante, aparece em Placas e pode ser movida/bloqueada). Mesas com placa mantêm o código da placa.
+- **Biblioteca**: `konva` (sem react-konva: um único desenhista em `lib/plate.ts` serve editor e impressão → o que se vê é o que
+  sai). Carrega só na rota do editor (chunk próprio). QR com `qrcode-generator` (já usado), zona de silêncio de 4 módulos.
+- **Imagens** ficam embutidas no JSON como data URL reduzida no navegador (≤ ~1,1 MB cada; documento ≤ 1,9 MB): o canvas não fica
+  "contaminado" por CORS na exportação. Sem MinIO para isso.
+- **Impressão**: PNG 300 dpi por mesa; folha A4 com várias (gira a folha se couber mais, linha de recorte opcional) ou uma por
+  página no tamanho exato. Aviso quando o QR < 2,5 cm. No app iOS a impressão fica indisponível (WKWebView), como os QR de emergência.

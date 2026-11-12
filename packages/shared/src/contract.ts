@@ -92,6 +92,15 @@ export const api = {
     link: r({ method: 'POST', path: '/tags/link', auth: 'jwt', roles: ROLES.MANAGE, body: s.LinkTagBody, response: s.Tag }),
     unlink: r({ method: 'POST', path: '/tags/:code/unlink', auth: 'jwt', roles: ROLES.MANAGE, params: s.CodeParams, response: s.Tag }),
     block: r({ method: 'POST', path: '/tags/:code/block', auth: 'jwt', roles: ROLES.MANAGE, params: s.CodeParams, response: s.Tag }),
+    /** Mesa sem placa ganha um código "só QR" (adesivo/plaquinha impressos pelo restaurante). */
+    ensureCodes: r({ method: 'POST', path: '/tags/ensure-codes', auth: 'jwt', roles: ROLES.MANAGE, body: s.EnsureTagCodesBody, response: z.array(s.Tag) }),
+  },
+  plateDesigns: {
+    list: r({ method: 'GET', path: '/plate-designs', auth: 'jwt', roles: ROLES.MANAGE, response: z.array(s.PlateDesignSummary) }),
+    get: r({ method: 'GET', path: '/plate-designs/:id', auth: 'jwt', roles: ROLES.MANAGE, params: s.IdParams, response: s.PlateDesign }),
+    create: r({ method: 'POST', path: '/plate-designs', auth: 'jwt', roles: ROLES.MANAGE, body: s.SavePlateDesignBody, response: s.PlateDesign }),
+    update: r({ method: 'PUT', path: '/plate-designs/:id', auth: 'jwt', roles: ROLES.MANAGE, params: s.IdParams, body: s.SavePlateDesignBody, response: s.PlateDesign }),
+    remove: r({ method: 'DELETE', path: '/plate-designs/:id', auth: 'jwt', roles: ROLES.MANAGE, params: s.IdParams, response: null }),
   },
   sessions: {
     close: r({ method: 'POST', path: '/sessions/:id/close', auth: 'jwt', roles: ROLES.OPERATE, params: s.IdParams, response: s.CloseSessionResponse }),

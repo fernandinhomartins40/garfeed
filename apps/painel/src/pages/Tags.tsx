@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { ArrowLeftRight, Link2, Link2Off, Lock, Plus, Printer, QrCode, Search } from 'lucide-react';
+import { ArrowLeftRight, Link2, Link2Off, Lock, Palette, Plus, Printer, QrCode, Search } from 'lucide-react';
 import { api, type Tag, type TagStatus } from '@garfeed/shared';
 import { call, errMsg } from '@/lib/api';
 import { qk, useNow } from '@/lib/live';
@@ -43,6 +43,7 @@ export function TagsPage() {
     <div className="px-4 py-6 md:px-8">
       <PageTitle actions={<>
         <Button size="lg" onClick={() => nav('/placas/vincular')}><Plus className="h-5 w-5" />Vincular placa</Button>
+        <Button size="lg" variant="soft" onClick={() => nav('/placas/artes')}><Palette className="h-5 w-5" />Adesivos e plaquinhas</Button>
         <Button size="lg" variant="outline" disabled={!printable.length} onClick={() => !printEmergencyQrs(printable) && toast.error('Permita pop-ups para imprimir.')}>
           <Printer className="h-5 w-5" />Imprimir QRs de emergência</Button>
       </>}>Placas</PageTitle>

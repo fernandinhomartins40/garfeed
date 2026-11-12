@@ -1,7 +1,7 @@
 import { Router, type Request } from 'express';
 import type { Prisma } from '@prisma/client';
 import {
-  CodeParams, COOKIES, LinkTagBody, type SessionJoinResponse, type Tag, type TagResolveResponse,
+  CodeParams, COOKIES, EnsureTagCodesBody, generateTagCode, LinkTagBody, type SessionJoinResponse, type Tag, type TagResolveResponse,
 } from '@garfeed/shared';
 import { prisma } from '../../lib/prisma';
 import { AppError, notFound } from '../../lib/errors';
@@ -93,6 +93,32 @@ router.get('/', async (req, res) => {
 /** Placa do próprio restaurante ou sem dono; de outro restaurante → 404 (não revela existência). */
 const findLinkable = (code: string, restaurantId: string) =>
   prisma.tag.findFirst({ where: { code, OR: [{ restaurantId }, { restaurantId: null }] }, include: { table: true } });
+
+/**
+ * Mesas sem placa ganham um código "só QR" (vira uma placa comum: ACTIVE, do restaurante, pode ser movida/bloqueada).
+ * Mesas que já têm placa ficam como estão. Devolve as placas de todas as mesas pedidas.
+ */
+router.post('/ensure-codes', validate({ body: EnsureTagCodesBody }), async (req, res) => {
+  const rid = tenantId(req);
+  const ids = [...new Set((req.body as EnsureTagCodesBody).tableIds)];
+  const tables = await prisma.table.findMany({ where: { id: { in: ids }, restaurantId: rid }, include: { tag: true } });
+  if (tables.length !== ids.length) throw notFound('Mesa');
+  for (const t of tables.filter((x) => !x.tag)) {
+    for (let tries = 0; ; tries++) {
+      try {
+        await prisma.tag.create({ data: { code: generateTagCode(), status: 'ACTIVE', restaurantId: rid, tableId: t.id, activatedAt: new Date() } });
+        break;
+      } catch (err) {
+        // P2002: código repetido (raro) → sorteia outro; mesa ganhou placa em paralelo → segue
+        if ((err as { code?: string }).code !== 'P2002' || tries >= 10) throw err;
+        if (await prisma.tag.count({ where: { tableId: t.id } })) break;
+      }
+    }
+    emitToRestaurant(rid, 'table:updated', { tableId: t.id });
+  }
+  const rows = await prisma.tag.findMany({ where: { tableId: { in: ids }, restaurantId: rid }, include: { table: true }, orderBy: { code: 'asc' } });
+  res.json(rows.map(toTag));
+});
 
 router.get('/:code', validate({ params: CodeParams }), async (req, res) => {
   const tag = await findLinkable((req.params as CodeParams).code, tenantId(req));

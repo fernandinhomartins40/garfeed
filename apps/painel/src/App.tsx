@@ -24,6 +24,8 @@ const ItemEditPage = page(() => import('./pages/ItemEdit'), 'ItemEditPage');
 const OptionGroupsPage = page(() => import('./pages/OptionGroups'), 'OptionGroupsPage');
 const LinkTagPage = page(() => import('./pages/LinkTag'), 'LinkTagPage');
 const TagsPage = page(() => import('./pages/Tags'), 'TagsPage');
+const PlateDesignsPage = page(() => import('./pages/PlateDesigns'), 'PlateDesignsPage');
+const PlateEditorPage = page(() => import('./pages/PlateEditor'), 'PlateEditorPage');
 const TeamPage = page(() => import('./pages/Team'), 'TeamPage');
 const SettingsPage = page(() => import('./pages/Settings'), 'SettingsPage');
 const AdminRestaurantsPage = page(() => import('./pages/admin/Restaurants'), 'AdminRestaurantsPage');
@@ -62,6 +64,8 @@ const router = createBrowserRouter([
       { path: '/cardapio/opcionais', element: <Guard group="MANAGE"><OptionGroupsPage /></Guard> },
       { path: '/cardapio/itens/:id', element: <Guard group="MANAGE"><ItemEditPage /></Guard> },
       { path: '/placas', element: <Guard group="MANAGE"><TagsPage /></Guard> },
+      { path: '/placas/artes', element: <Guard group="MANAGE"><PlateDesignsPage /></Guard> },
+      { path: '/placas/artes/:id', element: <Guard group="MANAGE"><PlateEditorPage /></Guard> },
       { path: '/equipe', element: <Guard group="OWNER"><TeamPage /></Guard> },
       { path: '/configuracoes', element: <Guard group="OWNER"><SettingsPage /></Guard> },
     ],

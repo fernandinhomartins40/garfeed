@@ -124,6 +124,7 @@ model Restaurant {
   events        Event[]
   billing       Billing?
   invoices      BillingPayment[]
+  plateDesigns  PlateDesign[]
 }
 
 model User {
@@ -492,4 +493,20 @@ model BillingEvent {
   id        String   @id
   event     String
   createdAt DateTime @default(now())
+}
+
+// Arte de placa/adesivo montada no editor do painel (JSON validado por PlateDoc em @garfeed/shared).
+model PlateDesign {
+  id           String   @id @default(cuid())
+  restaurantId String
+  name         String
+  widthMm      Int
+  heightMm     Int
+  doc          Json
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@index([restaurantId])
 }

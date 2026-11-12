@@ -714,3 +714,50 @@ export const AsaasWebhookBody = z.object({
 export type AsaasWebhookBody = z.infer<typeof AsaasWebhookBody>;
 export const AsaasWebhookResponse = z.object({ received: z.literal(true), ignored: z.boolean().optional(), duplicate: z.boolean().optional() });
 export type AsaasWebhookResponse = z.infer<typeof AsaasWebhookResponse>;
+
+// =====================================================================
+// Arte das placas/adesivos (editor do painel). Medidas em milímetros.
+// =====================================================================
+const mm = z.number().finite().min(-2000).max(2000);
+const size = z.number().finite().positive().max(2000);
+const PlateBase = {
+  id: z.string().min(1).max(40),
+  x: mm, y: mm, width: size, height: size,
+  rotation: z.number().finite().min(-360).max(360),
+  opacity: z.number().min(0).max(1),
+};
+export const PLATE_FONTS = ['Nunito', 'Inter'] as const;
+export const PlateElement = z.discriminatedUnion('type', [
+  /** QR da mesa: o conteúdo é sempre a URL da placa da mesa, gerada na impressão. */
+  z.object({ ...PlateBase, type: z.literal('qr'), fg: HexColor, bg: HexColor }),
+  /** Texto; aceita as variáveis {mesa} e {restaurante}. fontSize em mm (altura da linha ≈ 1,2×). */
+  z.object({
+    ...PlateBase, type: z.literal('text'), text: z.string().max(300),
+    fontFamily: z.enum(PLATE_FONTS), fontSize: z.number().min(1).max(300), fontWeight: z.enum(['400', '600', '800', '900']),
+    fill: HexColor, align: z.enum(['left', 'center', 'right']),
+  }),
+  /** Imagem embutida (data URL, já reduzida no navegador): não depende de CORS para exportar. */
+  z.object({ ...PlateBase, type: z.literal('image'), src: z.string().max(1_200_000).regex(/^data:image\/(png|jpeg|webp);base64,/, 'Imagem inválida') }),
+  z.object({ ...PlateBase, type: z.literal('rect'), fill: HexColor.nullable(), stroke: HexColor.nullable(), strokeWidth: z.number().min(0).max(50), cornerRadius: z.number().min(0).max(1000) }),
+  z.object({ ...PlateBase, type: z.literal('ellipse'), fill: HexColor.nullable(), stroke: HexColor.nullable(), strokeWidth: z.number().min(0).max(50) }),
+]);
+export type PlateElement = z.infer<typeof PlateElement>;
+export const PlateDoc = z.object({ background: HexColor, elements: z.array(PlateElement).max(80) });
+export type PlateDoc = z.infer<typeof PlateDoc>;
+
+export const PlateDesignSummary = z.object({ id: Id, name: z.string(), widthMm: z.number().int(), heightMm: z.number().int(), updatedAt: IsoDate });
+export type PlateDesignSummary = z.infer<typeof PlateDesignSummary>;
+export const PlateDesign = PlateDesignSummary.extend({ doc: PlateDoc });
+export type PlateDesign = z.infer<typeof PlateDesign>;
+/** POST /plate-designs e PUT /plate-designs/:id */
+export const SavePlateDesignBody = z.object({
+  name: z.string().trim().min(1).max(60),
+  widthMm: z.number().int().min(20).max(420),
+  heightMm: z.number().int().min(20).max(420),
+  doc: PlateDoc,
+});
+export type SavePlateDesignBody = z.infer<typeof SavePlateDesignBody>;
+
+/** POST /tags/ensure-codes: garante um código (placa "só QR") para cada mesa; devolve as placas das mesas. */
+export const EnsureTagCodesBody = z.object({ tableIds: z.array(Id).min(1).max(300) });
+export type EnsureTagCodesBody = z.infer<typeof EnsureTagCodesBody>;
