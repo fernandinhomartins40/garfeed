@@ -4,7 +4,7 @@
     "target": {
       "namespace": "android_app",
       "package_name": "br.com.garfeed.painel",
-      "sha256_cert_fingerprints": ["TROCAR:PELO:SHA256:DA:CHAVE:DE:ASSINATURA:VER:infra/twa/README.md"]
+      "sha256_cert_fingerprints": ["59:0C:D6:2D:21:C2:32:4C:BF:DC:36:A5:90:12:C1:E8:22:DE:09:43:19:A0:DE:6F:EC:BE:A0:06:D2:55:6B:64"]
     }
   }
 ]
