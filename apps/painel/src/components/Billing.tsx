@@ -185,7 +185,7 @@ export function PlanCard({ plan }: { plan: Plan }) {
         <div className='min-w-0 flex-1 basis-48'><h2 className='font-heading text-2xl font-black'>Plano atual</h2><p className='text-gf-navy-80'>{store ? 'Seu plano e a situação da conta.' : 'Seu plano e opções de assinatura.'}</p></div>
         <span className='rounded-pill bg-blue-50 px-4 py-1.5 text-lg font-bold text-info'>{PLAN_LABEL[current]}</span>
         {b && !store && (current === 'NETWORK'
-          ? <a href='mailto:contato@garfeed.com.br?subject=Plano%20Rede' className='inline-flex h-11 items-center rounded-lg bg-gf-bg px-4 font-semibold hover:bg-gf-border'>Falar com a gente</a>
+          ? <a href='mailto:fuseagencia10@gmail.com?subject=Plano%20Rede' className='inline-flex h-11 items-center rounded-lg bg-gf-bg px-4 font-semibold hover:bg-gf-border'>Falar com a gente</a>
           : <Button variant={b.subscribed ? 'outline' : 'primary'} onClick={() => setManage(true)}>{b.subscribed ? 'Trocar plano' : 'Assinar agora'}</Button>)}
       </div>
       {q.isPending && <p className='mt-4 border-t border-gf-border pt-4 text-gf-muted' role='status'>Carregando a situação da conta…</p>}

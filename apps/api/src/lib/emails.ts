@@ -5,7 +5,7 @@ import type { MailContent } from './mailer';
 
 const SITE = 'https://garfeed.com.br';
 const LOGO = `${SITE}/assets/email/logo-garfeed.png`;
-const SUPPORT = 'contato@garfeed.com.br';
+const SUPPORT = 'fuseagencia10@gmail.com';
 const C = { orange: '#FE581D', navy: '#142433', navy80: '#3A4756', muted: '#6B7480', border: '#F1E4DA', cream: '#FFF8F2', soft: '#FFF1EA' };
 const HEADING = "'Nunito','Trebuchet MS','Segoe UI',Arial,sans-serif";
 const BODY = "'Inter','Segoe UI',Helvetica,Arial,sans-serif";

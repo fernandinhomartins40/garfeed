@@ -5,7 +5,7 @@ O **cliente final é anônimo** (regra 6 do `CLAUDE.md`): não tem cadastro, nã
 
 - **Envio:** Velomail (servidor de e-mail próprio do dono do projeto — ver `docs/DECISOES.md`), API HTTP
   `POST https://www.velomail.com.br/api/emails/send` com `Authorization: Bearer <VELOMAIL_API_KEY>`.
-- **Remetente:** `nao-responda@garfeed.com.br` · **Reply-To:** `contato@garfeed.com.br`. A API do Velomail só aceita o
+- **Remetente:** `nao-responda@garfeed.com.br` · **Reply-To:** `fuseagencia10@gmail.com`. A API do Velomail só aceita o
   endereço puro em `from` (sem nome de exibição `"Garfeed <...>"`).
 - **Domínio:** `garfeed.com.br` autenticado no Velomail (DKIM `default._domainkey`, DMARC `p=none`, return-path
   `uz-mail.garfeed.com.br` com MX + SPF). Registros na zona DNS da Hostinger.
@@ -68,5 +68,5 @@ E-mails para o cliente final (comprovante de pedido, marketing) **não existem e
 | `VELOMAIL_API_KEY` | vazio (não envia) | Chave de envio do Velomail (permissão só `email:send`). **Nunca** a chave de administração/agente |
 | `VELOMAIL_API_URL` | `https://www.velomail.com.br/api/emails/send` | Endpoint de envio |
 | `MAIL_FROM` | `nao-responda@garfeed.com.br` | Remetente (endereço puro, do domínio verificado) |
-| `MAIL_REPLY_TO` | `contato@garfeed.com.br` | Reply-To |
+| `MAIL_REPLY_TO` | `fuseagencia10@gmail.com` | Reply-To |
 | `PAINEL_URL` | `http://localhost:5173` | Base dos links dos e-mails. Produção: `https://painel.garfeed.com.br` |

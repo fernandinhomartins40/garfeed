@@ -118,7 +118,7 @@ workflow manual `.github/workflows/apps-nativos.yml` (sem Mac). Guia: `docs/apps
   funciona e só não envia (em dev o link sai no log). Integração por HTTP (`fetch`), sem SDK nem dependência nova.
 - **Domínio**: `garfeed.com.br` autenticado no Velomail — DKIM em `default._domainkey`, DMARC `p=none` (relatórios para o
   Velomail) e return-path em `uz-mail.garfeed.com.br` (MX + SPF). Nada em `@`: o domínio ainda **não tem MX principal**,
-  então `contato@garfeed.com.br` (Reply-To) só recebe quando houver caixa de entrada configurada.
+  então o contato público (Reply-To, site, termos, ficha das lojas) é `fuseagencia10@gmail.com` (trocado em 2026-11-12: `contato@garfeed.com.br` não recebia).
 - **Remetente** `nao-responda@garfeed.com.br`: a API do Velomail valida `from` como endereço puro (sem nome de exibição).
 - **Envio assíncrono simples** (`lib/mailer.ts`): *fire-and-forget* com 3 tentativas e log, em vez de fila BullMQ — a API não
   tem worker próprio e os e-mails são reemitíveis pelo usuário ("esqueci minha senha", "reenviar convite").

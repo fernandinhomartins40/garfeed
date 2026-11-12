@@ -36,7 +36,7 @@ const Env = z.object({
   VELOMAIL_API_URL: z.string().default('https://www.velomail.com.br/api/emails/send'),
   VELOMAIL_API_KEY: z.string().optional().transform((s) => s || undefined),
   MAIL_FROM: z.string().default('nao-responda@garfeed.com.br'),
-  MAIL_REPLY_TO: z.string().default('contato@garfeed.com.br'),
+  MAIL_REPLY_TO: z.string().default('fuseagencia10@gmail.com'),
   /** Base dos links dos e-mails (definir senha, login). */
   PAINEL_URL: z.string().default('http://localhost:5173').transform((s) => s.replace(/\/+$/, '')),
   /** Requisições por minuto por IP nas rotas /public (o Wi-Fi do restaurante soma todos os celulares). */
