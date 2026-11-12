@@ -6,6 +6,9 @@ import { Icon } from './icons';
 import { BADGES, store, track } from './lib';
 import { CartBar, Logo, MesaChip } from './ui';
 
+/** "Economia de dados" do celular: não baixa o próximo vídeo antes da hora. */
+const saveData = !!(navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const BADGE_EMOJI = { MOST_ORDERED: '🔥', NEW: '✨', VEGAN: '🌱', SPICY: '🌶️' } as const;
 
@@ -139,7 +142,7 @@ const Slide = memo(function Slide({ it, i, active, near, ahead, canOrder, fav, h
         {/* Pré-carrega os 2 próximos; 3+ telas para trás a mídia é descarregada. */}
         {near && m?.url && m.type === 'VIDEO' ? (
           <video ref={video} src={m.url} poster={m.posterUrl ?? undefined} muted loop playsInline
-            preload={active || ahead ? 'auto' : 'metadata'} onClick={(e) => (e.currentTarget.paused ? void e.currentTarget.play() : e.currentTarget.pause())}
+            preload={active || (ahead && !saveData) ? 'auto' : 'metadata'} onClick={(e) => (e.currentTarget.paused ? void e.currentTarget.play() : e.currentTarget.pause())}
             className="h-full w-full object-cover" aria-label={`Vídeo: ${it.name}`} />
         ) : near && (m?.url ?? m?.posterUrl) ? (
           <img src={(m!.type === 'IMAGE' ? m!.url : m!.posterUrl) ?? m!.posterUrl ?? ''} alt={it.name} decoding="async"

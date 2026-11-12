@@ -7,6 +7,7 @@ import { Check, ChevronRight, CircleCheck, CloudUpload, FileVideo, Info, Layers,
 import { api, Badge as BadgeEnum, BADGE_LABEL, CreateItemBody, type Badge, type Item } from '@garfeed/shared';
 import { call, errMsg } from '@/lib/api';
 import { useMediaUpload } from '@/lib/upload';
+import { canCrop, CROP_ITEM, ImageCropDialog } from '@/components/ImageCrop';
 import { centsToInput, cn, parseCents } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Field, Input, Select, Textarea } from '@/components/ui/input';
@@ -36,6 +37,8 @@ function Editor({ item }: { item: Item | null }) {
   const cats = useQuery({ queryKey: mk.cats, queryFn: () => call(api.menu.listCategories) });
   const groups = useQuery({ queryKey: mk.groups, queryFn: () => call(api.menu.listOptionGroups) });
   const up = useMediaUpload(item?.media);
+  const [cropFile, setCropFile] = useState<File | null>(null);
+  const send = (f: File) => { setMediaTouched(true); void up.start(f); };
   const [mediaId, setMediaId] = useState<string | null>(item?.media?.id ?? null);
   const [mediaTouched, setMediaTouched] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -152,7 +155,7 @@ function Editor({ item }: { item: Item | null }) {
         </Card>
 
         <Card className="min-w-0 space-y-3 self-start p-4 sm:p-5 lg:sticky lg:top-4">
-          <MediaBox up={up} hasMedia={!!mediaId} onPick={(f) => { setMediaTouched(true); void up.start(f); }}
+          <MediaBox up={up} hasMedia={!!mediaId} onPick={(f) => (canCrop(f) ? setCropFile(f) : send(f))}
             onRemove={() => { up.cancel(); setMediaId(null); setMediaTouched(true); }} />
           <p className="flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-2 text-sm text-gf-navy-80"><Info className="h-4 w-4 shrink-0 text-info" />Vídeo vertical (9:16), até 30 s e 100 MB · ou foto até 15 MB</p>
           <div className="pt-2">
@@ -170,6 +173,7 @@ function Editor({ item }: { item: Item | null }) {
           <Button type="submit" size="lg" className="flex-1 whitespace-nowrap px-4 sm:min-w-44 sm:flex-none sm:px-6" loading={save.isPending} disabled={up.busy}>Salvar item</Button>
         </div>
       </div>
+      <ImageCropDialog file={cropFile} spec={CROP_ITEM} onCancel={() => setCropFile(null)} onDone={(f) => { setCropFile(null); send(f); }} />
       <Confirm open={blocker.state === 'blocked'} onOpenChange={() => blocker.reset?.()} title="Sair sem salvar?" confirmLabel="Sair sem salvar" danger
         description="As alterações deste item serão perdidas." onConfirm={() => blocker.proceed?.()} />
     </form>

@@ -8,6 +8,7 @@ import { call, errMsg, logout } from '@/lib/api';
 import { usePrefs } from '@/lib/auth';
 import { playAlert, unlockAudio } from '@/lib/alerts';
 import { useMediaUpload } from '@/lib/upload';
+import { CROP_LOGO, ImageCropDialog } from '@/components/ImageCrop';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
@@ -78,6 +79,7 @@ function SettingsForm({ s }: { s: Settings }) {
   const { register, control, handleSubmit, setValue, reset, formState: { isDirty } } = useForm<Form>({ defaultValues: s });
   const [accent, logoUrl, hours] = useWatch({ control, name: ['accentColor', 'logoUrl', 'openingHours'] });
   const logo = useMediaUpload();
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   useEffect(() => { if (logo.phase === 'ready' && logo.media?.url) setValue('logoUrl', logo.media.url, { shouldDirty: true }); }, [logo.phase, logo.media, setValue]);
   useEffect(() => { if (logo.phase === 'failed') toast.error(logo.error ?? 'Falha no envio do logo'); }, [logo.phase, logo.error]);
 
@@ -115,8 +117,9 @@ function SettingsForm({ s }: { s: Settings }) {
                   <div>
                     <label className={cn('inline-flex h-11 cursor-pointer items-center gap-2 whitespace-nowrap rounded-lg border border-gf-border bg-gf-bg px-4 font-medium', logo.busy && 'opacity-60')}>
                       <Upload className="h-4 w-4" />{logo.busy ? (logo.phase === 'uploading' ? `Enviando ${logo.progress}%` : 'Processando…') : 'Trocar logo'}
-                      <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" disabled={logo.busy} onChange={(e) => { const f = e.target.files?.[0]; if (f) void logo.start(f); e.target.value = ''; }} />
+                      <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" disabled={logo.busy} onChange={(e) => { const f = e.target.files?.[0]; if (f) setLogoFile(f); e.target.value = ''; }} />
                     </label>
+                    <ImageCropDialog file={logoFile} spec={CROP_LOGO} onCancel={() => setLogoFile(null)} onDone={(f) => { setLogoFile(null); void logo.start(f); }} />
                     <p className="mt-2 text-xs text-gf-muted">PNG, JPG ou WEBP, até 15 MB.</p>
                   </div>
                 </div>

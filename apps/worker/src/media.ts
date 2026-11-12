@@ -1,5 +1,6 @@
-// Processamento de mídia (PRD RF-16): vídeo → MP4 720×1280 H.264 ~1,5 Mbps, sem áudio, faststart + pôster JPG + thumb WebP;
-// imagem → WebP (até 1080×1920) + thumb WebP. Derivados ficam na mesma pasta do original no MinIO.
+// Processamento de mídia (PRD RF-16): vídeo → MP4 720×1280 H.264 (CRF 27, teto 1,2 Mbps), sem áudio, faststart + pôster JPG + thumb WebP;
+// imagem → WebP (até 1080×1920) + thumb WebP. Derivados ficam na mesma pasta do original no MinIO; o original é apagado
+// depois que tudo fica pronto (só ocupava espaço: nada mais o lê).
 import { execFile } from 'node:child_process';
 import { mkdtemp, rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -49,8 +50,11 @@ async function processVideo(input: string, dir: string) {
     '-i', input, '-an',
     // preenche a tela 9:16 (corta as sobras) e fixa 30 fps
     '-vf', 'scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,fps=30',
-    '-c:v', 'libx264', '-preset', 'veryfast', '-profile:v', 'high', '-pix_fmt', 'yuv420p',
-    '-b:v', '1500k', '-maxrate', '1800k', '-bufsize', '3000k', '-movflags', '+faststart', video,
+    // qualidade constante (CRF 27) com teto de 1,2 Mbps: prato parado gasta bem menos que 1,2 Mbps; GOP de 2 s para
+    // começar a tocar rápido e pular sem travar; faststart = toca enquanto baixa
+    '-c:v', 'libx264', '-preset', 'medium', '-profile:v', 'high', '-level', '4.0', '-pix_fmt', 'yuv420p',
+    '-crf', '27', '-maxrate', '1200k', '-bufsize', '2400k', '-g', '60', '-keyint_min', '30', '-sc_threshold', '0',
+    '-movflags', '+faststart', video,
   ]);
   await ffmpeg(['-ss', String(Math.min(1, durationMs / 2000)), '-i', video, '-frames:v', '1', '-q:v', '3', poster]);
   const out = await probe(video);
@@ -113,6 +117,7 @@ export async function processMedia(mediaId: string, redis?: Redis) {
       },
     });
     await redis?.del(menuCacheKey(media.restaurantId)); // item com esta mídia passa a mostrá-la no feed
+    await minio.removeObject(bucket, media.originalKey).catch(() => undefined); // falhar aqui não desfaz o READY
     return { media: updated, outputBytes: (await stat(files[0]!.path)).size };
   } finally {
     await rm(dir, { recursive: true, force: true });

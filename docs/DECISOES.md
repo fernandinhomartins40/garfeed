@@ -201,3 +201,14 @@ workflow manual `.github/workflows/apps-nativos.yml` (sem Mac). Guia: `docs/apps
   "contaminado" por CORS na exportação. Sem MinIO para isso.
 - **Impressão**: PNG 300 dpi por mesa; folha A4 com várias (gira a folha se couber mais, linha de recorte opcional) ou uma por
   página no tamanho exato. Aviso quando o QR < 2,5 cm. No app iOS a impressão fica indisponível (WKWebView), como os QR de emergência.
+
+## 2026-11-12 — Padrão das fotos e vídeos do cardápio
+- **Corte no envio** (painel): foto de item abre um corte fixo **9:16** (formato do feed em tela cheia) com arrastar/zoom e sai
+  como JPEG 1080×1920 (q 0,85) já comprimido; logo do restaurante, corte quadrado 800×800 em PNG (mantém transparência).
+  HEIC não abre no navegador (fora o Safari): vai inteiro e o worker converte, como antes. Vídeo não tem corte manual: o
+  worker preenche 9:16 cortando as sobras pelo centro.
+- **Vídeo**: H.264 720×1280 30 fps, **CRF 27 com teto de 1,2 Mbps** (antes 1,5 Mbps fixo), GOP de 2 s, faststart, sem áudio.
+  Clipe de 6 s de teste: 5,1 MB → 0,68 MB. No cardápio, com "economia de dados" ligada, o próximo vídeo não é pré-carregado.
+- **Original apagado** do MinIO depois que a mídia fica READY (nada mais o lê). Se o processamento falhar, o original fica
+  para nova tentativa.
+- **Seed de demonstração** pela API em `scripts/demo/cardapio-demo.mjs` + `docs/demo-cardapio/produtos.json`.

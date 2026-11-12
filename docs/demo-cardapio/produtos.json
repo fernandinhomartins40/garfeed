@@ -1,0 +1,36 @@
+{
+  "restaurante": "Brasa & Pão",
+  "categorias": [
+    { "nome": "Burgers", "setor": "KITCHEN" },
+    { "nome": "Combos", "setor": "KITCHEN" },
+    { "nome": "Porções", "setor": "KITCHEN" },
+    { "nome": "Bebidas", "setor": "BAR" },
+    { "nome": "Sobremesas", "setor": "KITCHEN" }
+  ],
+  "opcionais": [
+    { "nome": "Ponto da carne", "min": 1, "max": 1, "opcoes": [["Mal passado", 0], ["Ao ponto", 0], ["Bem passado", 0]] },
+    { "nome": "Adicionais", "min": 0, "max": 3, "opcoes": [["Bacon extra", 500], ["Cheddar extra", 400], ["Ovo", 300], ["Cebola caramelizada", 400]] },
+    { "nome": "Molho da batata", "min": 0, "max": 2, "opcoes": [["Maionese defumada", 0], ["Barbecue", 0], ["Cheddar cremoso", 300]] },
+    { "nome": "Refrigerante", "min": 1, "max": 1, "opcoes": [["Coca-Cola", 0], ["Guaraná", 0], ["Sprite", 0], ["Coca-Cola Zero", 0]] }
+  ],
+  "produtos": [
+    { "foto": "smash-duplo-bacon", "categoria": "Burgers", "nome": "Smash Duplo com Bacon", "descricao": "Dois smash de 90 g, cheddar duplo, bacon crocante e pão brioche.", "preco": 3890, "badges": ["MOST_ORDERED"], "opcionais": ["Ponto da carne", "Adicionais"], "video": true },
+    { "foto": "classico-da-casa", "categoria": "Burgers", "nome": "Clássico da Casa", "descricao": "Blend de 160 g, queijo prato, alface, tomate e maionese da casa.", "preco": 3290, "opcionais": ["Ponto da carne", "Adicionais"] },
+    { "foto": "cheddar-melt", "categoria": "Burgers", "nome": "Cheddar Melt", "descricao": "Blend de 160 g coberto com cheddar derretido e cebola caramelizada no pão australiano.", "preco": 3590, "opcionais": ["Ponto da carne", "Adicionais"] },
+    { "foto": "brasa-picante", "categoria": "Burgers", "nome": "Brasa Picante", "descricao": "Blend de 160 g, pepper jack, jalapeño, cebola roxa e maionese de chipotle.", "preco": 3690, "badges": ["SPICY"], "opcionais": ["Ponto da carne", "Adicionais"] },
+    { "foto": "chicken-crispy", "categoria": "Burgers", "nome": "Chicken Crispy", "descricao": "Sobrecoxa empanada crocante, coleslaw, picles e maionese de ervas.", "preco": 3390, "badges": ["NEW"], "opcionais": ["Adicionais"] },
+    { "foto": "veggie-da-horta", "categoria": "Burgers", "nome": "Veggie da Horta", "descricao": "Hambúrguer de grão-de-bico e cogumelos, rúcula, tomate e maionese vegana.", "preco": 3190, "badges": ["VEGAN"] },
+    { "foto": "combo-brasa", "categoria": "Combos", "nome": "Combo Brasa", "descricao": "Smash Duplo com Bacon + batata rústica + refrigerante lata.", "preco": 5490, "promo": 4990, "badges": ["NEW"], "opcionais": ["Ponto da carne", "Refrigerante"], "video": true },
+    { "foto": "combo-familia", "categoria": "Combos", "nome": "Combo Família", "descricao": "Quatro burgers clássicos, duas porções de batata e quatro refrigerantes.", "preco": 15990, "promo": 13990, "opcionais": ["Refrigerante"] },
+    { "foto": "batata-rustica", "categoria": "Porções", "nome": "Batata Rústica com Ervas", "descricao": "Porção de 400 g com alecrim, alho e maionese defumada.", "preco": 2890, "badges": ["MOST_ORDERED"], "opcionais": ["Molho da batata"] },
+    { "foto": "batata-cheddar-bacon", "categoria": "Porções", "nome": "Batata com Cheddar e Bacon", "descricao": "Batata rústica coberta com cheddar cremoso e bacon.", "preco": 3490, "opcionais": ["Molho da batata"], "video": true },
+    { "foto": "onion-rings", "categoria": "Porções", "nome": "Onion Rings", "descricao": "Anéis de cebola empanados na cerveja, com molho barbecue.", "preco": 2690 },
+    { "foto": "tiras-frango", "categoria": "Porções", "nome": "Tiras de Frango Crocante", "descricao": "Tiras de frango empanadas com molho de mostarda e mel.", "preco": 3190 },
+    { "foto": "chopp-pilsen", "categoria": "Bebidas", "nome": "Chopp Pilsen 400 ml", "descricao": "Gelado, direto da chopeira.", "preco": 1490 },
+    { "foto": "limonada-suica", "categoria": "Bebidas", "nome": "Limonada Suíça", "descricao": "Limão, leite condensado e gelo.", "preco": 1290 },
+    { "foto": "refrigerante-lata", "categoria": "Bebidas", "nome": "Refrigerante lata", "descricao": "Coca-Cola, Guaraná ou Sprite.", "preco": 790, "opcionais": ["Refrigerante"] },
+    { "foto": "milkshake-ovomaltine", "categoria": "Bebidas", "nome": "Milkshake de Ovomaltine", "descricao": "Sorvete de creme batido com Ovomaltine crocante e chantilly.", "preco": 2290, "badges": ["NEW"] },
+    { "foto": "brownie-sorvete", "categoria": "Sobremesas", "nome": "Brownie com Sorvete", "descricao": "Brownie quente, sorvete de creme e calda de chocolate.", "preco": 2290 },
+    { "foto": "petit-gateau", "categoria": "Sobremesas", "nome": "Petit Gâteau", "descricao": "Bolinho de chocolate com recheio cremoso e sorvete de baunilha.", "preco": 2490 }
+  ]
+}

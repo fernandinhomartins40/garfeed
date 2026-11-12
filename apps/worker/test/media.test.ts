@@ -49,6 +49,9 @@ describe('worker de mídia', () => {
     const poster = await minio.statObject(bucket, `${restaurantId}/teste/poster.jpg`);
     expect(poster.size).toBeGreaterThan(1000);
     expect(poster.metaData['content-type']).toBe('image/jpeg');
+    // original apagado (economia de espaço); vídeo de teste de 3 s fica bem abaixo do teto de 1,2 Mbps
+    await expect(minio.statObject(bucket, key)).rejects.toThrow();
+    expect((await minio.statObject(bucket, `${restaurantId}/teste/video.mp4`)).size).toBeLessThan(3 * 1_200_000 / 8 * 1.2);
   });
 
   it('imagem → WebP + thumb; Media READY', async () => {
@@ -60,5 +63,6 @@ describe('worker de mídia', () => {
     const r = await processMedia(media.id);
     expect(r?.media).toMatchObject({ status: 'READY', width: 800, height: 600, posterUrl: null });
     expect(r!.media.url).toMatch(/image\.webp$/);
+    await expect(minio.statObject(bucket, key)).rejects.toThrow();
   });
 });
