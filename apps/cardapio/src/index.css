@@ -5,6 +5,8 @@
 
 :root { --accent: var(--gf-orange); --on-accent: #fff; }
 html, body, #root { height: 100%; }
+/* altura da área visível real: acompanha a barra de endereço do celular aparecendo/sumindo */
+@supports (height: 100dvh) { #root { height: 100dvh; } }
 body { @apply bg-white font-sans text-gf-navy antialiased; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
 /* Tablet/desktop: o cardápio fica numa coluna de celular centralizada (as barras e sheets fixos já usam max-w-md centralizado). */
 @media (min-width: 640px) {
@@ -15,8 +17,9 @@ body { @apply bg-white font-sans text-gf-navy antialiased; -webkit-tap-highlight
 .no-scrollbar::-webkit-scrollbar { display: none; }
 /* Fundo elegante quando o item não tem mídia (ou ela ainda está processando). */
 .media-fallback { background: radial-gradient(120% 70% at 30% 25%, color-mix(in srgb, var(--accent) 55%, transparent), transparent 60%), radial-gradient(90% 60% at 80% 85%, #2a3f55, transparent 70%), #142433; }
-@keyframes kenburns { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.12) translate(-2%, -2%); } }
-.kenburns { animation: kenburns 9s ease-in-out infinite alternate; }
+/* zoom lento só com scale3d (camada própria na GPU): sem translate em % nem reposicionar pixels a cada quadro = sem tremido */
+@keyframes kenburns { from { transform: scale3d(1, 1, 1); } to { transform: scale3d(1.07, 1.07, 1); } }
+.kenburns { animation: kenburns 14s cubic-bezier(.45, 0, .55, 1) infinite alternate; transform-origin: 50% 42%; will-change: transform; backface-visibility: hidden; }
 @keyframes nudge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 .nudge { animation: nudge 1.4s ease-in-out infinite; }
 @keyframes up { from { transform: translateY(100%); } to { transform: translateY(0); } }

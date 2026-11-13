@@ -30,6 +30,31 @@ export function Feed(p: Props) {
     if (ref.current) ref.current.scrollTop = activeIdx * ref.current.clientHeight;
   }, []);
 
+  // Mantém cada prato encaixado na tela: se a altura muda (barra de endereço do celular some/aparece) ou a rolagem
+  // termina fora do lugar, volta para o prato atual. Sem isso, da 3ª tela em diante aparece um pedaço da próxima.
+  const activeRef = useRef(activeIdx);
+  activeRef.current = activeIdx;
+  useEffect(() => {
+    const c = ref.current!;
+    let lastH = c.clientHeight;
+    const ro = new ResizeObserver(() => {
+      if (c.clientHeight === lastH) return;
+      lastH = c.clientHeight;
+      c.scrollTop = activeRef.current * c.clientHeight;
+    });
+    ro.observe(c);
+    let t: ReturnType<typeof setTimeout> | undefined;
+    const settle = () => {
+      const h = c.clientHeight, i = Math.round(c.scrollTop / h);
+      if (Math.abs(c.scrollTop - i * h) > 1) c.scrollTo({ top: i * h, behavior: reduced ? 'auto' : 'smooth' });
+    };
+    // scrollend (Chrome/Firefox); no Safari antigo, 150 ms sem rolar
+    const onScroll = () => { clearTimeout(t); t = setTimeout(settle, 150); };
+    const native = 'onscrollend' in window;
+    c.addEventListener(native ? 'scrollend' : 'scroll', native ? settle : onScroll, { passive: true });
+    return () => { ro.disconnect(); clearTimeout(t); c.removeEventListener(native ? 'scrollend' : 'scroll', native ? settle : onScroll); };
+  }, []);
+
   useEffect(() => {
     const root = ref.current!;
     const io = new IntersectionObserver((es) => {

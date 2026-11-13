@@ -17,6 +17,8 @@ import { join } from 'node:path';
 const arg = (k) => process.argv.find((a) => a.startsWith(`--${k}=`))?.split('=')[1];
 const API = (arg('api') ?? 'https://api.garfeed.com.br').replace(/\/$/, '');
 const REDO = process.argv.includes('--refazer-midia');
+/** --somente=foto1,foto2: limita a reenviar a mídia só desses produtos (com --refazer-midia). */
+const ONLY = arg('somente')?.split(',');
 const { DEMO_EMAIL, DEMO_PASSWORD, DEMO_TOKEN } = process.env;
 if (!DEMO_TOKEN && (!DEMO_EMAIL || !DEMO_PASSWORD)) throw new Error('Defina DEMO_EMAIL e DEMO_PASSWORD (ou DEMO_TOKEN, token de acesso do dono)');
 const ROOT = new URL('../../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
@@ -68,8 +70,10 @@ async function upload(file, type) {
 /** Clipe vertical de 6 s com zoom lento a partir da foto (só para a demonstração). */
 function clipFromPhoto(photo, slug) {
   const out = join(tmp, `${slug}.mp4`);
-  execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-loop', '1', '-i', photo, '-t', '6',
-    '-vf', "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,zoompan=z='1+0.0009*on':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=180:s=1080x1920:fps=30",
+  // zoompan arredonda a posição para pixels inteiros (treme); ampliar 4× antes deixa o passo 4× menor que 1 px na saída.
+  // Zoom em onda (aproxima e volta): o loop do feed emenda sem pulo.
+  execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', photo,
+    '-vf', "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,scale=4320:7680:flags=lanczos,zoompan=z='1+0.06*(1-cos(2*PI*on/180))/2':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=180:s=1080x1920:fps=30",
     '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-b:v', '8M', out]);
   return out;
 }
@@ -107,7 +111,7 @@ try {
       badges: p.badges ?? [], optionGroupIds: (p.opcionais ?? []).map(groupId), visible: true, soldOut: false,
     };
     const photo = findFile('fotos', p.foto, ['jpg', 'jpeg', 'png', 'webp']);
-    const needMedia = REDO || !have?.media || have.media.status !== 'READY';
+    const needMedia = (REDO && (!ONLY || ONLY.includes(p.foto))) || !have?.media || have.media.status !== 'READY';
     if (needMedia && photo) {
       const video = findFile('videos', p.foto, ['mp4']) ?? (p.video ? clipFromPhoto(photo, p.foto) : null);
       const r = await upload(video ?? photo, video ? 'VIDEO' : 'IMAGE');
