@@ -36,14 +36,22 @@ export function Feed(p: Props) {
     t.style.transition = animate && !reduced ? 'transform 340ms cubic-bezier(.22,.8,.24,1)' : 'none';
     t.style.transform = `translate3d(0, calc(${-i * 100}% + ${dragPx}px), 0)`;
   };
+  // O prato "ativo" (zoom, vídeo, pré-carga) só troca quando o deslize termina: trocar no meio tirava o zoom da foto que
+  // estava saindo (ela "pulava" de 107% para 100%) e o re-render de todos os pratos roubava quadros da animação.
+  const commit = useRef(0);
   const goTo = (i: number) => {
     const n = Math.max(0, Math.min(items.length - 1, i));
     place(n, true);
-    if (n !== idx.current) { idx.current = n; p.setActiveIdx(n); }
+    if (n === idx.current) return;
+    idx.current = n;
+    clearTimeout(commit.current);
+    commit.current = window.setTimeout(() => p.setActiveIdx(n), reduced ? 0 : 360);
   };
+  useEffect(() => () => clearTimeout(commit.current), []);
   // prato atual mudou por fora (grade → feed, categoria, link compartilhado)
   const mounted = useRef(false);
   useLayoutEffect(() => {
+    clearTimeout(commit.current);
     idx.current = activeIdx;
     place(activeIdx, mounted.current);
     mounted.current = true;
@@ -230,7 +238,7 @@ const Slide = memo(function Slide({ it, i, active, near, ahead, canOrder, fav, h
 
       <div className="absolute right-3 top-[56%] z-[1] flex -translate-y-1/2 flex-col items-center gap-4 [@media(max-height:500px)]:top-[62%] [@media(max-height:500px)]:gap-2">
         <button type="button" aria-pressed={fav} aria-label={fav ? 'Remover dos favoritos' : 'Favoritar'} onClick={() => onFav(it)}
-          className={`grid h-14 w-14 place-items-center rounded-full bg-black/45 backdrop-blur ${fav ? 'text-accent' : 'text-white'}`}>
+          className={`grid h-14 w-14 place-items-center rounded-full bg-black/50 ${fav ? 'text-accent' : 'text-white'}`}>
           <Icon name="heart" className="h-8 w-8" fill={fav} />
         </button>
         {canOrder && (
@@ -239,7 +247,7 @@ const Slide = memo(function Slide({ it, i, active, near, ahead, canOrder, fav, h
             <Icon name="plus" className="h-9 w-9" />
           </button>
         )}
-        <button type="button" aria-label="Compartilhar" onClick={() => onShare(it)} className="grid h-14 w-14 place-items-center rounded-full bg-black/45 text-white backdrop-blur">
+        <button type="button" aria-label="Compartilhar" onClick={() => onShare(it)} className="grid h-14 w-14 place-items-center rounded-full bg-black/50 text-white">
           <Icon name="share" className="h-7 w-7" />
         </button>
       </div>
@@ -248,7 +256,7 @@ const Slide = memo(function Slide({ it, i, active, near, ahead, canOrder, fav, h
         <div className="mr-16">
           <div className="mb-2 flex flex-wrap gap-2">
             {it.soldOut && (
-              <span className="inline-flex items-center gap-1.5 rounded-pill bg-white/25 px-3 py-1 text-sm font-bold backdrop-blur">
+              <span className="inline-flex items-center gap-1.5 rounded-pill bg-black/50 px-3 py-1 text-sm font-bold">
                 <Icon name="ban" className="h-5 w-5" />Esgotado hoje
               </span>
             )}
