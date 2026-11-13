@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Konva from 'konva';
@@ -46,6 +46,8 @@ function Editor({ initial }: { initial: PlateDesign }) {
   const restaurant = useAuth((s) => s.restaurant);
   const tables = useQuery({ queryKey: qk.tables, queryFn: () => call(api.tables.list) });
   const active = useMemo(() => (tables.data ?? []).filter((t) => t.active), [tables.data]);
+  const brand = useQuery({ queryKey: ['plate-brand'], queryFn: () => call(api.plateDesigns.brand), staleTime: 60_000 }).data;
+  const swatches = useMemo(() => [...new Set([brand?.accent, brand?.dark, '#FFFFFF', '#142433', '#FE581D', '#000000'].filter((c): c is string => !!c))], [brand]);
 
   const [d, setD] = useState<Draft>({ name: initial.name, widthMm: initial.widthMm, heightMm: initial.heightMm, doc: initial.doc });
   const [sel, setSel] = useState<string | null>(null);
@@ -79,8 +81,8 @@ function Editor({ initial }: { initial: PlateDesign }) {
   const redo = () => { const n = future.current.pop(); if (!n) return; past.current.push(d); setD(n); setDirty(true); };
 
   const selected = d.doc.elements.find((e) => e.id === sel) ?? null;
-  const add = (e: NewEl) => {
-    const el = { id: newId(), rotation: 0, opacity: 1, x: (d.widthMm - e.width) / 2, y: (d.heightMm - e.height) / 2, ...e } as El;
+  const add = (e: NewEl, pos?: { x: number; y: number }) => {
+    const el = { id: newId(), rotation: 0, opacity: 1, x: (d.widthMm - e.width) / 2, y: (d.heightMm - e.height) / 2, ...pos, ...e } as El;
     commit((p) => ({ ...p, doc: { ...p.doc, elements: [...p.doc.elements, el] } }));
     setSel(el.id);
   };
@@ -155,8 +157,12 @@ function Editor({ initial }: { initial: PlateDesign }) {
 
   const qrTooSmall = d.doc.elements.some((e) => e.type === 'qr' && Math.min(e.width, e.height) < 25);
   const noQr = !d.doc.elements.some((e) => e.type === 'qr');
+  // algo desenhado POR CIMA do QR (depois dele na ordem das camadas) impede a leitura
+  const qrCovered = d.doc.elements.some((q, qi) => q.type === 'qr' && d.doc.elements.slice(qi + 1).some((o) =>
+    o.x < q.x + q.width && o.x + o.width > q.x && o.y < q.y + q.height && o.y + (o.type === 'text' ? o.fontSize * 1.2 : o.height) > q.y));
 
   return (
+    <Swatches.Provider value={swatches}>
     <div className="flex min-h-[calc(100dvh-3.5rem)] flex-col md:min-h-dvh">
       {/* barra superior */}
       <div className="flex flex-wrap items-center gap-2 border-b border-gf-border bg-white px-3 py-2 md:px-6">
@@ -183,6 +189,7 @@ function Editor({ initial }: { initial: PlateDesign }) {
             <ImagePlus /><span>Imagem</span>
             <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="sr-only" onChange={(e) => { void pickImage(e.target.files?.[0]); e.target.value = ''; }} />
           </label>
+          {brand?.logo && <Tool icon={<img src={brand.logo} alt="" className="h-6 w-6 rounded object-contain" />} label="Seu logo" onClick={() => { const w = Math.min(d.widthMm, d.heightMm) * 0.2; add({ type: 'image', src: brand.logo!, width: w, height: w }, { x: 4, y: 4 }); }} />}
           <Tool icon={<img src={logoUrl} alt="" className="h-4 w-auto" />} label="Logo Garfeed" onClick={() => void addGarfeedLogo()} />
           <Tool icon={<Square />} label="Retângulo" onClick={() => add({ type: 'rect', fill: '#FE581D', stroke: null, strokeWidth: 1, cornerRadius: 3, width: d.widthMm * 0.5, height: d.heightMm * 0.2 })} />
           <Tool icon={<Circle />} label="Círculo" onClick={() => { const s = Math.min(d.widthMm, d.heightMm) * 0.4; add({ type: 'ellipse', fill: '#FFE9DC', stroke: null, strokeWidth: 1, width: s, height: s }); }} />
@@ -208,9 +215,11 @@ function Editor({ initial }: { initial: PlateDesign }) {
 
         {/* propriedades */}
         <aside className="w-full border-t border-gf-border bg-white p-4 lg:w-80 lg:overflow-y-auto lg:border-l lg:border-t-0">
-          {(qrTooSmall || noQr) && (
+          {(qrTooSmall || noQr || qrCovered) && (
             <p role="status" className="mb-4 rounded-card border border-amber-200 bg-amber-100 px-3 py-2 text-sm font-semibold text-gf-navy">
-              {noQr ? 'Adicione o QR Code da mesa para poder imprimir.' : 'QR menor que 2,5 cm pode falhar na leitura. Recomendado: 3 cm ou mais.'}
+              {noQr ? 'Adicione o QR Code da mesa para poder imprimir.'
+                : qrCovered ? 'Tem algo por cima do QR Code: o celular pode não conseguir ler. Afaste o elemento ou envie-o para trás.'
+                : 'QR menor que 2,5 cm pode falhar na leitura. Recomendado: 3 cm ou mais.'}
             </p>
           )}
           {selected
@@ -221,6 +230,7 @@ function Editor({ initial }: { initial: PlateDesign }) {
 
       <PrintDialog open={printing} onOpenChange={setPrinting} d={d} tables={active} restaurante={vars.restaurante} />
     </div>
+    </Swatches.Provider>
   );
 }
 
@@ -327,14 +337,25 @@ const Num = ({ label, value, onChange, step = 1, min, max }: { label: string; va
   <Field label={label}><Input type="number" inputMode="decimal" step={step} min={min} max={max} value={Math.round(value * 10) / 10}
     onChange={(e) => { const v = Number(e.target.value); if (Number.isFinite(v) && e.target.value !== '') onChange(v); }} /></Field>
 );
-const Color = ({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) => (
-  <Field label={label}>
-    <div className="flex items-center gap-2">
-      <input type="color" aria-label={label} value={value} onChange={(e) => onChange(e.target.value.toUpperCase())} className="h-11 w-14 shrink-0 cursor-pointer rounded-lg border border-gf-border bg-white p-1" />
-      <Input aria-label={`${label} (hex)`} value={value} maxLength={7} onChange={(e) => /^#[0-9A-Fa-f]{6}$/.test(e.target.value) && onChange(e.target.value.toUpperCase())} />
-    </div>
-  </Field>
-);
+/** Cores à mão nos seletores: as da marca do restaurante (quando houver) e as básicas. */
+const Swatches = createContext<string[]>([]);
+function Color({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  const sw = useContext(Swatches);
+  return (
+    <Field label={label}>
+      <div className="flex items-center gap-2">
+        <input type="color" aria-label={label} value={value} onChange={(e) => onChange(e.target.value.toUpperCase())} className="h-11 w-14 shrink-0 cursor-pointer rounded-lg border border-gf-border bg-white p-1" />
+        <Input aria-label={`${label} (hex)`} value={value} maxLength={7} onChange={(e) => /^#[0-9A-Fa-f]{6}$/.test(e.target.value) && onChange(e.target.value.toUpperCase())} />
+      </div>
+      <span className="mt-2 flex flex-wrap gap-1.5">
+        {sw.map((c) => (
+          <button key={c} type="button" aria-label={`Usar a cor ${c}`} title={c} onClick={(e) => { e.preventDefault(); onChange(c); }}
+            className={cn('h-8 w-8 rounded-full border-2', value.toUpperCase() === c.toUpperCase() ? 'border-gf-orange' : 'border-gf-border')} style={{ background: c }} />
+        ))}
+      </span>
+    </Field>
+  );
+}
 /** Cor que pode ser "sem cor" (preenchimento/contorno). */
 const OptColor = ({ label, value, onChange, fallback }: { label: string; value: string | null; onChange: (v: string | null) => void; fallback: string }) => (
   <div>

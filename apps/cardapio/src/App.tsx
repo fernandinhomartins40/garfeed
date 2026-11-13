@@ -3,7 +3,8 @@ import type {
   CallType, PublicItem, PublicMenuResponse, PublicOrder, PublicRestaurant, SessionJoinResponse,
   SessionMeResponse, TableRef, TagResolveResponse,
 } from '@garfeed/shared';
-import { ApiError, API_URL, CALL_COOLDOWN_SEC, http, onColor, startEvents, stopEvents, store, track, unitPrice, uuid } from './lib';
+import { ApiError, API_URL, applyBrand, CALL_COOLDOWN_SEC, http, startEvents, stopEvents, store, track, unitPrice, uuid } from './lib';
+import { brandLogo } from './ui';
 import { Feed } from './Feed';
 import { Grid } from './Grid';
 import { CallDialog, Hub, OptionsSheet } from './Sheets';
@@ -135,13 +136,9 @@ export default function App() {
     return () => clearTimeout(t);
   }, [phase]);
 
-  // Cor de destaque do restaurante.
-  useEffect(() => {
-    const c = restaurant?.accentColor;
-    if (!c || !/^#[0-9a-f]{6}$/i.test(c)) return;
-    document.documentElement.style.setProperty('--accent', c);
-    document.documentElement.style.setProperty('--on-accent', onColor(c));
-  }, [restaurant?.accentColor]);
+  // Marca própria do restaurante (só vem preenchida nos planos com o recurso).
+  useEffect(() => { applyBrand(restaurant?.accentColor ?? null, restaurant?.darkColor ?? null); }, [restaurant?.accentColor, restaurant?.darkColor]);
+  brandLogo.current = restaurant?.whiteLabel && restaurant.logoUrl ? { src: restaurant.logoUrl, alt: restaurant.name } : null;
 
   // Carrinho persistido por sessão.
   useEffect(() => { if (sessionId) { setCart(store.get(`gf_cart_${sessionId}`, [])); loadMe(); } }, [sessionId, loadMe]);

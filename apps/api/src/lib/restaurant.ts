@@ -1,5 +1,5 @@
 import type { Restaurant } from '@prisma/client';
-import { OpeningHours, type PublicRestaurant } from '@garfeed/shared';
+import { hasBranding, OpeningHours, type PublicRestaurant } from '@garfeed/shared';
 
 const DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const;
 
@@ -32,8 +32,11 @@ export const localDay = (timezone: string, now = new Date()) =>
 
 export function toPublicRestaurant(r: Restaurant, now = new Date()): PublicRestaurant {
   const isOpen = isOpenAt(r.openingHours, r.timezone, now);
+  const brand = hasBranding(r.plan, r.status);
   return {
-    id: r.id, slug: r.slug, name: r.name, logoUrl: r.logoUrl, accentColor: r.accentColor,
+    id: r.id, slug: r.slug, name: r.name, logoUrl: r.logoUrl,
+    // marca própria só nos planos com o recurso; senão o cardápio fica com as cores e o logo do Garfeed
+    accentColor: brand ? r.accentColor : null, darkColor: brand ? r.darkColor : null, whiteLabel: brand && !!r.logoUrl,
     wifiName: r.wifiName, wifiPassword: r.wifiPassword, instagram: r.instagram, googleReviewUrl: r.googleReviewUrl,
     openingHours: OpeningHours.safeParse(r.openingHours).data ?? null,
     isOpen,

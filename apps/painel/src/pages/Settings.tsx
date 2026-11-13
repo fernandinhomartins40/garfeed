@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Controller, useForm, useWatch } from 'react-hook-form';
+import { Controller, useForm, useWatch, type UseFormRegisterReturn } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Check, Clock, Eye, EyeOff, ExternalLink, Instagram, Layers, Link2, Play, Store, Trash2, Upload, UtensilsCrossed, Volume2, Wifi } from 'lucide-react';
-import { api, UpdateSettingsBody, type Settings } from '@garfeed/shared';
+import { Check, Clock, Eye, EyeOff, ExternalLink, Instagram, Layers, Link2, Lock, Play, Store, Trash2, Upload, Volume2, Wifi } from 'lucide-react';
+import { api, contrast, hasBranding, UpdateSettingsBody, type Settings } from '@garfeed/shared';
 import { call, errMsg, logout } from '@/lib/api';
 import { usePrefs } from '@/lib/auth';
 import { playAlert, unlockAudio } from '@/lib/alerts';
 import { useMediaUpload } from '@/lib/upload';
 import { CROP_LOGO, ImageCropDialog } from '@/components/ImageCrop';
 import { cn } from '@/lib/utils';
+import { isStoreApp } from '@/lib/storeApp';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Field, Input } from '@/components/ui/input';
@@ -27,6 +28,41 @@ export function SettingsPage() {
   if (s.isLoading) return <Spinner />;
   if (s.error) return <div className="p-8"><ErrorBox error={s.error} retry={() => void s.refetch()} /></div>;
   return <SettingsForm s={s.data!} />;
+}
+
+/** Cor com seletor + campo hexadecimal. */
+function ColorField({ label, hint, value, fallback, onPick, reg }: { label: string; hint: string; value: string | null | undefined; fallback: string; onPick: (c: string) => void; reg: UseFormRegisterReturn }) {
+  return (
+    <div>
+      <p className="text-sm font-semibold">{label} <span className="font-normal text-gf-muted">· {hint}</span></p>
+      <div className="mt-1 flex gap-2">
+        <input type="color" aria-label={`Escolher ${label.toLowerCase()}`} value={value || fallback} onChange={(e) => onPick(e.target.value.toUpperCase())} className="h-11 w-12 shrink-0 cursor-pointer rounded-lg border border-gf-border" />
+        <Input aria-label={`${label} em hexadecimal`} className="w-32 font-mono" placeholder={fallback} {...reg} />
+      </div>
+    </div>
+  );
+}
+
+/** Miniatura do topo do cardápio com a marca (ou com o padrão do Garfeed). */
+function BrandPreview({ name, logo, accent, dark }: { name: string; logo: string | null | undefined; accent: string | null | undefined; dark: string | null | undefined }) {
+  const ok = (c?: string | null) => !!c && /^#[0-9a-f]{6}$/i.test(c);
+  const a = ok(accent) ? accent! : '#FE581D', d = ok(dark) ? dark! : '#142433';
+  const on = contrast(a, '#FFFFFF') >= 3 ? '#FFFFFF' : d;
+  const darkBad = ok(dark) && contrast(d, '#FFFFFF') < 4.5;
+  return (
+    <div className="max-w-xs overflow-hidden rounded-xl border border-gf-border bg-white">
+      <div className="flex items-center gap-2 px-3 py-2" style={{ background: d }}>
+        {logo ? <img src={logo} alt="" className="h-8 w-8 rounded-lg bg-white object-contain p-0.5" /> : <img src="/logo-horizontal-negativa.svg" alt="Garfeed" className="h-6 w-auto" />}
+        <span className="truncate text-sm font-bold text-white">{name}</span>
+      </div>
+      <div className="flex flex-wrap items-center gap-2 p-3">
+        <span className="rounded-pill px-3 py-1 text-sm font-bold" style={{ background: a, color: on }}>Burgers</span>
+        <span className="rounded-pill border border-gf-border px-3 py-1 text-sm font-bold" style={{ color: d }}>Bebidas</span>
+        <span className="ml-auto rounded-pill px-3 py-1 text-sm font-black" style={{ background: a, color: on }}>+ Adicionar</span>
+      </div>
+      {darkBad && <p role="alert" className="px-3 pb-2 text-xs font-medium text-danger">Cor escura clara demais: o texto ficaria ilegível.</p>}
+    </div>
+  );
 }
 
 function Section({ icon: Icon, title, text, children, className }: { icon: typeof Store; title: string; text: string; children: React.ReactNode; className?: string }) {
@@ -77,7 +113,9 @@ function SettingsForm({ s }: { s: Settings }) {
   const prefs = usePrefs();
   const [showPw, setShowPw] = useState(false);
   const { register, control, handleSubmit, setValue, reset, formState: { isDirty } } = useForm<Form>({ defaultValues: s });
-  const [accent, logoUrl, hours] = useWatch({ control, name: ['accentColor', 'logoUrl', 'openingHours'] });
+  const [accent, dark, logoUrl, hours] = useWatch({ control, name: ['accentColor', 'darkColor', 'logoUrl', 'openingHours'] });
+  const brand = hasBranding(s.plan, s.status);
+  const watchName = useWatch({ control, name: 'name' });
   const logo = useMediaUpload();
   const [logoFile, setLogoFile] = useState<File | null>(null);
   useEffect(() => { if (logo.phase === 'ready' && logo.media?.url) setValue('logoUrl', logo.media.url, { shouldDirty: true }); }, [logo.phase, logo.media, setValue]);
@@ -90,7 +128,7 @@ function SettingsForm({ s }: { s: Settings }) {
   });
   const onSubmit = handleSubmit((f) => {
     const blank = (v: string | null | undefined) => (v?.trim() ? v.trim() : null);
-    const r = UpdateSettingsBody.safeParse({ ...f, wifiName: blank(f.wifiName), wifiPassword: blank(f.wifiPassword), instagram: blank(f.instagram), googleReviewUrl: blank(f.googleReviewUrl), logoUrl: blank(f.logoUrl), accentColor: blank(f.accentColor) });
+    const r = UpdateSettingsBody.safeParse({ ...f, wifiName: blank(f.wifiName), wifiPassword: blank(f.wifiPassword), instagram: blank(f.instagram), googleReviewUrl: blank(f.googleReviewUrl), logoUrl: blank(f.logoUrl), accentColor: blank(f.accentColor), darkColor: blank(f.darkColor) });
     if (!r.success) return toast.error(r.error.issues.map((i) => `${String(i.path[0] ?? '')}: ${i.message}`).join(' · '));
     save.mutate(r.data);
   });
@@ -124,16 +162,22 @@ function SettingsForm({ s }: { s: Settings }) {
                   </div>
                 </div>
               </div>
-              <div className="min-w-0">
-                <p className="mb-2 text-sm font-semibold">Cor do tema</p>
-                <div className="flex gap-2">
-                  <input type="color" aria-label="Escolher cor" value={accent ?? '#FE581D'} onChange={(e) => setValue('accentColor', e.target.value.toUpperCase(), { shouldDirty: true })} className="h-11 w-12 cursor-pointer rounded-lg border border-gf-border" />
-                  <Input aria-label="Cor em hexadecimal" className="w-32 font-mono" placeholder="#FE581D" {...register('accentColor')} />
-                </div>
-                <p className="mb-2 mt-3 text-sm text-gf-navy-80">Pré-visualização</p>
-                <div className="rounded-xl bg-gf-orange-soft p-3">
-                  <span className="inline-flex items-center gap-2 rounded-lg px-4 py-2 font-semibold text-white" style={{ background: accent || '#FE581D' }}><UtensilsCrossed className="h-4 w-4" />Ver cardápio ›</span>
-                </div>
+              <div className="min-w-0 basis-full border-t border-gf-border pt-5">
+                <p className="mb-2 flex flex-wrap items-center gap-2 text-sm font-semibold">Marca própria
+                  {!brand && <span className="inline-flex items-center gap-1 rounded-pill bg-gf-bg px-2 py-0.5 text-xs font-semibold text-gf-navy-80"><Lock className="h-3.5 w-3.5" />Plano Pro</span>}
+                </p>
+                <fieldset disabled={!brand} className={cn('space-y-3', !brand && 'opacity-60')}>
+                  <ColorField label="Cor principal" hint="Botões, categorias e destaques" value={accent} fallback="#FE581D"
+                    onPick={(c) => setValue('accentColor', c, { shouldDirty: true })} reg={register('accentColor')} />
+                  <ColorField label="Cor escura" hint="Textos e fundos escuros (precisa ser escura para dar leitura)" value={dark} fallback="#142433"
+                    onPick={(c) => setValue('darkColor', c, { shouldDirty: true })} reg={register('darkColor')} />
+                </fieldset>
+                <p className="mb-2 mt-3 text-sm text-gf-navy-80">Pré-visualização do cardápio</p>
+                <BrandPreview name={watchName} logo={brand ? logoUrl : null} accent={brand ? accent : null} dark={brand ? dark : null} />
+                <p className="mt-2 text-xs text-gf-muted">
+                  {brand ? 'Com logo enviado, ele aparece no topo do cardápio no lugar do Garfeed. As cores também valem para os modelos de plaquinhas.'
+                    : `Logo no topo do cardápio e as cores da sua marca no cardápio e nas plaquinhas são recursos do plano Pro.${isStoreApp() ? '' : ' Você pode trocar de plano em Plano e cobrança.'}`}
+                </p>
               </div>
             </div>
           </Section>

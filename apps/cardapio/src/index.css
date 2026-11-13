@@ -3,14 +3,17 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { --accent: var(--gf-orange); --on-accent: #fff; }
+:root {
+  --accent: var(--gf-orange); --on-accent: #fff; --accent-soft: var(--gf-orange-soft); --accent-peach: var(--gf-peach);
+  --accent-text: #C2410C; --brand-dark: var(--gf-navy);
+}
 html, body, #root { height: 100%; }
 /* altura da área visível real: acompanha a barra de endereço do celular aparecendo/sumindo */
 @supports (height: 100dvh) { #root { height: 100dvh; } }
 body { @apply bg-white font-sans text-gf-navy antialiased; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
 /* Tablet/desktop: o cardápio fica numa coluna de celular centralizada (as barras e sheets fixos já usam max-w-md centralizado). */
 @media (min-width: 640px) {
-  body { background: var(--gf-navy); }
+  body { background: var(--brand-dark); }
   #root { max-width: 28rem; margin: 0 auto; background: #fff; box-shadow: 0 0 40px rgb(0 0 0 / .35); }
 }
 .no-scrollbar { scrollbar-width: none; }

@@ -16,7 +16,7 @@ import { validate } from '../../middleware/validate';
 export const router = Router();
 
 const toSettings = (r: Restaurant): Settings => ({
-  id: r.id, slug: r.slug, name: r.name, logoUrl: r.logoUrl, accentColor: r.accentColor, plan: r.plan, status: r.status,
+  id: r.id, slug: r.slug, name: r.name, logoUrl: r.logoUrl, accentColor: r.accentColor, darkColor: r.darkColor, plan: r.plan, status: r.status,
   requireConfirmation: r.requireConfirmation, soundEnabled: r.soundEnabled, timezone: r.timezone,
   openingHours: OpeningHours.safeParse(r.openingHours).data ?? null,
   wifiName: r.wifiName, wifiPassword: r.wifiPassword, instagram: r.instagram, googleReviewUrl: r.googleReviewUrl,

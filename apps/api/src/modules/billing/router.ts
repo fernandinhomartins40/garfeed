@@ -93,6 +93,7 @@ async function activate(id: string, b: PlanChoice & { nextDueDate: string }) {
     prisma.billing.update({ where: { restaurantId: id }, data: { asaasSubscriptionId: sub.id, cycle: b.cycle, valueCents: b.valueCents, nextDueDate: date(b.nextDueDate), status: 'PENDING' } }),
     prisma.restaurant.update({ where: { id }, data: { plan: b.plan } }),
   ]);
+  await menuChanged(id); // o plano liga/desliga a marca própria no cardápio
   // Melhor esforço: espelha já a 1ª cobrança para a fatura abrir na hora, sem esperar o webhook PAYMENT_CREATED
   // (que faz o mesmo upsert pelo id da cobrança). Falha aqui não desfaz a assinatura.
   try {
@@ -114,6 +115,7 @@ async function change(id: string, b: PlanChoice) {
     prisma.billing.update({ where: { restaurantId: id }, data: { cycle: b.cycle, valueCents: b.valueCents } }),
     prisma.restaurant.update({ where: { id }, data: { plan: b.plan } }),
   ]);
+  await menuChanged(id); // o plano liga/desliga a marca própria no cardápio
 }
 
 // Cancelar não muda o status do restaurante: quem decide suspender é o admin (PATCH /admin/restaurants/:id).

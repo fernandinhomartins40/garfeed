@@ -5,7 +5,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   // Importa só os módulos de @garfeed/shared que o cliente usa: o index puxa o zod inteiro (~50 KB gz) sem necessidade.
-  resolve: { alias: [{ find: /^@garfeed\/shared\/(money)$/, replacement: fileURLToPath(new URL('../../packages/shared/src/$1.ts', import.meta.url)) }] },
+  resolve: { alias: [{ find: /^@garfeed\/shared\/(money|brand)$/, replacement: fileURLToPath(new URL('../../packages/shared/src/$1.ts', import.meta.url)) }] },
   server: { port: 5174, strictPort: true },
   preview: { port: 5174 },
   plugins: [

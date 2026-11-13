@@ -154,7 +154,7 @@ export const TEMPLATES: PlateTemplate[] = [
       el({ type: 'ellipse', x: 0, y: 0, width: 70, height: 70, fill: NAVY, stroke: null, strokeWidth: 0 }),
       text('{mesa}', 10, 7, 50, 6.5, { fill: WHITE }),
       el({ type: 'qr', x: 18, y: 17, width: 34, height: 34, fg: NAVY, bg: WHITE }),
-      text('CARDÁPIO DIGITAL', 12, 54, 46, 3.4, { fill: ORANGE }),
+      text('CARDÁPIO DIGITAL', 12, 54, 46, 3.4, { fill: WHITE }),
     ] },
   },
   {
@@ -177,3 +177,14 @@ export const TEMPLATES: PlateTemplate[] = [
   },
   { key: 'branco', label: 'Em branco', hint: 'Você escolhe o tamanho', name: 'Arte em branco', widthMm: 100, heightMm: 100, doc: { background: WHITE, elements: [] } },
 ];
+
+/** Troca as cores do Garfeed nos modelos pelas da marca do restaurante (laranja → principal, marinho → escura). */
+export function withBrand<T extends { doc: PlateDoc }>(t: T, brand?: { accent: string | null; dark: string | null } | null): T {
+  if (!brand || (!brand.accent && !brand.dark)) return t;
+  const map: Record<string, string> = {};
+  if (brand.accent) map[ORANGE] = brand.accent;
+  if (brand.dark) map[NAVY] = brand.dark;
+  const swap = (v: unknown) => (typeof v === 'string' && map[v.toUpperCase()] ? map[v.toUpperCase()] : v);
+  const elements = t.doc.elements.map((e) => Object.fromEntries(Object.entries(e).map(([k, v]) => [k, ['fill', 'stroke', 'fg'].includes(k) ? swap(v) : v])) as PlateElement);
+  return { ...t, doc: { background: t.doc.background, elements } };
+}

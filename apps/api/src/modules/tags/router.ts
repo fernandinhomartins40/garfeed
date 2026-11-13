@@ -40,7 +40,7 @@ publicRouter.get('/tags/:code', validate({ params: CodeParams }), async (req, re
   const body: TagResolveResponse = {
     code: tag.code,
     status: tag.status,
-    restaurant: r && { id: r.id, slug: r.slug, name: r.name, logoUrl: r.logoUrl, accentColor: r.accentColor, isOpen: r.isOpen, canOrder: r.canOrder },
+    restaurant: r && { id: r.id, slug: r.slug, name: r.name, logoUrl: r.logoUrl, accentColor: r.accentColor, darkColor: r.darkColor, whiteLabel: r.whiteLabel, isOpen: r.isOpen, canOrder: r.canOrder },
     table: ok ? tableRef(tag.table!) : null,
   };
   res.json(body);

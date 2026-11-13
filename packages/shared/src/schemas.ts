@@ -1,6 +1,7 @@
 // Contrato da API (PRD seção 9): corpo das requisições e formato das respostas.
 // Datas trafegam como string ISO 8601. Dinheiro sempre em centavos (Int).
 import { z } from 'zod';
+import { contrast } from './brand';
 import {
   Badge, CallStatus, CallType, EventType, MediaStatus, MediaType, OrderStatus, Plan,
   RestStatus, Role, SessionStatus, Sector, StaffRole, TagStatus,
@@ -12,6 +13,8 @@ export const Id = z.string().min(1).max(64);
 export const IsoDate = z.string();
 export const Cents = z.number().int().min(0).max(10_000_000);
 export const HexColor = z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Cor inválida (use #RRGGBB)');
+/** Cor escura da marca (textos e fundos): precisa de contraste 4,5:1 com o branco para o texto continuar legível. */
+export const DarkHexColor = HexColor.refine((c) => contrast(c, '#FFFFFF') >= 4.5, 'Cor clara demais para textos: escolha um tom mais escuro');
 const Hhmm = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Horário inválido (HH:MM)');
 /** { mon: [["11:00","15:00"],["18:00","23:00"]], ... } — dia ausente = fechado. */
 export const OpeningHours = z.partialRecord(
@@ -133,7 +136,11 @@ export const PublicRestaurant = z.object({
   slug: z.string(),
   name: z.string(),
   logoUrl: z.string().nullable(),
+  /** Cores da marca: só vêm preenchidas com marca própria (hasBranding); senão o cardápio usa as do Garfeed. */
   accentColor: z.string().nullable(),
+  darkColor: z.string().nullable(),
+  /** Marca própria com logo: o cardápio mostra o logo do restaurante no lugar do Garfeed. */
+  whiteLabel: z.boolean(),
   wifiName: z.string().nullable(),
   wifiPassword: z.string().nullable(),
   instagram: z.string().nullable(),
@@ -157,7 +164,7 @@ export const TagResolveResponse = z.object({
   code: z.string(),
   status: TagStatus,
   /** null quando a placa não está vinculada (tela M1 "não ativada"). */
-  restaurant: PublicRestaurant.pick({ id: true, slug: true, name: true, logoUrl: true, accentColor: true, isOpen: true, canOrder: true }).nullable(),
+  restaurant: PublicRestaurant.pick({ id: true, slug: true, name: true, logoUrl: true, accentColor: true, darkColor: true, whiteLabel: true, isOpen: true, canOrder: true }).nullable(),
   table: TableRef.nullable(),
 });
 export type TagResolveResponse = z.infer<typeof TagResolveResponse>;
@@ -511,6 +518,7 @@ export const Settings = z.object({
   name: z.string(),
   logoUrl: z.string().nullable(),
   accentColor: z.string().nullable(),
+  darkColor: z.string().nullable(),
   plan: Plan,
   status: RestStatus,
   requireConfirmation: z.boolean(),
@@ -527,6 +535,7 @@ export const UpdateSettingsBody = z.object({
   name: z.string().trim().min(1).max(80),
   logoUrl: z.url().nullable(),
   accentColor: HexColor.nullable(),
+  darkColor: DarkHexColor.nullable(),
   requireConfirmation: z.boolean(),
   soundEnabled: z.boolean(),
   openingHours: OpeningHours.nullable(),
@@ -761,3 +770,13 @@ export type SavePlateDesignBody = z.infer<typeof SavePlateDesignBody>;
 /** POST /tags/ensure-codes: garante um código (placa "só QR") para cada mesa; devolve as placas das mesas. */
 export const EnsureTagCodesBody = z.object({ tableIds: z.array(Id).min(1).max(300) });
 export type EnsureTagCodesBody = z.infer<typeof EnsureTagCodesBody>;
+
+/** GET /plate-designs/brand — kit da marca para o editor de plaquinhas (logo já em data URL: exporta sem CORS). */
+export const PlateBrand = z.object({
+  enabled: z.boolean(),
+  name: z.string(),
+  accent: HexColor.nullable(),
+  dark: HexColor.nullable(),
+  logo: z.string().nullable(),
+});
+export type PlateBrand = z.infer<typeof PlateBrand>;

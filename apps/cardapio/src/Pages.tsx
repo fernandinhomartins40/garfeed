@@ -8,7 +8,7 @@ import { IconBtn, Logo, MesaChip, PoweredBy, RestLogo, Stepper, Thumb } from './
 
 const Btn = ({ children, onClick, disabled, outline, icon }: { children: ReactNode; onClick: () => void; disabled?: boolean; outline?: boolean; icon?: IconName }) => (
   <button type="button" onClick={onClick} disabled={disabled}
-    className={`flex h-14 w-full items-center justify-center gap-3 rounded-pill font-heading text-lg font-black disabled:opacity-60 ${outline ? 'border-2 border-gf-border text-gf-navy' : 'bg-gf-orange text-white active:bg-gf-orange-hover'}`}>
+    className={`flex h-14 w-full items-center justify-center gap-3 rounded-pill font-heading text-lg font-black disabled:opacity-60 ${outline ? 'border-2 border-gf-border text-gf-navy' : 'bg-gf-orange text-on-accent active:bg-gf-orange-hover'}`}>
     {icon && <Icon name={icon} className="h-7 w-7" />}{children}
   </button>
 );
@@ -70,7 +70,7 @@ export function Welcome({ restaurant, table, closed, onContinue }: { restaurant:
         {closed ? 'Esta mesa foi encerrada.' : <>Você está na <b className="font-heading font-black">{table?.name ?? restaurant?.name}</b></>}
       </p>
       <button type="button" onClick={onContinue}
-        className="mt-[min(2rem,5dvh)] flex h-16 w-full max-w-sm items-center justify-between rounded-pill bg-gf-orange px-8 font-heading text-2xl font-black text-white shadow-lg">
+        className="mt-[min(2rem,5dvh)] flex h-16 w-full max-w-sm items-center justify-between rounded-pill bg-gf-orange px-8 font-heading text-2xl font-black text-on-accent shadow-lg">
         <Icon name="book" className="h-8 w-8" />{closed ? 'Abrir de novo' : 'Ver cardápio'}<Icon name="chevronRight" className="h-7 w-7" />
       </button>
       <div className="mt-auto pt-6"><PoweredBy white /></div>
@@ -159,7 +159,7 @@ export function Track({ restaurant, table, order, byId, onBack, onCall }: Common
         <div><p className="font-heading text-xl font-black">{restaurant.name}</p>{table && <p className="flex items-center gap-1 text-gf-navy-80"><Icon name="table" className="h-5 w-5" />{table.name}</p>}</div>
       </div>
       <div className="mt-6 text-center">
-        <span className={`mx-auto grid h-24 w-24 place-items-center rounded-full ${rejected ? 'bg-red-50 text-danger' : 'bg-gf-orange-soft text-gf-orange'}`}>
+        <span className={`mx-auto grid h-24 w-24 place-items-center rounded-full ${rejected ? 'bg-red-50 text-danger' : 'bg-gf-orange-soft text-orange-text'}`}>
           <Icon name={rejected ? 'ban' : 'receipt'} className="h-12 w-12" />
         </span>
         <h1 className="mt-3 font-heading text-4xl font-black">{rejected ? `Pedido ${STATUS_LABEL[order.status].toLowerCase()}` : 'Pedido enviado!'}</h1>
@@ -251,7 +251,7 @@ export function Bill({ restaurant, table, orders, totalCents, byId, onBack, onCa
 // ---------- M12 ----------
 const STATUS_STYLE: Record<OrderStatus, string> = {
   PENDING: 'bg-gf-bg text-gf-navy', CONFIRMED: 'bg-info text-white', PREPARING: 'bg-warning text-gf-navy',
-  READY: 'bg-gf-orange text-white', DELIVERED: 'bg-success text-white', REJECTED: 'bg-danger text-white', CANCELED: 'bg-gf-muted text-white',
+  READY: 'bg-gf-orange text-on-accent', DELIVERED: 'bg-success text-white', REJECTED: 'bg-danger text-white', CANCELED: 'bg-gf-muted text-white',
 };
 export function TableOrders({ restaurant, table, orders, byId, canOrder, onBack, onRepeat, onOpen }: Common & {
   orders: PublicOrder[]; byId: Map<string, PublicItem>; canOrder: boolean;

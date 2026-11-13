@@ -5,6 +5,7 @@ z.config(z.locales.pt());
 
 export * from './enums';
 export * from './money';
+export * from './brand';
 export * from './tag-code';
 export * from './schemas';
 export * from './contract';

@@ -97,6 +97,7 @@ export const api = {
   },
   plateDesigns: {
     list: r({ method: 'GET', path: '/plate-designs', auth: 'jwt', roles: ROLES.MANAGE, response: z.array(s.PlateDesignSummary) }),
+    brand: r({ method: 'GET', path: '/plate-designs/brand', auth: 'jwt', roles: ROLES.MANAGE, response: s.PlateBrand }),
     get: r({ method: 'GET', path: '/plate-designs/:id', auth: 'jwt', roles: ROLES.MANAGE, params: s.IdParams, response: s.PlateDesign }),
     create: r({ method: 'POST', path: '/plate-designs', auth: 'jwt', roles: ROLES.MANAGE, body: s.SavePlateDesignBody, response: s.PlateDesign }),
     update: r({ method: 'PUT', path: '/plate-designs/:id', auth: 'jwt', roles: ROLES.MANAGE, params: s.IdParams, body: s.SavePlateDesignBody, response: s.PlateDesign }),

@@ -3,13 +3,24 @@ import { formatBRL } from '@garfeed/shared/money';
 import type { PublicItem, PublicRestaurant } from '@garfeed/shared';
 import { Icon } from './icons';
 
-export const Logo = ({ white, className = 'h-9' }: { white?: boolean; className?: string }) => (
+const GarfeedLogo = ({ white, className = 'h-9' }: { white?: boolean; className?: string }) => (
   <img src={white ? '/logo-horizontal-negativa.svg' : '/logo-horizontal-cor.svg'} alt="Garfeed" className={`${className} w-auto`} />
 );
 
+/** Logo do restaurante com marca própria (o App preenche ao carregar o restaurante); null = logo do Garfeed. */
+export const brandLogo: { current: { src: string; alt: string } | null } = { current: null };
+
+/** Logo do topo: o do restaurante quando ele tem marca própria, senão o do Garfeed. */
+export const Logo = ({ white, className = 'h-9' }: { white?: boolean; className?: string }) => {
+  const b = brandLogo.current;
+  if (!b) return <GarfeedLogo white={white} className={className} />;
+  // logo quadrado (corte do painel); no feed escuro ganha fundo branco para não sumir sobre a foto
+  return <img src={b.src} alt={b.alt} className={`${className} aspect-square w-auto rounded-xl object-contain ${white ? 'bg-white p-1 shadow-md' : ''}`} />;
+};
+
 export const PoweredBy = ({ white }: { white?: boolean }) => (
   <p className={`flex items-center justify-center gap-2 text-sm ${white ? 'text-white' : 'text-gf-navy-80'}`}>
-    powered by <Logo white={white} className="h-6" />
+    powered by <GarfeedLogo white={white} className="h-6" />
   </p>
 );
 
@@ -30,7 +41,7 @@ export function Thumb({ item, className = '' }: { item?: PublicItem; className?:
   const src = m?.thumbUrl ?? m?.posterUrl ?? (m?.type === 'IMAGE' ? m.url : null);
   return src
     ? <img src={src} alt="" loading="lazy" decoding="async" className={`${className} object-cover`} />
-    : <span aria-hidden="true" className={`${className} media-fallback grid place-items-center`}><img src="/simbolo-laranja.svg" alt="" className="w-1/3 opacity-60" /></span>;
+    : <span aria-hidden="true" className={`${className} media-fallback grid place-items-center`}><img src={brandLogo.current?.src ?? '/simbolo-laranja.svg'} alt="" className={`w-1/3 opacity-60 ${brandLogo.current ? 'rounded-xl' : ''}`} /></span>;
 }
 
 export const MesaChip = ({ name, onClick, soft }: { name: string; onClick?: () => void; soft?: boolean }) => {
@@ -42,7 +53,7 @@ export const MesaChip = ({ name, onClick, soft }: { name: string; onClick?: () =
 export const CartBar = ({ count, total, onClick }: { count: number; total: number; onClick: () => void }) => (
   <div className="fixed inset-x-0 bottom-0 z-20 px-4 pb-[max(12px,env(safe-area-inset-bottom))]">
     <button type="button" onClick={onClick}
-      className="mx-auto flex h-14 w-full max-w-md items-center justify-center gap-3 rounded-pill bg-gf-orange font-heading text-lg font-black text-white shadow-lg active:bg-gf-orange-hover">
+      className="mx-auto flex h-14 w-full max-w-md items-center justify-center gap-3 rounded-pill bg-gf-orange font-heading text-lg font-black text-on-accent shadow-lg active:bg-gf-orange-hover">
       <Icon name="cart" className="h-7 w-7" />
       Ver pedido · {count} {count === 1 ? 'item' : 'itens'} · {formatBRL(total)}
     </button>

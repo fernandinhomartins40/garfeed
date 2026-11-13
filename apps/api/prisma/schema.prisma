@@ -98,6 +98,7 @@ model Restaurant {
   name                String
   logoUrl             String?
   accentColor         String?
+  darkColor           String? // cor escura da marca (textos/fundos), só vale com marca própria
   plan                Plan       @default(ESSENTIAL)
   status              RestStatus @default(TRIAL)
   requireConfirmation Boolean    @default(true)

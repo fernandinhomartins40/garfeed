@@ -212,3 +212,17 @@ workflow manual `.github/workflows/apps-nativos.yml` (sem Mac). Guia: `docs/apps
 - **Original apagado** do MinIO depois que a mídia fica READY (nada mais o lê). Se o processamento falhar, o original fica
   para nova tentativa.
 - **Seed de demonstração** pela API em `scripts/demo/cardapio-demo.mjs` + `docs/demo-cardapio/produtos.json`.
+
+## 2026-11-13 — Marca própria (logo e cores) no cardápio e nas plaquinhas
+- **Quem tem**: planos **Pro e Rede**, e o **teste grátis** (para experimentar). Regra única em `hasBranding(plan, status)`
+  (`packages/shared/src/brand.ts`). Essencial: cardápio com logo e cores do Garfeed; o que foi salvo (logo/cores) não é apagado,
+  só deixa de ser aplicado. Trocar de plano (assinatura) limpa o cache do cardápio na hora.
+- **O que muda no cardápio**: o logo do restaurante substitui o do Garfeed no topo e no espaço de itens sem foto
+  ("powered by Garfeed" continua); **cor principal** (`accentColor`, já existia) pinta botões, categorias, preços e destaques;
+  **cor escura** (`darkColor`, nova) pinta textos e fundos escuros. Feito por variáveis CSS: os tokens `gf-orange`, `gf-navy`
+  etc. do cardápio apontam para elas, então nada fica laranja fixo.
+- **Legibilidade**: a cor escura precisa de contraste ≥ 4,5:1 com o branco (validado na API); texto na cor principal usa uma
+  versão escurecida só o necessário para 4,5:1; o texto sobre a cor principal é branco ou escuro conforme o contraste.
+- **Plaquinhas**: `GET /plate-designs/brand` devolve as cores e o logo (data URL lida do MinIO, sem CORS na exportação). Modelos
+  nascem nas cores da marca, "Seu logo" entra no canto, as cores da marca ficam à mão nos seletores. O editor avisa quando
+  algum elemento cobre o QR.

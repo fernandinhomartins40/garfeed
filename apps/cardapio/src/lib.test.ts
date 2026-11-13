@@ -37,3 +37,13 @@ it('constantes espelham o contrato', () => {
   expect(STATUS_LABEL).toEqual(ORDER_STATUS_LABEL);
   expect(BADGES).toEqual(BADGE_LABEL);
 });
+
+describe('cores da marca própria', () => {
+  it('texto na cor da marca sempre legível sobre branco', async () => {
+    const { readableOnWhite, mix } = await import('./lib');
+    const { contrast } = await import('@garfeed/shared/brand');
+    for (const c of ['#FFD400', '#22C55E', '#FE581D', '#1D4ED8']) expect(contrast(readableOnWhite(c), '#FFFFFF')).toBeGreaterThanOrEqual(4.5);
+    expect(readableOnWhite('#1D4ED8')).toBe('#1D4ED8'); // já escura: não mexe
+    expect(mix('#000000', '#FFFFFF', 0.5)).toBe('#808080');
+  });
+});

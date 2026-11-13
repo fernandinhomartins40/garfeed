@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -6,7 +6,7 @@ import { ArrowLeft, Palette, Pencil, Plus, Trash2 } from 'lucide-react';
 import { api, type PlateDesignSummary } from '@garfeed/shared';
 import { call, errMsg } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
-import { renderPng, TEMPLATES, type PlateTemplate } from '@/lib/plate';
+import { renderPng, TEMPLATES, withBrand, type PlateTemplate } from '@/lib/plate';
 import { ago } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Confirm, Dialog } from '@/components/ui/dialog';
@@ -28,6 +28,9 @@ export function PlateDesignsPage() {
   const nav = useNavigate();
   const qc = useQueryClient();
   const list = useQuery({ queryKey: ['plate-designs'], queryFn: () => call(api.plateDesigns.list) });
+  const brand = useQuery({ queryKey: ['plate-brand'], queryFn: () => call(api.plateDesigns.brand), staleTime: 60_000 }).data;
+  // com marca própria, os modelos já nascem nas cores do restaurante
+  const templates = useMemo(() => TEMPLATES.map((t) => withBrand(t, brand?.enabled ? brand : null)), [brand]);
   const [picking, setPicking] = useState(false);
   const [del, setDel] = useState<PlateDesignSummary | null>(null);
   const create = useMutation({
@@ -72,7 +75,7 @@ export function PlateDesignsPage() {
 
       <Dialog open={picking} onOpenChange={setPicking} title="Escolha um modelo" description="Tudo pode ser mudado depois: tamanho, cores, textos e posição." className="max-w-4xl">
         <div className="grid max-h-[70dvh] gap-3 overflow-y-auto sm:grid-cols-2 lg:grid-cols-3">
-          {TEMPLATES.map((t) => (
+          {templates.map((t) => (
             <button key={t.key} disabled={create.isPending} onClick={() => create.mutate(t)}
               className="rounded-card border border-gf-border p-3 text-left transition-colors hover:border-gf-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gf-orange disabled:opacity-50">
               <TemplateThumb t={t} />

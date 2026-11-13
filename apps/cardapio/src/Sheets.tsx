@@ -4,7 +4,7 @@ import type { PublicItem, PublicRestaurant, TableRef } from '@garfeed/shared';
 import type { Dialog } from './App';
 import { Icon, type IconName } from './icons';
 import { groupError, groupHint, itemPrice, openUntil, todayHours, unitPrice } from './lib';
-import { IconBtn, Logo, MesaChip, RestLogo, Stepper, Thumb } from './ui';
+import { IconBtn, MesaChip, RestLogo, Stepper, Thumb } from './ui';
 
 function useEsc(onClose: () => void) {
   useEffect(() => {
@@ -75,7 +75,7 @@ export function OptionsSheet({ item, optionIds = [], note: note0 = '', canOrder,
               return (
                 <label key={o.id} className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border px-3 ${on ? 'border-gf-orange bg-gf-orange-soft' : 'border-gf-border'}`}>
                   <input type={single ? 'radio' : 'checkbox'} name={g.id} checked={on} onChange={() => toggle(gi, o.id)}
-                    className="h-6 w-6 accent-[var(--gf-orange)]" />
+                    className="h-6 w-6 accent-[var(--accent)]" />
                   <span className="flex-1 text-lg">{o.name}</span>
                   {o.priceCents > 0 && <span className="font-heading text-lg font-black text-orange-text">+{formatBRL(o.priceCents)}</span>}
                 </label>
@@ -99,7 +99,7 @@ export function OptionsSheet({ item, optionIds = [], note: note0 = '', canOrder,
         <Stepper value={qty} onChange={setQty} />
         <button type="button" disabled={!canOrder || item.soldOut}
           onClick={() => (firstErr ? setTried(true) : onAdd(picked, note.trim(), qty))}
-          className="h-14 flex-1 rounded-pill bg-gf-orange font-heading text-lg font-black text-white disabled:bg-gf-border disabled:text-gf-muted">
+          className="h-14 flex-1 rounded-pill bg-gf-orange font-heading text-lg font-black text-on-accent disabled:bg-gf-border disabled:text-gf-muted">
           {item.soldOut ? 'Esgotado hoje' : `Adicionar · ${formatBRL(unitPrice(item, picked) * qty)}`}
         </button>
       </div>
@@ -164,7 +164,7 @@ export function Hub({ restaurant: r, table, hasSession, onClose, onCall, onBill,
         {r.openingHours && <Row icon="clock" title="Horário de funcionamento" sub={hours ? `Hoje: ${hours}` : 'Fechado hoje'} />}
       </div>
       <div className="mt-4 space-y-2 text-center">
-        <p className="flex items-center justify-center gap-2 text-sm text-gf-navy-80">Powered by <Logo className="h-6" /></p>
+        <p className="flex items-center justify-center gap-2 text-sm text-gf-navy-80">Powered by <img src="/logo-horizontal-cor.svg" alt="Garfeed" className="h-6 w-auto" /></p>
         <a href="https://garfeed.com.br/privacidade" target="_blank" rel="noopener noreferrer" className="inline-block min-h-11 py-3 text-sm text-gf-navy-80 underline">
           Política de privacidade
         </a>
@@ -183,7 +183,7 @@ export function CallDialog({ dialog, table, onClose, onAgain }: { dialog: Dialog
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-[#142433]/45 p-4">
       <div role="alertdialog" aria-modal="true" aria-labelledby="call-t" className="max-h-[calc(100dvh-2rem)] w-full max-w-sm overflow-y-auto rounded-3xl bg-white p-6 text-center shadow-xl">
-        <span className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-gf-orange-soft text-gf-orange">
+        <span className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-gf-orange-soft text-orange-text">
           <Icon name={dialog.type === 'BILL' ? 'receipt' : 'bell'} className="h-10 w-10" />
         </span>
         <h2 id="call-t" className="mt-3 font-heading text-3xl font-black leading-tight">
@@ -194,7 +194,7 @@ export function CallDialog({ dialog, table, onClose, onAgain }: { dialog: Dialog
           className="mt-5 h-12 w-full rounded-pill bg-gf-orange-soft font-heading text-lg font-black text-orange-text disabled:bg-gf-bg disabled:text-gf-muted">
           Chamar novamente
         </button>
-        <button type="button" onClick={onClose} className="mt-3 h-12 w-full rounded-pill bg-gf-orange font-heading text-lg font-black text-white">Entendi</button>
+        <button type="button" onClick={onClose} className="mt-3 h-12 w-full rounded-pill bg-gf-orange font-heading text-lg font-black text-on-accent">Entendi</button>
       </div>
     </div>
   );

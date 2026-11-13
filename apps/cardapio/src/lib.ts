@@ -1,4 +1,5 @@
 import type { Badge, EventsBody, ErrorResponse, OptionGroup, OrderStatus, PublicItem, PublicRestaurant } from '@garfeed/shared';
+import { contrast } from '@garfeed/shared/brand';
 
 type OpeningHours = PublicRestaurant['openingHours'];
 
@@ -103,6 +104,33 @@ export function openUntil(h: OpeningHours, now = new Date()): string | null {
 }
 
 // ---------- Cor do restaurante ----------
+const hex2 = (n: number) => Math.round(Math.max(0, Math.min(255, n))).toString(16).padStart(2, '0');
+/** Mistura `a` com `b` (t = peso de `a`, 0 a 1). */
+export function mix(a: string, b: string, t: number) {
+  const ch = (h: string, i: number) => parseInt(h.slice(i, i + 2), 16);
+  return `#${[1, 3, 5].map((i) => hex2(ch(a, i) * t + ch(b, i) * (1 - t))).join('')}`.toUpperCase();
+}
+/** Versão da cor que dá para ler como texto sobre branco (AA 4,5:1): escurece só o necessário. */
+export function readableOnWhite(hex: string) {
+  let c = hex;
+  for (let t = 1; contrast(c, '#FFFFFF') < 4.5 && t > 0; t -= 0.05) c = mix(hex, '#000000', t);
+  return c;
+}
+/** Aplica as cores da marca própria (vazias = padrão do Garfeed definido em index.css). */
+export function applyBrand(accent: string | null, dark: string | null) {
+  const root = document.documentElement.style;
+  const ok = (c: string | null): c is string => !!c && /^#[0-9a-f]{6}$/i.test(c);
+  for (const v of ['--accent', '--on-accent', '--accent-soft', '--accent-peach', '--accent-text', '--brand-dark']) root.removeProperty(v);
+  if (ok(accent)) {
+    root.setProperty('--accent', accent);
+    root.setProperty('--on-accent', onColor(accent));
+    root.setProperty('--accent-soft', mix(accent, '#FFFFFF', 0.12));
+    root.setProperty('--accent-peach', mix(accent, '#FFFFFF', 0.24));
+    root.setProperty('--accent-text', readableOnWhite(accent));
+  }
+  if (ok(dark)) root.setProperty('--brand-dark', dark);
+}
+
 /** Texto legível (AA) sobre a cor de destaque: branco ou marinho. */
 export function onColor(hex: string) {
   const [r, g, b] = [1, 3, 5].map((i) => {
