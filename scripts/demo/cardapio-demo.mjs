@@ -5,6 +5,7 @@
 //
 // Uso (na raiz do repo):
 //   DEMO_EMAIL=... DEMO_PASSWORD=... node scripts/demo/cardapio-demo.mjs [--api=https://api.garfeed.com.br] [--refazer-midia]
+//   (ou DEMO_TOKEN=<token de acesso do dono> no lugar de e-mail/senha)
 // Fotos: docs/demo-cardapio/fotos/<foto>.jpg|png|webp  (lista em docs/demo-cardapio/produtos.json)
 // Vídeos: docs/demo-cardapio/videos/<foto>.mp4 se existir; senão, para itens com "video": true, gera um clipe de 6 s
 // a partir da foto (zoom lento) com o ffmpeg — serve para demonstrar e testar o processamento de vídeo.
@@ -16,8 +17,8 @@ import { join } from 'node:path';
 const arg = (k) => process.argv.find((a) => a.startsWith(`--${k}=`))?.split('=')[1];
 const API = (arg('api') ?? 'https://api.garfeed.com.br').replace(/\/$/, '');
 const REDO = process.argv.includes('--refazer-midia');
-const { DEMO_EMAIL, DEMO_PASSWORD } = process.env;
-if (!DEMO_EMAIL || !DEMO_PASSWORD) throw new Error('Defina DEMO_EMAIL e DEMO_PASSWORD');
+const { DEMO_EMAIL, DEMO_PASSWORD, DEMO_TOKEN } = process.env;
+if (!DEMO_TOKEN && (!DEMO_EMAIL || !DEMO_PASSWORD)) throw new Error('Defina DEMO_EMAIL e DEMO_PASSWORD (ou DEMO_TOKEN, token de acesso do dono)');
 const ROOT = new URL('../../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
 const DIR = join(ROOT, 'docs/demo-cardapio');
 const data = JSON.parse(readFileSync(join(DIR, 'produtos.json'), 'utf8'));
@@ -75,8 +76,8 @@ function clipFromPhoto(photo, slug) {
 
 const kb = (n) => `${Math.round(n / 1024)} KB`;
 try {
-  token = (await call('POST', '/auth/login', { email: DEMO_EMAIL, password: DEMO_PASSWORD })).accessToken;
-  console.log(`API ${API} — entrei como dono do restaurante de demonstração`);
+  token = DEMO_TOKEN || (await call('POST', '/auth/login', { email: DEMO_EMAIL, password: DEMO_PASSWORD })).accessToken;
+  console.log(`API ${API} — entrei como dono do restaurante`);
 
   // categorias na ordem do arquivo
   let cats = await call('GET', '/menu/categories');
