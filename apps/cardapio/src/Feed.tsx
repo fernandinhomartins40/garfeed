@@ -25,44 +25,89 @@ export function Feed(p: Props) {
   const [favs, setFavs] = useState<string[]>(() => store.get('gf_fav', []));
   const [hint, setHint] = useState(() => !store.get('gf_hint', false));
 
-  // Volta ao prato em que estava (grade → feed, link compartilhado).
+  // Paginador próprio (sem rolagem do navegador): cada prato ocupa exatamente a tela. A rolagem nativa com encaixe deixava
+  // um pedaço do próximo prato à mostra no celular, porque a barra de endereço some no meio do deslize e muda a altura.
+  // Aqui a posição é sempre "prato × 100% da altura" (porcentagem: não depende da altura em pixels).
+  const stack = useRef<HTMLDivElement>(null);
+  const idx = useRef(activeIdx);
+  const place = (i: number, animate: boolean, dragPx = 0) => {
+    const t = stack.current;
+    if (!t) return;
+    t.style.transition = animate && !reduced ? 'transform 340ms cubic-bezier(.22,.8,.24,1)' : 'none';
+    t.style.transform = `translate3d(0, calc(${-i * 100}% + ${dragPx}px), 0)`;
+  };
+  const goTo = (i: number) => {
+    const n = Math.max(0, Math.min(items.length - 1, i));
+    place(n, true);
+    if (n !== idx.current) { idx.current = n; p.setActiveIdx(n); }
+  };
+  // prato atual mudou por fora (grade → feed, categoria, link compartilhado)
+  const mounted = useRef(false);
   useLayoutEffect(() => {
-    if (ref.current) ref.current.scrollTop = activeIdx * ref.current.clientHeight;
-  }, []);
+    idx.current = activeIdx;
+    place(activeIdx, mounted.current);
+    mounted.current = true;
+  }, [activeIdx]);
 
-  // Mantém cada prato encaixado na tela: se a altura muda (barra de endereço do celular some/aparece) ou a rolagem
-  // termina fora do lugar, volta para o prato atual. Sem isso, da 3ª tela em diante aparece um pedaço da próxima.
-  const activeRef = useRef(activeIdx);
-  activeRef.current = activeIdx;
   useEffect(() => {
     const c = ref.current!;
-    let lastH = c.clientHeight;
-    const ro = new ResizeObserver(() => {
-      if (c.clientHeight === lastH) return;
-      lastH = c.clientHeight;
-      c.scrollTop = activeRef.current * c.clientHeight;
-    });
-    ro.observe(c);
-    let t: ReturnType<typeof setTimeout> | undefined;
-    const settle = () => {
-      const h = c.clientHeight, i = Math.round(c.scrollTop / h);
-      if (Math.abs(c.scrollTop - i * h) > 1) c.scrollTo({ top: i * h, behavior: reduced ? 'auto' : 'smooth' });
+    let y0 = 0, t0 = 0, dy = 0, down = false, moved = false;
+    const h = () => c.clientHeight || 1;
+    const onDown = (e: PointerEvent) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      down = true; moved = false; y0 = e.clientY; t0 = e.timeStamp; dy = 0;
     };
-    // scrollend (Chrome/Firefox); no Safari antigo, 150 ms sem rolar
-    const onScroll = () => { clearTimeout(t); t = setTimeout(settle, 150); };
-    const native = 'onscrollend' in window;
-    c.addEventListener(native ? 'scrollend' : 'scroll', native ? settle : onScroll, { passive: true });
-    return () => { ro.disconnect(); clearTimeout(t); c.removeEventListener(native ? 'scrollend' : 'scroll', native ? settle : onScroll); };
-  }, []);
-
-  useEffect(() => {
-    const root = ref.current!;
-    const io = new IntersectionObserver((es) => {
-      for (const e of es) if (e.isIntersecting) p.setActiveIdx(Number((e.target as HTMLElement).dataset.i));
-    }, { root, threshold: 0.6 });
-    root.querySelectorAll('[data-i]').forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, [items, p.setActiveIdx]);
+    const onMove = (e: PointerEvent) => {
+      if (!down) return;
+      dy = e.clientY - y0;
+      if (!moved && Math.abs(dy) < 8) return; // toque: deixa o clique acontecer
+      moved = true;
+      const atEdge = (dy > 0 && idx.current === 0) || (dy < 0 && idx.current === items.length - 1);
+      place(idx.current, false, atEdge ? dy * 0.3 : dy); // nas pontas, resistência
+    };
+    const onUp = (e: PointerEvent) => {
+      if (!down) return;
+      down = false;
+      if (!moved) return;
+      const v = dy / Math.max(1, e.timeStamp - t0); // px/ms
+      const step = dy < -h() * 0.18 || v < -0.45 ? 1 : dy > h() * 0.18 || v > 0.45 ? -1 : 0;
+      goTo(idx.current + step);
+    };
+    // depois de arrastar, o "clique" do fim do gesto não deve acionar botões
+    const onClick = (e: MouseEvent) => { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } };
+    let wheelAcc = 0, wheelLock = 0;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      if (e.timeStamp < wheelLock) return;
+      wheelAcc += e.deltaY;
+      if (Math.abs(wheelAcc) > 40) { goTo(idx.current + Math.sign(wheelAcc)); wheelAcc = 0; wheelLock = e.timeStamp + 500; }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.target as HTMLElement).closest('input, textarea, select, [role=dialog]')) return;
+      if (e.key === 'ArrowDown' || e.key === 'PageDown') { e.preventDefault(); goTo(idx.current + 1); }
+      if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); goTo(idx.current - 1); }
+    };
+    // foco por teclado ou "rolar até" do navegador não pode deslocar o contêiner (só o paginador move os pratos)
+    const noScroll = () => { if (c.scrollTop) c.scrollTop = 0; };
+    c.addEventListener('scroll', noScroll);
+    c.addEventListener('pointerdown', onDown);
+    window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+    c.addEventListener('click', onClick, true);
+    c.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('keydown', onKey);
+    return () => {
+      c.removeEventListener('scroll', noScroll);
+      c.removeEventListener('pointerdown', onDown);
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+      c.removeEventListener('click', onClick, true);
+      c.removeEventListener('wheel', onWheel);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [items.length]);
 
   const active = items[activeIdx];
   // RF-27 item_view com ms visível.
@@ -80,7 +125,7 @@ export function Feed(p: Props) {
   const jump = (c: Category) => {
     const i = items.findIndex((it) => it.categoryId === c.id);
     track('category_change', { categoryId: c.id });
-    ref.current?.scrollTo({ top: i * ref.current.clientHeight, behavior: reduced ? 'auto' : 'smooth' });
+    if (i >= 0) goTo(i);
   };
 
   const fav = (it: PublicItem) => {
@@ -103,12 +148,14 @@ export function Feed(p: Props) {
 
   return (
     <div className="relative h-full bg-gf-navy">
-      <div ref={ref} className="no-scrollbar h-full snap-y snap-mandatory overflow-y-auto overscroll-contain">
+      <div ref={ref} className="h-full touch-none select-none overflow-hidden overscroll-none" aria-roledescription="carrossel vertical">
+        <div ref={stack} className="h-full will-change-transform">
         {items.map((it, i) => (
           <Slide key={it.id} it={it} i={i} active={i === activeIdx} near={i >= activeIdx - 2 && i <= activeIdx + 2}
             ahead={i > activeIdx} canOrder={p.canOrder} fav={favs.includes(it.id)} hint={hint && i === 0} bottomGap={p.cartCount > 0}
             onAdd={p.onAdd} onFav={fav} onShare={share} />
         ))}
+        </div>
       </div>
 
       <header className="pointer-events-none absolute inset-x-0 top-0 z-10 space-y-3 pt-[max(12px,env(safe-area-inset-top))]">
@@ -150,6 +197,9 @@ type SlideProps = {
 const Slide = memo(function Slide({ it, i, active, near, ahead, canOrder, fav, hint, bottomGap, onAdd, onFav, onShare }: SlideProps) {
   const [more, setMore] = useState(false);
   const video = useRef<HTMLVideoElement>(null);
+  const sec = useRef<HTMLElement>(null);
+  // pratos fora da tela ficam inertes: Tab não foca botão escondido (o foco faria o navegador deslocar o feed)
+  useEffect(() => { sec.current?.toggleAttribute('inert', !active); }, [active]);
   const m = it.media;
 
   // Só o visível toca; prefers-reduced-motion = sem autoplay.
@@ -162,7 +212,7 @@ const Slide = memo(function Slide({ it, i, active, near, ahead, canOrder, fav, h
 
   const price = it.promoPriceCents ?? it.priceCents;
   return (
-    <section data-i={i} aria-label={it.name} className="relative h-full snap-start snap-always overflow-hidden">
+    <section ref={sec} data-i={i} aria-label={it.name} className="relative h-full overflow-hidden">
       <div className={`absolute inset-0 ${it.soldOut ? 'grayscale-[.75] brightness-75' : ''}`}>
         {/* Pré-carrega os 2 próximos; 3+ telas para trás a mídia é descarregada. */}
         {near && m?.url && m.type === 'VIDEO' ? (
